@@ -2,6 +2,7 @@ package com.mediaportal.ampdroid.lists.views;
 
 import java.util.Date;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
@@ -12,24 +13,26 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvSchedule;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
+import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class TvServerSchedulesDetailsViewItem implements ILoadingAdapterItem {
    TvSchedule mSchedule;
    TvChannel mChannel;
+   private Context mContext;
 
-   public TvServerSchedulesDetailsViewItem(TvSchedule _schedule, TvChannel _channel) {
+   public TvServerSchedulesDetailsViewItem(Context _context, TvSchedule _schedule, TvChannel _channel) {
       mSchedule = _schedule;
       mChannel = _channel;
+      mContext = _context;
    }
 
    private String getText() {
       if (mChannel != null) {
-         return "Channel: " + mChannel.getDisplayName();
+         return mContext.getString(R.string.tvserver_channel) + ": " + mChannel.getDisplayName();
       } else {
-         return "Channel: " + mSchedule.getIdChannel();
+         return mContext.getString(R.string.tvserver_channel) + ": " + mSchedule.getIdChannel();
       }
    }
 

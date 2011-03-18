@@ -2,6 +2,7 @@ package com.mediaportal.ampdroid.lists.views;
 
 import java.util.Date;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
@@ -12,23 +13,25 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvRecording;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
+import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 public class TvServerRecordingsThumbsViewItem implements ILoadingAdapterItem {
    TvRecording mRecording;
    TvChannel mChannel;
-   public TvServerRecordingsThumbsViewItem(TvRecording _recording, TvChannel _channel) {
+   private Context mContext;
+   public TvServerRecordingsThumbsViewItem(Context _context, TvRecording _recording, TvChannel _channel) {
       mRecording = _recording;
       mChannel = _channel;
+      mContext = _context;
    }
 
    private String getText() {
       if (mChannel != null) {
-         return "Channel: " + mChannel.getDisplayName();
+         return mContext.getString(R.string.tvserver_channel) + ": " + mChannel.getDisplayName();
       } else {
-         return "Channel: " + mRecording.getIdChannel();
+         return mContext.getString(R.string.tvserver_channel) + ": " + mRecording.getIdChannel();
       }
    }
 

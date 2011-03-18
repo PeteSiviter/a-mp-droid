@@ -2,6 +2,7 @@ package com.mediaportal.ampdroid.lists.views;
 
 import java.io.File;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
@@ -20,17 +21,20 @@ public class EpisodePosterViewAdapterItem implements ILoadingAdapterItem {
    private int mSeriesId;
    private SeriesEpisode mEpisode;
    private LazyLoadingImage mImage;
+   private Context mContext;
 
-   public EpisodePosterViewAdapterItem(int _seriesId, SeriesEpisode _episode) {
+   public EpisodePosterViewAdapterItem(Context _context, int _seriesId, SeriesEpisode _episode) {
       mEpisode = _episode;
       mSeriesId = _seriesId;
-      
+      mContext = _context;
+
       String ext = Utils.getExtension(mEpisode.getBannerUrl());
-      
+
       int width = 400;
       int height = 200;
-      String cacheName =  "Series" + File.separator + mSeriesId + File.separator + "Season." + mEpisode.getSeasonNumber()
-            + File.separator + "Ep" + _episode.getEpisodeNumber() + "_" + width + "x" + height + "." + ext;
+      String cacheName = "Series" + File.separator + mSeriesId + File.separator + "Season."
+            + mEpisode.getSeasonNumber() + File.separator + "Ep" + _episode.getEpisodeNumber()
+            + "_" + width + "x" + height + "." + ext;
       mImage = new LazyLoadingImage(mEpisode.getBannerUrl(), cacheName, width, height);
    }
 
@@ -38,7 +42,6 @@ public class EpisodePosterViewAdapterItem implements ILoadingAdapterItem {
    public LazyLoadingImage getImage() {
       return mImage;
    }
-
 
    @Override
    public int getType() {
@@ -67,7 +70,7 @@ public class EpisodePosterViewAdapterItem implements ILoadingAdapterItem {
 
    @Override
    public void fillViewFromViewHolder(ViewHolder _holder) {
-      SubtextViewHolder holder = (SubtextViewHolder)_holder;
+      SubtextViewHolder holder = (SubtextViewHolder) _holder;
       if (holder.title != null) {
          holder.title.setTypeface(null, Typeface.BOLD);
 
@@ -76,7 +79,8 @@ public class EpisodePosterViewAdapterItem implements ILoadingAdapterItem {
       }
 
       if (holder.text != null) {
-         holder.text.setText("Episode " + mEpisode.getEpisodeNumber());
+         holder.text.setText(mContext.getString(R.string.media_episode) + " "
+               + mEpisode.getEpisodeNumber());
          holder.text.setTextColor(Color.WHITE);
       }
 

@@ -27,6 +27,7 @@ public class BaseTabActivity extends TabActivity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
+      PreferencesManager.intitialisePreferencesManager(this);
 
       if (PreferencesManager.isFullscreen()) {
          getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

@@ -89,7 +89,7 @@ public class TvServerProgramsDetailsViewItem implements ILoadingAdapterItem {
    public void fillViewFromViewHolder(ViewHolder _holder) {
       SubtextViewHolder holder = (SubtextViewHolder) _holder;
       if (holder.title != null) {
-         holder.title.setText(mProgram.getTitle() + (mProgram.isIsScheduled() ? " - Rec" : ""));
+         holder.title.setText(mProgram.getTitle());
          if (mIsCurrent) {
             holder.title.setTextColor(Color.GREEN);
          } else {

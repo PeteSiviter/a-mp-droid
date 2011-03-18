@@ -3,6 +3,7 @@ package com.mediaportal.ampdroid.activities.tvserver;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -28,7 +29,10 @@ public class TvServerRecordingsActivity extends BaseActivity {
 
    private class UpdateRecordingsTask extends AsyncTask<Integer, Integer, List<TvRecording>> {
       private HashMap<Integer, TvChannel> mChannels;
-
+      private Context mContext;
+      private UpdateRecordingsTask(Context _context){
+         mContext = _context;
+      }
       @Override
       protected List<TvRecording> doInBackground(Integer... _params) {
          List<TvRecording> recordings = mService.getTvRecordings();
@@ -51,7 +55,7 @@ public class TvServerRecordingsActivity extends BaseActivity {
          if (_result != null) {
             for (TvRecording r : _result) {
                TvChannel channel = mChannels.get(r.getIdChannel());
-               mAdapter.addItem(new TvServerRecordingsThumbsViewItem(r, channel));
+               mAdapter.addItem(new TvServerRecordingsThumbsViewItem(mContext, r, channel));
             }
 
             mListView.setAdapter(mAdapter);
@@ -86,7 +90,7 @@ public class TvServerRecordingsActivity extends BaseActivity {
    private void refreshRecordings() {
       mAdapter.showLoadingItem(true);
       mAdapter.setLoadingText(getString(R.string.tvserver_loadrecordings));
-      mRecordingsUpdater = new UpdateRecordingsTask();
+      mRecordingsUpdater = new UpdateRecordingsTask(this);
       mRecordingsUpdater.execute(0);
    }
 }

@@ -63,6 +63,10 @@ public class TvServerSchedulesActivity extends BaseActivity {
 
    private class UpdateSchedulesTask extends AsyncTask<Integer, Integer, List<TvSchedule>> {
       private HashMap<Integer, TvChannel> mChannels;
+      private Context mContext;
+      private UpdateSchedulesTask(Context _context){
+         mContext = _context;
+      }
       
       @Override
       protected List<TvSchedule> doInBackground(Integer... _params) {
@@ -83,7 +87,7 @@ public class TvServerSchedulesActivity extends BaseActivity {
          if (_result != null) {
             for (TvSchedule s : _result) {
                TvChannel channel = mChannels.get(s.getIdChannel());
-               mAdapter.addItem(new TvServerSchedulesDetailsViewItem(s, channel));
+               mAdapter.addItem(new TvServerSchedulesDetailsViewItem(mContext, s, channel));
             }
 
             mListView.setAdapter(mAdapter);
@@ -138,7 +142,7 @@ public class TvServerSchedulesActivity extends BaseActivity {
    private void refreshSchedules() {
       mAdapter.showLoadingItem(true);
       mAdapter.setLoadingText(getString(R.string.tvserver_loadschedules));
-      mRecordingsUpdater = new UpdateSchedulesTask();
+      mRecordingsUpdater = new UpdateSchedulesTask(this);
       mRecordingsUpdater.execute(0);
    }
 }

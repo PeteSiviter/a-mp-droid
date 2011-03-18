@@ -57,6 +57,7 @@
 	<string name="media_series_loadseries">Loading Series ...</string>
 	<string name="media_series_loadseriesdetails">Loading Series Details ...</string>
 	<string name="media_series_loadepisodedetails">Loading Episode Details ...</string>
+	<string name="media_episode">Episode</string>
 	<string name="media_episodes">Episodes</string>
 	<string name="media_episodes_loading">Loading Episodes ...</string>
 	<string name="media_episodes_minutes"> minutes</string>
@@ -93,6 +94,8 @@
 	<string name="tvserver_noconnection_tvserver_desc">Couldn\'t connect to Tv Server</string>
 	<string name="tvserver_starttimeshift_failed">Couldn\'t start timeshift</string>
 	<string name="tvserver_stoptimeshift_failed">Couldn\'t stop timeshift</string>
+	<string name="tvserver_starttimeshift">Start timeshift</string>
+	<string name="tvserver_startrecording">Start recording</string>
 	<string name="tvserver_stoptimeshift">Stop timeshift</string>
 	<string name="tvserver_loadgroups">Loading Groups</string>
 	<string name="tvserver_loadchannels">Loading Channels</string>
@@ -109,7 +112,9 @@
 	<string name="tvserver_errorplaying">Error playing </string>
 	<string name="tvserver_errorplaying_resultcode">, ResultCode: </string>
 	<string name="tvserver_finishedplaying">Finished playing  </string>
-
+	<string name="tvserver_channel">Channel</string>
+	<string name="tvserver_activecards">Active Cards</string>
+	<string name="tvserver_title_starttimeshiftrecording">Start Timeshift/Recording</string>
 
 	<string name="tvserver_program_start">Start Time</string>
 	<string name="tvserver_program_end">End Time</string>

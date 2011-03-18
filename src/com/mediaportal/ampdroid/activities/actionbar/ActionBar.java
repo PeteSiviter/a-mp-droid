@@ -61,6 +61,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
    private boolean mIsInitialised = false;
    private boolean mLoading;
+   
 
    public ActionBar(Context _context, AttributeSet _attrs) {
       super(_context, _attrs);

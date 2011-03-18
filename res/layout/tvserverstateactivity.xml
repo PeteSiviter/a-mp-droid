@@ -11,7 +11,7 @@
 			android:layout_height="fill_parent" android:layout_width="fill_parent"
 			android:orientation="vertical">
 			<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="Start Timeshift/Recording"
+				android:layout_height="wrap_content" android:text="@string/tvserver_title_starttimeshiftrecording"
 				android:layout_gravity="bottom" android:textSize="18dip"
 				android:textStyle="bold" android:layout_marginTop="5dip"
 				android:layout_marginBottom="5dip"></TextView>
@@ -26,14 +26,14 @@
 			<LinearLayout android:id="@+id/LinearLayout02"
 				android:layout_height="wrap_content" android:layout_width="fill_parent">
 				<Button android:layout_height="wrap_content" android:id="@+id/ButtonStartTimeshift"
-					android:text="Start Timeshift" android:layout_weight="1"
+					android:text="@string/tvserver_starttimeshift" android:layout_weight="1"
 					android:layout_width="0dip"></Button>
 				<Button android:layout_height="wrap_content" android:id="@+id/ButtonStartRecording"
-					android:text="Start Recording" android:layout_width="0dip"
+					android:text="@string/tvserver_startrecording" android:layout_width="0dip"
 					android:layout_weight="1"></Button>
 			</LinearLayout>
 			<TextView android:id="@+id/TextView02" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="Active Cards"
+				android:layout_height="wrap_content" android:text="@string/tvserver_activecards"
 				android:layout_marginBottom="5dip" android:layout_marginTop="5dip"
 				android:textSize="18dip" android:textStyle="bold"></TextView>
 			<ListView android:id="@+id/ListViewCards"

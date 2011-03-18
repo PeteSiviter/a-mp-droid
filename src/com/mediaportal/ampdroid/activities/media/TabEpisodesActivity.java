@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -47,6 +48,12 @@ public class TabEpisodesActivity extends Activity {
    private TextView mTextViewSeason;
 
    private class LoadEpisodesTask extends AsyncTask<Integer, List<SeriesEpisode>, Boolean> {
+      private Context mContext;
+
+      private LoadEpisodesTask(Context _context){
+         mContext = _context;
+      }
+      
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
@@ -73,7 +80,7 @@ public class TabEpisodesActivity extends Activity {
             if (episodes != null) {
                for (SeriesEpisode e : episodes) {
                   // EpisodeDetails details = mService.getEpisode(e.getId());
-                  mAdapter.addItem(new EpisodePosterViewAdapterItem(mSeriesId, e));
+                  mAdapter.addItem(new EpisodePosterViewAdapterItem(mContext, mSeriesId, e));
                }
             }
          }
@@ -240,7 +247,7 @@ public class TabEpisodesActivity extends Activity {
    private void refreshEpisodes() {
       mAdapter.setLoadingText(getString(R.string.media_episodes_loading));
       mAdapter.showLoadingItem(true);
-      mEpisodesLoaderTask = new LoadEpisodesTask();
+      mEpisodesLoaderTask = new LoadEpisodesTask(this);
       mEpisodesLoaderTask.execute(0);
 
    }
