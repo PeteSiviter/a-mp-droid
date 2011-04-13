@@ -238,4 +238,6 @@
 	<string-array name="settings_media_defaultview_shares_values">
 		<item>0</item>
 	</string-array>
+		<string name="settings_host_useauth">Use Authentification</string>
+		<string name="remote_button_info">i</string>
 </resources>

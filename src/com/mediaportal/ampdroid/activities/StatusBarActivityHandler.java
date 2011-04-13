@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -20,6 +21,7 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.RemoteCommands;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
+import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
 import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
 import com.mediaportal.ampdroid.utils.Util;
@@ -40,7 +42,11 @@ public class StatusBarActivityHandler {
    private ActionBar actionBar;
    private TextView mSliderTitleText;
    private SeekBar mPositionSlider;
+   private boolean mProgressSeekBarChanging;
    private boolean mVolumeSeekBarChanging;
+   private Button mInfoButton;
+   private TextView mSliderText;
+   private TextView mSliderTextDetails;
 
    private static String statusString;
    private static RemoteNowPlaying nowPlayingMessage;
@@ -61,8 +67,28 @@ public class StatusBarActivityHandler {
       mNextButton = (ImageButton) mParent.findViewById(R.id.ImageButtonBottomNext);
       mRemoteButton = (ImageButton) mParent.findViewById(R.id.ImageButtonBottomRemote);
       mVolumeButton = (ImageButton) mParent.findViewById(R.id.ImageButtonBottomVolume);
+      mInfoButton = (Button) mParent.findViewById(R.id.ButtonInfo);
 
       mPositionSlider = (SeekBar) mParent.findViewById(R.id.SeekBarSliderPosition);
+      mPositionSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+         @Override
+         public void onStopTrackingTouch(SeekBar _seekBar) {
+            int seekValue = _seekBar.getProgress();// between 0 - 100
+            if (mRemote.isClientControlConnected()) {
+               mRemote.sendClientPosition(seekValue);
+            }
+            mProgressSeekBarChanging = false;
+         }
+
+         @Override
+         public void onStartTrackingTouch(SeekBar seekBar) {
+            mProgressSeekBarChanging = true;
+         }
+
+         @Override
+         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+         }
+      });
 
       if (mPauseButton != null) {
          mPauseButton.setOnClickListener(new OnClickListener() {
@@ -143,7 +169,7 @@ public class StatusBarActivityHandler {
          mVolumeButton.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-               //send mute button
+               // send mute button
                mRemote.sendRemoteButton(RemoteCommands.muteButton);
 
                return true;
@@ -151,8 +177,19 @@ public class StatusBarActivityHandler {
          });
       }
 
+      if (mInfoButton != null) {
+         mInfoButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               mRemote.sendRemoteButton(RemoteCommands.infoButton);
+            }
+         });
+      }
+
       mStatusText = (TextView) mParent.findViewById(R.id.TextViewSliderSatusText);
       mSliderTitleText = (TextView) mParent.findViewById(R.id.TextViewSliderTitle);
+      mSliderText = (TextView) mParent.findViewById(R.id.TextViewSliderText);
+      mSliderTextDetails = (TextView) mParent.findViewById(R.id.TextViewSliderTextDetail);
 
       mSeekBar = (SeekBar) mParent.findViewById(R.id.SeekBarBottomVolume);
       mVolumeSeekBarChanging = false;
@@ -293,7 +330,8 @@ public class StatusBarActivityHandler {
             // statusText.setText("Remote connected...");
          } else {
             Util.showToast(mParent, mParent.getString(R.string.info_remote_notconnected));
-            StatusBarActivityHandler.statusString = mParent.getString(R.string.info_remote_notconnected);
+            StatusBarActivityHandler.statusString = mParent
+                  .getString(R.string.info_remote_notconnected);
          }
          mStatusText.setText(StatusBarActivityHandler.statusString);
       }
@@ -302,7 +340,16 @@ public class StatusBarActivityHandler {
    public void setNowPlaying(RemoteNowPlaying _nowPlayingMessage) {
       StatusBarActivityHandler.nowPlayingMessage = _nowPlayingMessage;
       if (mSliderTitleText != null) {
-         mSliderTitleText.setText(StatusBarActivityHandler.nowPlayingMessage.getFile());
+         mSliderTitleText.setText(StatusBarActivityHandler.nowPlayingMessage.getTitle());
+      }
+
+      if (mSliderText != null) {
+         mSliderText.setText("Duration: "
+               + StatusBarActivityHandler.nowPlayingMessage.getDuration());
+      }
+
+      if (mSliderTextDetails != null) {
+         mSliderTextDetails.setText(StatusBarActivityHandler.nowPlayingMessage.getDescription());
       }
 
       if (mSliderTitleText != null) {
@@ -319,6 +366,19 @@ public class StatusBarActivityHandler {
       }
    }
 
+   public void setNowPlaying(RemoteNowPlayingUpdate _nowPlayingMessage) {
+      if (_nowPlayingMessage != null && mPositionSlider != null && !mProgressSeekBarChanging) {
+         int pos = _nowPlayingMessage.getPosition();
+         int duration = _nowPlayingMessage.getDuration();
+
+         int progress = 0;
+         if (pos != 0 && duration != 0) {
+            progress = pos * 100 / duration;
+         }
+         mPositionSlider.setProgress(progress);
+      }
+   }
+
    public void setStatus(RemoteStatusMessage _statusMessage) {
       if (_statusMessage != null) {
          if (mSeekBar != null) {
@@ -330,14 +390,13 @@ public class StatusBarActivityHandler {
       StatusBarActivityHandler.volumeMessage = _statusMessage;
       if (_statusMessage != null) {
          if (mSeekBar != null) {
-            if(!mVolumeSeekBarChanging){
-            int volume = _statusMessage.getVolume();
-            mSeekBar.setProgress((int) (volume * 0.2));
+            if (!mVolumeSeekBarChanging) {
+               int volume = _statusMessage.getVolume();
+               mSeekBar.setProgress((int) (volume * 0.2));
             }
-            if(_statusMessage.isIsMuted()){
+            if (_statusMessage.isIsMuted()) {
                mVolumeButton.setImageResource(R.drawable.button_volume_muted);
-            }
-            else{
+            } else {
                mVolumeButton.setImageResource(R.drawable.button_volume);
             }
          }

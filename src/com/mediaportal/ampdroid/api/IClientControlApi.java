@@ -23,5 +23,6 @@ public interface IClientControlApi extends IApiInterface {
    void requestPlugins();
    void openWindow(int _windowId, String _parameter);
    void sendPowerMode(PowerModes _mode);
+   void sendPosition(int _position);
    
 }

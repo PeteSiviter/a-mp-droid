@@ -13,12 +13,21 @@ public class RemoteClientSetting {
    
    private String mRemoteAccessServer;
    private int mRemoteAccessPort;
+   private String mRemoteAccessUser;
+   private String mRemoteAccessPass;
+   private boolean mRemoteAccessUseAuth;
    
    private String mTvServer;
    private int mTvPort;
+   private String mTvUser;
+   private String mTvPass;
+   private boolean mTvUseAuth;
    
    private String mRemoteControlServer;
    private int mRemoteControlPort;
+   private String mRemoteControlUser;
+   private String mRemoteControlPass;
+   private boolean mRemoteControlUseAuth;
    
    @ColumnProperty(value="ClientId", type="integer")
    public int getClientId() {
@@ -105,8 +114,100 @@ public class RemoteClientSetting {
       return mRemoteControlPort;
    }
 
-   @ColumnProperty(value="RemoteControlPort", type="integer")
+   @ColumnProperty(value = "RemoteControlPort", type = "integer")
    public void setRemoteControlPort(int mRemoteControlPort) {
       this.mRemoteControlPort = mRemoteControlPort;
    }
+
+   @ColumnProperty(value="RemoteAccessUser", type="text")
+   public String getRemoteAccessUser() {
+      return mRemoteAccessUser;
+   }
+
+   @ColumnProperty(value="RemoteAccessUser", type="text")
+   public void setRemoteAccessUser(String remoteAccessUser) {
+      mRemoteAccessUser = remoteAccessUser;
+   }
+
+   @ColumnProperty(value="RemoteAccessPass", type="text")
+   public String getRemoteAccessPass() {
+      return mRemoteAccessPass;
+   }
+
+   @ColumnProperty(value="RemoteAccessPass", type="text")
+   public void setRemoteAccessPass(String remoteAccessPass) {
+      mRemoteAccessPass = remoteAccessPass;
+   }
+
+   @ColumnProperty(value="RemoteAccessUseAuth", type="boolean")
+   public boolean isRemoteAccessUseAuth() {
+      return mRemoteAccessUseAuth;
+   }
+
+   @ColumnProperty(value="RemoteAccessUseAuth", type="boolean")
+   public void setRemoteAccessUseAuth(boolean remoteAccessUseAuth) {
+      mRemoteAccessUseAuth = remoteAccessUseAuth;
+   }
+
+   @ColumnProperty(value="TvUser", type="text")
+   public String getTvUser() {
+      return mTvUser;
+   }
+
+   @ColumnProperty(value="TvUser", type="text")
+   public void setTvUser(String tvUser) {
+      mTvUser = tvUser;
+   }
+
+   @ColumnProperty(value="TvPass", type="text")
+   public String getTvPass() {
+      return mTvPass;
+   }
+
+   @ColumnProperty(value="TvPass", type="text")
+   public void setTvPass(String tvPass) {
+      mTvPass = tvPass;
+   }
+
+   @ColumnProperty(value="TvUseAuth", type="boolean")
+   public boolean isTvUseAuth() {
+      return mTvUseAuth;
+   }
+
+   @ColumnProperty(value="TvUseAuth", type="boolean")
+   public void setTvUseAuth(boolean tvUseAuth) {
+      mTvUseAuth = tvUseAuth;
+   }
+
+   @ColumnProperty(value="RemoteControlUser", type="text")
+   public String getRemoteControlUser() {
+      return mRemoteControlUser;
+   }
+
+   @ColumnProperty(value="RemoteControlUser", type="text")
+   public void setRemoteControlUser(String remoteControlUser) {
+      mRemoteControlUser = remoteControlUser;
+   }
+
+   @ColumnProperty(value="RemoteControlPass", type="text")
+   public String getRemoteControlPass() {
+      return mRemoteControlPass;
+   }
+
+   @ColumnProperty(value="RemoteControlPass", type="text")
+   public void setRemoteControlPass(String remoteControlPass) {
+      mRemoteControlPass = remoteControlPass;
+   }
+
+   @ColumnProperty(value="RemoteControlUseAuth", type="boolean")
+   public boolean isRemoteControlUseAuth() {
+      return mRemoteControlUseAuth;
+   }
+
+   @ColumnProperty(value="RemoteControlUseAuth", type="boolean")
+   public void setRemoteControlUseAuth(boolean remoteControlUseAuth) {
+      mRemoteControlUseAuth = remoteControlUseAuth;
+   }
+   
+   
 }

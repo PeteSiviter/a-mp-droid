@@ -24,7 +24,7 @@ public class RemoteClientsDatabaseHandler {
 
    public RemoteClientsDatabaseHandler(Context _context) {
       mContext = _context;
-      mDbHelper = new SettingsDatabaseHelper(mContext, "ampdroid_settings", null, 6);
+      mDbHelper = new SettingsDatabaseHelper(mContext, "ampdroid_settings", null, 7);
    }
 
    public void open() {

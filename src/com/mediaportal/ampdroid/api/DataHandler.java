@@ -616,7 +616,6 @@ public class DataHandler {
 
    public void playFileOnClient(String _fileName) {
       client.getClientControlApi().startVideo(_fileName);
-
    }
 
    public void sendRemoteButtonDown(RemoteKey _remoteKey, int _pause) {
@@ -642,5 +641,9 @@ public class DataHandler {
 
    public void requestPlugins() {
       client.getClientControlApi().requestPlugins();
+   }
+
+   public void sendClientPosition(int _position) {
+      client.getClientControlApi().sendPosition(_position);
    }
 }

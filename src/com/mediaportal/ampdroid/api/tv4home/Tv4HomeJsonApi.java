@@ -66,6 +66,11 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
 
    private String m_server;
    private int m_port;
+   
+   private String m_user;
+   private String m_pass;
+   private boolean m_useAuth;
+   
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
 
@@ -73,10 +78,14 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    private final String JSON_SUFFIX = "/TV4Home.Server.CoreService/TVEInteractionService/json";
 
    @SuppressWarnings("unchecked")
-   public Tv4HomeJsonApi(String _server, int _port) {
+   public Tv4HomeJsonApi(String _server, int _port, String _user, String _pass, boolean _auth) {
       m_server = _server;
       m_port = _port;
-      mJsonClient = new JsonClient(JSON_PREFIX + m_server + ":" + m_port + JSON_SUFFIX);
+      m_user = _user;
+      m_pass = _pass;
+      m_useAuth = _auth;
+      
+      mJsonClient = new JsonClient(JSON_PREFIX + m_server + ":" + m_port + JSON_SUFFIX, _user, _pass, _auth);
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    
@@ -85,6 +94,9 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
       sf.addSpecificMapping(Date.class, new CustomDateDeserializer());
    }
    
+   public Tv4HomeJsonApi(String _server, int _port) {
+      this(_server, _port, "", "", false);
+   }
 
    @Override
    public String getServer() {
@@ -94,6 +106,21 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    @Override
    public int getPort() {
       return m_port;
+   }
+   
+   @Override
+   public String getUserName() {
+      return m_user;
+   }
+
+   @Override
+   public String getUserPass() {
+      return m_pass;
+   }
+
+   @Override
+   public boolean getUseAuth() {
+      return m_useAuth;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })

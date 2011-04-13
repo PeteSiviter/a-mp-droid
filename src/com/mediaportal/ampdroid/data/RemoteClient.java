@@ -13,6 +13,9 @@ public class RemoteClient {
    private int mRemoteAccessApiId;
    private int mTvControlApiId;
    private int mClientControlApiId;
+   private String mUserName;
+   private String mUserPassword;
+   private boolean mUseAuth;
    
    private IMediaAccessApi mRemoteAccessApi;
    private ITvServiceApi mTvControlApi;
@@ -164,6 +167,30 @@ public class RemoteClient {
 
    public void setClientControlApi(IClientControlApi clientControlApi) {
       this.mClientControlApi = clientControlApi;
+   }
+
+   public void setUseAuth(boolean useAuth) {
+      mUseAuth = useAuth;
+   }
+
+   public boolean useAuth() {
+      return mUseAuth;
+   }
+
+   public void setUserPassword(String userPassword) {
+      mUserPassword = userPassword;
+   }
+
+   public String getUserPassword() {
+      return mUserPassword;
+   }
+
+   public void setUserName(String userName) {
+      mUserName = userName;
+   }
+
+   public String getUserName() {
+      return mUserName;
    }
 
 

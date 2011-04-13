@@ -26,7 +26,9 @@ import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.data.ClientPlugin;
 import com.mediaportal.ampdroid.data.NowPlaying;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
+import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
+import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
@@ -36,6 +38,11 @@ import com.mediaportal.ampdroid.remote.RemoteWelcomeMessage;
 public class WifiRemoteMpController implements IClientControlApi {
    private String server;
    private int port;
+   
+   private String m_user;
+   private String m_pass;
+   private boolean m_useAuth;
+   
    private Socket socket;
    private DataInputStream instream;
    private DataOutputStream outstream;
@@ -78,6 +85,9 @@ public class WifiRemoteMpController implements IClientControlApi {
                      } else if (type.equals("nowplaying")) {
                         Object returnObject = mJsonObjectMapper.readValue(response, RemoteNowPlaying.class);
                         publishProgress(returnObject);
+                     }else if (type.equals("nowplayingupdate")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteNowPlayingUpdate.class);
+                        publishProgress(returnObject);
                      }else if (type.equals("plugins")){
                         Object returnObject = mJsonObjectMapper.readValue(response, RemotePluginMessage.class);
                         publishProgress(returnObject);
@@ -86,6 +96,9 @@ public class WifiRemoteMpController implements IClientControlApi {
                         publishProgress(returnObject);
                      }else if(type.equals("volume")){
                         Object returnObject = mJsonObjectMapper.readValue(response, RemoteVolumeMessage.class);
+                        publishProgress(returnObject);
+                     }else if(type.equals("image")){
+                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteImageMessage.class);
                         publishProgress(returnObject);
                      }
                   }
@@ -138,7 +151,7 @@ public class WifiRemoteMpController implements IClientControlApi {
       }
    }
 
-   public WifiRemoteMpController(String _server, int _port) {
+   public WifiRemoteMpController(String _server, int _port, String _user, String _pass, boolean _auth) {
       super();
       this.server = _server;
       this.port = _port;
@@ -146,6 +159,10 @@ public class WifiRemoteMpController implements IClientControlApi {
       
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+   }
+   
+   public WifiRemoteMpController(String _server, int _port) {
+      this(_server, _port, "", "", false);
    }
 
    @Override
@@ -161,6 +178,21 @@ public class WifiRemoteMpController implements IClientControlApi {
    @Override
    public String getAddress() {
       return server;
+   }
+   
+   @Override
+   public String getUserName() {
+      return m_user;
+   }
+
+   @Override
+   public String getUserPass() {
+      return m_pass;
+   }
+
+   @Override
+   public boolean getUseAuth() {
+      return m_useAuth;
    }
 
    @Override
@@ -272,6 +304,15 @@ public class WifiRemoteMpController implements IClientControlApi {
       GsonBuilder gsonb = new GsonBuilder();
       Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemotePlayFileMessage(_file));
+
+      writeLine(msgString);
+   }
+   
+   @Override
+   public void sendPosition(int _position) {
+      GsonBuilder gsonb = new GsonBuilder();
+      Gson gson = gsonb.create();
+      String msgString = gson.toJson(new WifiRemotePositionMessage(_position));
 
       writeLine(msgString);
    }

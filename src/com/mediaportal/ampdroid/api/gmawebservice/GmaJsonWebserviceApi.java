@@ -3,8 +3,10 @@ package com.mediaportal.ampdroid.api.gmawebservice;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -43,26 +45,29 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    private GmaJsonWebserviceMovieApi m_moviesAPI;
    private GmaJsonWebserviceSeriesApi m_seriesAPI;
    private GmaJsonWebserviceVideoApi m_videosAPI;
-   
+
    private String mServer;
    private int mPort;
+   
+   private String m_user;
+   private String m_pass;
+   private boolean m_useAuth;
 
    private final String GET_SUPPORTED_FUNCTIONS = "MP_GetSupportedFunctions";
 
    private final String JSON_PREFIX = "http://";
    private final String JSON_SUFFIX = "/GmaWebService/MediaAccessService/json";
    private final String STREAM_SUFFIX = "/GmaWebService/MediaAccessService/stream";
-   
+
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
-   
 
    @SuppressWarnings("unchecked")
-   public GmaJsonWebserviceApi(String _server, int _port) {
+   public GmaJsonWebserviceApi(String _server, int _port, String _user, String _pass, boolean _auth) {
       mServer = _server;
       mPort = _port;
 
-      mJsonClient = new JsonClient(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX);
+      mJsonClient = new JsonClient(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX, _user, _pass, _auth);
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -76,6 +81,11 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       // m_musicAPI = new GmaWebserviceMusicApi(m_wcfService,
       // mJsonObjectMapper);
    }
+   
+   public GmaJsonWebserviceApi(String _server, int _port) {
+      this(_server, _port, "", "", false);
+   }
+
 
    @Override
    public String getServer() {
@@ -85,6 +95,21 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    @Override
    public int getPort() {
       return mPort;
+   }
+   
+   @Override
+   public String getUserName() {
+      return m_user;
+   }
+
+   @Override
+   public String getUserPass() {
+      return m_pass;
+   }
+
+   @Override
+   public boolean getUseAuth() {
+      return m_useAuth;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -164,7 +189,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       }
       return null;
    }
-   
+
    @Override
    public FileInfo getFileInfo(String _path) {
       String methodName = "FS_GetFileInfo";
@@ -228,7 +253,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public List<Movie> getMovies(int _start, int _end) {
       return m_moviesAPI.getMovies(_start, _end);
    }
-   
+
    @Override
    public List<Movie> getAllVideos() {
       return m_videosAPI.getAllMovies();
@@ -305,8 +330,15 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
-               + "/FS_GetImage?path=" + URLEncoder.encode(_url, "UTF-8"));
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort
+               + STREAM_SUFFIX + "/FS_GetImage?path=" + URLEncoder.encode(_url, "UTF-8"));
+         
+         Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+               return new PasswordAuthentication("DieBagger", "Opperate20".toCharArray());
+            }
+         });
+         
          HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
          conn.setDoInput(true);
          conn.connect();
@@ -329,9 +361,16 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
-               + "/FS_GetImageResized?path=" + URLEncoder.encode(_url, "UTF-8") + "&maxWidth="
-               + _maxWidth + "&maxHeight=" + _maxHeight);
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort
+               + STREAM_SUFFIX + "/FS_GetImageResized?path=" + URLEncoder.encode(_url, "UTF-8")
+               + "&maxWidth=" + _maxWidth + "&maxHeight=" + _maxHeight);
+
+         Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+               return new PasswordAuthentication("DieBagger", "Opperate20".toCharArray());
+            }
+         });
+
          HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
          conn.setDoInput(true);
          conn.connect();
@@ -373,5 +412,4 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       // TODO Auto-generated method stub
       return null;
    }
-
 }

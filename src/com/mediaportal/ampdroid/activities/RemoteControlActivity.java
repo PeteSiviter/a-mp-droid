@@ -25,6 +25,7 @@ import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.api.RemoteCommands;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
+import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
@@ -229,6 +230,25 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             return false;
          }
       });
+      
+      final ImageButton switchFullscreenButton = (ImageButton) findViewById(R.id.ImageButtonSwitchFullscreen);
+      switchFullscreenButton.setOnTouchListener(new OnTouchListener() {
+         @Override
+         public boolean onTouch(View _view, MotionEvent _event) {
+            if (_event.getAction() == MotionEvent.ACTION_DOWN) {
+               Util.Vibrate(_view.getContext(), 30);
+
+               new SendKeyTask(_view.getContext(), mService).execute(RemoteCommands.switchFullscreenButton);
+               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen);
+               return true;
+            }
+            if (_event.getAction() == MotionEvent.ACTION_UP) {
+               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen_sel);
+               return true;
+            }
+            return false;
+         }
+      });
 
       final ImageButton remote = (ImageButton) findViewById(R.id.ImageButtonArrows);
 
@@ -339,7 +359,9 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             mStatusBarHandler.setStatus((RemoteStatusMessage) _message);
          } else if (_message.getClass().equals(RemoteNowPlaying.class)) {
             mStatusBarHandler.setNowPlaying((RemoteNowPlaying) _message);
-         } else if (_message.getClass().equals(RemotePluginMessage.class)) {
+         } else if (_message.getClass().equals(RemoteNowPlayingUpdate.class)) {
+            mStatusBarHandler.setNowPlaying((RemoteNowPlayingUpdate) _message);
+         }else if (_message.getClass().equals(RemotePluginMessage.class)) {
             mRemotePlugins = ((RemotePluginMessage)_message).getPlugins();
          } else if (_message.getClass().equals(RemoteWelcomeMessage.class)) {
             RemoteVolumeMessage vol = ((RemoteWelcomeMessage) _message).getVolume();

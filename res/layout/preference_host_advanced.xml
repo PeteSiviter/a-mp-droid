@@ -57,9 +57,11 @@
 		
 			
 		<CheckBox 
+			android:id="@+id/pref_wifi_only" 
+			android:text="WiFi only" 
 			android:checked="false"
 			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content" android:id="@+id/pref_use_auth" android:text="@string/settings_host_useauth"/>
+			android:layout_height="wrap_content" />
 			
 		
 		

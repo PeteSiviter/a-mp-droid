@@ -36,7 +36,7 @@
 	<string name="title_tvserver_epg">Program Guide</string>
 	<string name="title_media">Media Browsing</string>
 
-	<string name="media_views">Views</string>
+	<string name="media_views">Ansichten</string>
 	<string name="media_views_text">Text</string>
 	<string name="media_views_poster">Poster</string>
 	<string name="media_views_thumbs">Thumbs</string>
@@ -44,8 +44,8 @@
 
 	<string name="media_tabs_shares">Shares</string>
 	<string name="media_tabs_videos">Videos</string>
-	<string name="media_tabs_movies">Movies</string>
-	<string name="media_tabs_series">Series</string>
+	<string name="media_tabs_movies">Filme</string>
+	<string name="media_tabs_series">Serien</string>
 
 	<string name="media_nofile">No local file available for this item</string>
 

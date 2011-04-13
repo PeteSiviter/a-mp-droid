@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -23,6 +25,7 @@ import com.mediaportal.ampdroid.api.tv4home.Tv4HomeJsonApi;
 import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteMpController;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+
 public class ClientPreference extends DialogPreference {
    private Context mContext;
    private RemoteClient mClient;
@@ -32,9 +35,8 @@ public class ClientPreference extends DialogPreference {
    private EditText mHostView;
    private EditText mUserView;
    private EditText mPassView;
-   private EditText mAccPointView;
 
-   private CheckBox mWifiOnlyView;
+   private CheckBox mUseAuthView;
 
    public ClientPreference(Context context, AttributeSet attrs) {
       super(context, attrs);
@@ -66,7 +68,7 @@ public class ClientPreference extends DialogPreference {
    public RemoteClient getHost() {
       return mClient;
    }
-   
+
    public void setDbHandler(RemoteClientsDatabaseHandler _dbHandler) {
       mDbHandler = _dbHandler;
    }
@@ -84,8 +86,9 @@ public class ClientPreference extends DialogPreference {
                   + "\"?");
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int which) {
-                   mDbHandler.removeRemoteClient(mClient);
-                   ((PreferenceActivity)view.getContext()).getPreferenceScreen().removePreference(ClientPreference.this);
+                  mDbHandler.removeRemoteClient(mClient);
+                  ((PreferenceActivity) view.getContext()).getPreferenceScreen().removePreference(
+                        ClientPreference.this);
                }
             });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -108,8 +111,14 @@ public class ClientPreference extends DialogPreference {
 
       mUserView = (EditText) parent.findViewById(R.id.pref_user);
       mPassView = (EditText) parent.findViewById(R.id.pref_pass);
-      mAccPointView = (EditText) parent.findViewById(R.id.pref_access_point);
-      mWifiOnlyView = (CheckBox) parent.findViewById(R.id.pref_wifi_only);
+      
+      mUseAuthView = (CheckBox) parent.findViewById(R.id.pref_use_auth);
+      mUseAuthView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+         @Override
+         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            setUseAuth(isChecked);
+         }
+      });
       return parent;
    }
 
@@ -118,19 +127,27 @@ public class ClientPreference extends DialogPreference {
       super.onBindDialogView(view);
       if (mClient != null) {
          mNameView.setText(mClient.getClientName());
-         
-         
-         mHostView.setText(mClient.getClientAddress());
-         mUserView.setText("");
-         mPassView.setText("");
 
-         mAccPointView.setText("");
-         mWifiOnlyView.setChecked(true);
+         mHostView.setText(mClient.getClientAddress());
+
+         mUseAuthView.setChecked(mClient.useAuth());
+
+         setUseAuth(mClient.useAuth());
+
       } else {
          // set defaults:
       }
    }
-   
+
+   private void setUseAuth(boolean useAuth) {
+      if (useAuth) {
+         mUserView.setText(mClient.getUserName());
+         mPassView.setText(mClient.getUserPassword());
+      }
+      mUserView.setEnabled(useAuth);
+      mPassView.setEnabled(useAuth);
+   }
+
    @Override
    protected void onDialogClosed(boolean positiveResult) {
       super.onDialogClosed(positiveResult);
@@ -140,38 +157,44 @@ public class ClientPreference extends DialogPreference {
             Random rnd = new Random();
             mClient = new RemoteClient(rnd.nextInt());
             create = true;
-         }         
+         }
          mClient.setClientName(mNameView.getText().toString());
          String addr = mHostView.getText().toString();
-         GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr, 44321);
+         
+         
+         String user = mUserView.getText().toString();
+         String pass = mPassView.getText().toString();
+         boolean auth = mUseAuthView.isChecked();
+         
+         mClient.setUserName(user);
+         mClient.setUserPassword(pass);
+         mClient.setUseAuth(auth);
+         
+         GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr, 44321, user, pass, auth);
          mClient.setRemoteAccessApi(api);
-         
-         Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, 4321);
+
+         Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, 4321, user, pass, auth);
          mClient.setTvControlApi(tvApi);
-         
-         WifiRemoteMpController clientApi = new WifiRemoteMpController(addr, 8017);
+
+         WifiRemoteMpController clientApi = new WifiRemoteMpController(addr, 8017, user, pass, auth);
          mClient.setClientControlApi(clientApi);
-         
-         if(create){
+
+         if (create) {
             mDbHandler.addRemoteClient(mClient);
-         }
-         else{
+         } else {
             mDbHandler.updateRemoteClient(mClient);
          }
 
          DataHandler.updateRemoteClient(mClient);
-         //host.user = mUserView.getText().toString();
-         //host.pass = mPassView.getText().toString();
+         // host.user = mUserView.getText().toString();
+         // host.pass = mPassView.getText().toString();
 
-         //host.access_point = mAccPointView.getText().toString();
-         //host.wifi_only = mWifiOnlyView.isChecked();
-         
+         // host.access_point = mAccPointView.getText().toString();
+         // host.wifi_only = mWifiOnlyView.isChecked();
+
          setClient(mClient);
-         
-         
+
       }
    }
-
-
 
 }
