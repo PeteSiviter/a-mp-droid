@@ -3,7 +3,7 @@
 	<RelativeLayout android:id="@+id/BottomBarLayout"
 		android:background="@drawable/bottom_bar_bg" android:layout_width="fill_parent"
 		android:layout_height="60dip" android:orientation="horizontal"
-		android:layout_marginTop="-60dip">
+		android:layout_gravity="bottom">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true" android:layout_centerVertical="true"
 			android:id="@+id/ButtonLeftLayout" android:layout_width="fill_parent">

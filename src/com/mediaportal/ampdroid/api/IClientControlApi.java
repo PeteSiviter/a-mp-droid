@@ -11,6 +11,8 @@ public interface IClientControlApi extends IApiInterface {
    int getTimeOut();
    
    void addApiListener(IClientControlListener _listener);
+   void clearApiListener();
+   void removeApiListener(IClientControlListener _listener);
    
    void sendKeyCommand(RemoteKey _key);
    void setVolume(int level);
@@ -24,5 +26,6 @@ public interface IClientControlApi extends IApiInterface {
    void openWindow(int _windowId, String _parameter);
    void sendPowerMode(PowerModes _mode);
    void sendPosition(int _position);
+   void sendRemoteKey(int keyCode, int i);
    
 }

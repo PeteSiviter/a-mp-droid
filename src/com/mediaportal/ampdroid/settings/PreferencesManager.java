@@ -6,6 +6,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class PreferencesManager {
+   public enum StatusbarAutohide {
+      AlwaysShow, AlwaysHide, ShowWhenConnected, ShowManually
+   }
+
    static SharedPreferences Preferences;
 
    public static void intitialisePreferencesManager(Context _context) {
@@ -37,6 +41,24 @@ public class PreferencesManager {
          Log.w("aMPdroid", "PreferencesManager not initialised");
          return "unknown";
       }
+   }
+
+   public static StatusbarAutohide getStatusbarAutohide() {
+      if (Preferences != null) {
+         String value = Preferences.getString("statusbar_autohide", "0");
+         if (value.equals("0")) {
+            return StatusbarAutohide.AlwaysShow;
+         } else if (value.equals("1")) {
+            return StatusbarAutohide.AlwaysHide;
+         } else if (value.equals("2")) {
+            return StatusbarAutohide.ShowWhenConnected;
+         } else if (value.equals("3")) {
+            return StatusbarAutohide.ShowManually;
+         }
+      } else {
+         Log.w("aMPdroid", "PreferencesManager not initialised");
+      }
+      return StatusbarAutohide.AlwaysShow;
    }
 
 }

@@ -19,10 +19,6 @@ public class HomeActivity extends BaseActivity {
       super.onCreate(_savedInstanceState);
       setContentView(R.layout.homescreen);
 
-      mService = DataHandler.getCurrentRemoteInstance();
-      statusBarHandler = new StatusBarActivityHandler(this, mService, true);
-      // statusBarHandler.setupRemoteStatus();
-
       final ImageButton buttonRemote = (ImageButton) findViewById(R.id.ImageButtonRemote);
       buttonRemote.setOnClickListener(new View.OnClickListener() {
          public void onClick(View _view) {
@@ -66,6 +62,8 @@ public class HomeActivity extends BaseActivity {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
             Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
+            Intent myIntent = new Intent(_view.getContext(), PicturesActivity.class);
+            startActivity(myIntent);
          }
       });
 
@@ -81,6 +79,5 @@ public class HomeActivity extends BaseActivity {
    @Override
    protected void onStart() {
       super.onStart();
-      statusBarHandler.setLoading(false);
    }
 }

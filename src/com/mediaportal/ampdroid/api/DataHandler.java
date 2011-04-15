@@ -30,6 +30,7 @@ import com.mediaportal.ampdroid.data.TvVirtualCard;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.database.MediaAccessDatabaseHandler;
+import com.mediaportal.ampdroid.utils.SoftkeyboardUtils;
 
 public class DataHandler {
    private RemoteClient client;
@@ -586,6 +587,14 @@ public class DataHandler {
       client.getClientControlApi().addApiListener(_listener);
    }
 
+   public void clearClientControlListener() {
+      client.getClientControlApi().clearApiListener();
+   }
+
+   public void removeClientControlListener(IClientControlListener _listener) {
+      client.getClientControlApi().removeApiListener(_listener);
+   }
+
    public boolean connectClientControl() {
       return client.getClientControlApi().connect();
    }
@@ -645,5 +654,9 @@ public class DataHandler {
 
    public void sendClientPosition(int _position) {
       client.getClientControlApi().sendPosition(_position);
+   }
+
+   public void sendRemoteKey(int keyCode, int i) {
+      client.getClientControlApi().sendRemoteKey(keyCode, i);
    }
 }

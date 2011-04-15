@@ -24,7 +24,7 @@ public class SeriesPosterViewAdapterItem implements ILoadingAdapterItem {
       String fileName = Utils.getFileNameWithExtension(mSeries.getCurrentPosterUrl(), "\\");
       String cacheName =   "Series" + File.separator + mSeries.getId() + File.separator + "Poster" + File.separator + fileName;
 
-      mImage = new LazyLoadingImage(mSeries.getCurrentPosterUrl(), cacheName, 100, 150);
+      mImage = new LazyLoadingImage(mSeries.getCurrentPosterUrl(), cacheName, 75, 100);
    }
 
    @Override

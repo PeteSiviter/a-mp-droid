@@ -144,7 +144,7 @@ public class TabSeriesDetailsActivity extends Activity {
                String cacheName = "Series" + File.separator + mSeriesId + File.separator
                      + "LargePoster" + File.separator + fileName;
 
-               LazyLoadingImage image = new LazyLoadingImage(seriesPoster, cacheName, 200, 400);
+               LazyLoadingImage image = new LazyLoadingImage(seriesPoster, cacheName, 150, 200);
                mSeriesPoster.setTag(seriesPoster);
                mImageHandler.DisplayImage(image, R.drawable.listview_imageloading_poster, mContext,
                      mSeriesPoster);
@@ -232,8 +232,8 @@ public class TabSeriesDetailsActivity extends Activity {
                   String cacheName = "Series" + File.separator + mSeriesId + File.separator
                         + "LargePoster" + File.separator + fileName;
 
-                  LazyLoadingImage bannerImage = new LazyLoadingImage(seasonBanner, cacheName, 100,
-                        150);
+                  LazyLoadingImage bannerImage = new LazyLoadingImage(seasonBanner, cacheName, 75,
+                        100);
                   image.setTag(seasonBanner);
                   mImageHandler.DisplayImage(bannerImage, R.drawable.listview_imageloading_poster,
                         mContext, image);

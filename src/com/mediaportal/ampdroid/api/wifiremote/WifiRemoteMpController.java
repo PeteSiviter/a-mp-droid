@@ -1,8 +1,10 @@
 package com.mediaportal.ampdroid.api.wifiremote;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -11,48 +13,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.myjson.Gson;
 import com.google.myjson.GsonBuilder;
+import com.mediaportal.ampdroid.R;
+import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.api.PowerModes;
-import com.mediaportal.ampdroid.data.ClientPlugin;
-import com.mediaportal.ampdroid.data.NowPlaying;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
-import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
+import com.mediaportal.ampdroid.remote.RemoteProperties;
+import com.mediaportal.ampdroid.remote.RemotePropertiesUpdate;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
 import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
 import com.mediaportal.ampdroid.remote.RemoteWelcomeMessage;
+import com.mediaportal.ampdroid.utils.SoftkeyboardUtils;
 
 public class WifiRemoteMpController implements IClientControlApi {
-   private String server;
-   private int port;
-   
-   private String m_user;
-   private String m_pass;
-   private boolean m_useAuth;
-   
-   private Socket socket;
-   private DataInputStream instream;
-   private DataOutputStream outstream;
-   private TcpListenerTask tcpreader;
-   private List<IClientControlListener> listeners;
-   private ObjectMapper mJsonObjectMapper;
+   private String mServer;
+   private int mPort;
 
-   private class TcpListenerTask extends AsyncTask<DataInputStream, Object, String> {
+   private String mUser;
+   private String mPass;
+   private boolean mUseAuth;
+
+   private Socket mSocket;
+   private DataInputStream mInstream;
+   private DataOutputStream mOutstream;
+   private TcpListenerTask mTcpReader;
+   private List<IClientControlListener> mListeners;
+   private ObjectMapper mJsonObjectMapper;
+   private Context mContext;
+   private GsonBuilder gsonb;
+   private Gson gson;
+   private BufferedReader input;;
+
+   private class TcpListenerTask extends AsyncTask<DataInputStream, Object, ConnectionState> {
       private List<IClientControlListener> listeners;
-      private boolean listening = false;;
+      private boolean listening = false;
+      
 
       public boolean isListening() {
          return listening;
@@ -68,11 +76,13 @@ public class WifiRemoteMpController implements IClientControlApi {
 
       @Override
       @SuppressWarnings("unchecked")
-      protected String doInBackground(DataInputStream... params) {
+      protected ConnectionState doInBackground(DataInputStream... params) {
          listening = true;
-         while (listening) {
-            try {
-               String response = instream.readLine();
+         try {
+            input = new BufferedReader(new InputStreamReader(mInstream, "UTF8"));
+            
+            while (listening) {
+               String response = input.readLine();
 
                ObjectMapper mapper = new ObjectMapper();
                Map<String, Object> userData = mapper.readValue(response, Map.class);
@@ -80,49 +90,73 @@ public class WifiRemoteMpController implements IClientControlApi {
                   String type = (String) userData.get("Type");
                   if (type != null) {
                      if (type.equals("status")) {
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteStatusMessage.class);
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteStatusMessage.class);
                         publishProgress(returnObject);
                      } else if (type.equals("nowplaying")) {
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteNowPlaying.class);
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteNowPlaying.class);
                         publishProgress(returnObject);
-                     }else if (type.equals("nowplayingupdate")) {
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteNowPlayingUpdate.class);
+                     } else if (type.equals("nowplayingupdate")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteNowPlayingUpdate.class);
                         publishProgress(returnObject);
-                     }else if (type.equals("plugins")){
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemotePluginMessage.class);
+                     } else if (type.equals("properties")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteProperties.class);
+
+                        RemoteProperties props = (RemoteProperties) returnObject;
+                        for (RemotePropertiesUpdate p : props.getProperties()) {
+                           publishProgress(p);
+                        }
+                     } else if (type.equals("propertychanged")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemotePropertiesUpdate.class);
                         publishProgress(returnObject);
-                     }else if (type.equals("welcome")){
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteWelcomeMessage.class);
+                     } else if (type.equals("plugins")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemotePluginMessage.class);
                         publishProgress(returnObject);
-                     }else if(type.equals("volume")){
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteVolumeMessage.class);
+                     } else if (type.equals("welcome")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteWelcomeMessage.class);
                         publishProgress(returnObject);
-                     }else if(type.equals("image")){
-                        Object returnObject = mJsonObjectMapper.readValue(response, RemoteImageMessage.class);
+                     } else if (type.equals("volume")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteVolumeMessage.class);
+                        publishProgress(returnObject);
+                     } else if (type.equals("image")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteImageMessage.class);
                         publishProgress(returnObject);
                      }
                   }
                }
-            } catch (IOException e) {
-               e.printStackTrace();
-               listening = false;
-            } catch (Exception e) {
-               e.printStackTrace();
-               listening = false;
             }
+         } catch (IOException e) {
+            e.printStackTrace();
+            listening = false;
+         } catch (Exception e) {
+            e.printStackTrace();
+            listening = false;
          }
          this.listening = false;
-         return "Socket closed";
+         mInstream = null;
+         mSocket = null;
+         return ConnectionState.Disconnected;
       }
 
-      /*
-       * (non-Javadoc)
-       * 
-       * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-       */
       @Override
-      protected void onPostExecute(String result) {
+      protected void onPostExecute(ConnectionState result) {
          publishState(result);
+      }
+      
+      
+
+      @Override
+      protected void onCancelled() {
+         super.onCancelled();
+         publishState(ConnectionState.Disconnected);
       }
 
       /*
@@ -151,48 +185,58 @@ public class WifiRemoteMpController implements IClientControlApi {
       }
    }
 
-   public WifiRemoteMpController(String _server, int _port, String _user, String _pass, boolean _auth) {
+   public WifiRemoteMpController(Context _context, String _server, int _port, String _user,
+         String _pass, boolean _auth) {
       super();
-      this.server = _server;
-      this.port = _port;
-      this.listeners = new ArrayList<IClientControlListener>();
-      
+      mServer = _server;
+      mPort = _port;
+
+      mUser = _user;
+      mPass = _pass;
+      mUseAuth = _auth;
+
+      mListeners = new ArrayList<IClientControlListener>();
+      mContext = _context;
+
+      gsonb = new GsonBuilder();
+      gson = gsonb.create();
+
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    }
-   
-   public WifiRemoteMpController(String _server, int _port) {
-      this(_server, _port, "", "", false);
+
+   public WifiRemoteMpController(Context _context, String _server, int _port) {
+      this(_context, _server, _port, "", "", false);
    }
 
    @Override
    public String getServer() {
-      return server;
+      return mServer;
    }
 
    @Override
    public int getPort() {
-      return port;
+      return mPort;
    }
 
    @Override
    public String getAddress() {
-      return server;
+      return mServer;
    }
-   
+
    @Override
    public String getUserName() {
-      return m_user;
+      return mUser;
    }
 
    @Override
    public String getUserPass() {
-      return m_pass;
+      return mPass;
    }
 
    @Override
    public boolean getUseAuth() {
-      return m_useAuth;
+      return mUseAuth;
    }
 
    @Override
@@ -212,19 +256,25 @@ public class WifiRemoteMpController implements IClientControlApi {
     */
    public boolean connect() {
       try {
-         socket = new Socket();
-         SocketAddress socketAddress = new InetSocketAddress(server, port);
+         mSocket = new Socket();
+         SocketAddress socketAddress = new InetSocketAddress(mServer, mPort);
 
-         socket.connect(socketAddress, 2000);
+         mSocket.connect(socketAddress, 2000);
 
          // outgoing stream redirect to socket
-         outstream = new DataOutputStream(socket.getOutputStream());
-         instream = new DataInputStream(socket.getInputStream());
+         mOutstream = new DataOutputStream(mSocket.getOutputStream());
+         mInstream = new DataInputStream(mSocket.getInputStream());
 
-         tcpreader = new TcpListenerTask(listeners);
-         tcpreader.execute(instream);
+         mTcpReader = new TcpListenerTask(mListeners);
+         mTcpReader.execute(mInstream);
 
-         publishState("State: " + socket.isConnected());
+         if (mSocket.isConnected()) {
+            publishState(ConnectionState.Connected);
+         } else {
+            publishState(ConnectionState.Disconnected);
+         }
+
+         registerProperties();
 
          return true;
 
@@ -236,8 +286,39 @@ public class WifiRemoteMpController implements IClientControlApi {
       return false;
    }
 
-   private void publishState(String _state) {
-      for (IClientControlListener l : listeners) {
+   private void registerProperties() {
+      WifiRemoteRegisterPropertiesMessage register = new WifiRemoteRegisterPropertiesMessage();
+      register.Properties.add("#Play.Current.Title");
+      register.Properties.add("#Play.Current.File");
+      register.Properties.add("#Play.Current.Thumb");
+      register.Properties.add("#Play.Current.Plot");
+      register.Properties.add("#Play.Current.PlotOutline");
+      register.Properties.add("#Play.Current.Channel");
+      register.Properties.add("#Play.Current.Genre");
+      register.Properties.add("#Play.Current.Title");
+      register.Properties.add("#Play.Current.Artist");
+      register.Properties.add("#Play.Current.Album");
+      register.Properties.add("#Play.Current.Track");
+      register.Properties.add("#Play.Current.Year");
+      register.Properties.add("#TV.View.channel");
+      register.Properties.add("#TV.View.thumb");
+      register.Properties.add("#TV.View.start");
+      register.Properties.add("#TV.View.stop");
+      register.Properties.add("#TV.View.remaining");
+      register.Properties.add("#TV.View.genre");
+      register.Properties.add("#TV.View.title");
+      register.Properties.add("#TV.View.description");
+      register.Properties.add("#TV.Next.start");
+      register.Properties.add("#TV.Next.stop");
+      register.Properties.add("#TV.Next.title");
+      register.Properties.add("#TV.Next.description");
+
+      String msgString = gson.toJson(register);
+      writeLine(msgString);
+   }
+
+   private void publishState(ConnectionState _state) {
+      for (IClientControlListener l : mListeners) {
          l.stateChanged(_state);
       }
 
@@ -246,8 +327,16 @@ public class WifiRemoteMpController implements IClientControlApi {
    @Override
    public void disconnect() {
       try {
-         tcpreader.cancel(true);
-         socket.close();
+
+         if (mSocket != null) {
+            mSocket.close();
+         }
+         if (mTcpReader != null) {
+            mTcpReader.cancel(true);
+         }
+         mSocket = null;
+         mTcpReader = null;
+         mInstream = null;
       } catch (IOException e) {
          e.printStackTrace();
       }
@@ -256,78 +345,67 @@ public class WifiRemoteMpController implements IClientControlApi {
 
    @Override
    public void addApiListener(IClientControlListener _listener) {
-      listeners.add(_listener);
+      mListeners.add(_listener);
+   }
+
+   @Override
+   public void clearApiListener() {
+      mListeners.clear();
+   }
+
+   @Override
+   public void removeApiListener(IClientControlListener _listener) {
+      mListeners.remove(_listener);
+
    }
 
    @Override
    public void sendKeyCommand(RemoteKey _key) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
-      // String msgString = gson.toJson(new WifiRemoteMessage("command","",
-      // _key.getAction()));
       String msgString = gson.toJson(new WifiRemoteMessageKey(_key));
       writeLine(msgString);
    }
 
    @Override
    public void sendKeyDownCommand(RemoteKey _key, int _timeout) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
-      // String msgString = gson.toJson(new WifiRemoteMessage("command","",
-      // _key.getAction()));
       String msgString = gson.toJson(new WifiRemoteKeyDownMessage(_key, _timeout));
       writeLine(msgString);
    }
 
    @Override
    public void sendKeyUpCommand() {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
-      // String msgString = gson.toJson(new WifiRemoteMessage("command","",
-      // _key.getAction()));
       String msgString = gson.toJson(new WifiRemoteKeyUpMessage());
       writeLine(msgString);
    }
 
    @Override
    public void sendPowerMode(PowerModes _mode) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
-      // String msgString = gson.toJson(new WifiRemoteMessage("command","",
-      // _key.getAction()));
       String msgString = gson.toJson(new WifiRemotePowermodeMessage(_mode));
       writeLine(msgString);
    }
 
    @Override
    public void sendPlayFileCommand(String _file) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemotePlayFileMessage(_file));
-
       writeLine(msgString);
    }
-   
+
    @Override
    public void sendPosition(int _position) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemotePositionMessage(_position));
-
       writeLine(msgString);
    }
 
    private boolean writeLine(String msgString) {
       try {
-         if (outstream != null) {
+         if (mOutstream != null) {
             byte[] buffer = msgString.getBytes();
-            outstream.write(buffer, 0, buffer.length);
+            mOutstream.write(buffer, 0, buffer.length);
             // outstream.writeUTF(msgString);
             // outstream.writeChars(msgString);
-            outstream.writeByte(13);
-            outstream.writeByte(10);
+            mOutstream.writeByte(13);
+            mOutstream.writeByte(10);
 
-            outstream.flush();
+            mOutstream.flush();
             return true;
          }
       } catch (IOException e) {
@@ -337,7 +415,7 @@ public class WifiRemoteMpController implements IClientControlApi {
 
    @Override
    public boolean isConnected() {
-      return (socket != null && socket.isConnected() && tcpreader != null && tcpreader
+      return (mSocket != null && mSocket.isConnected() && mTcpReader != null && mTcpReader
             .isListening());
    }
 
@@ -348,47 +426,40 @@ public class WifiRemoteMpController implements IClientControlApi {
 
    @Override
    public void setVolume(int level) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemoteMessageSetVolume(level));
-
       writeLine(msgString);
    }
 
    @Override
    public void startVideo(String _path) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemotePlayFileMessage(_path));
-
       writeLine(msgString);
    }
 
    @Override
    public void playChannelOnClient(int _channel) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemoteStartTvMessage(_channel));
-
       writeLine(msgString);
    }
 
    @Override
    public void requestPlugins() {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemoteMessage("plugins"));
-
       writeLine(msgString);
    }
 
    @Override
    public void openWindow(int _windowId, String _parameter) {
-      GsonBuilder gsonb = new GsonBuilder();
-      Gson gson = gsonb.create();
       String msgString = gson.toJson(new WifiRemoteOpenWindowMessage(_windowId));
-
       writeLine(msgString);
    }
 
+   @Override
+   public void sendRemoteKey(int keyCode, int i) {
+      String s = SoftkeyboardUtils.getChar(keyCode);
+      if(s != null){
+         String msgString = gson.toJson(new WifiRemoteKeyMessage(s));
+         writeLine(msgString);
+      }
+   }
 }

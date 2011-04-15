@@ -83,7 +83,7 @@
 			android:screenOrientation="portrait">
 		</activity>
 		<activity android:name="com.mediaportal.ampdroid.activities.PicturesActivity"
-			android:screenOrientation="portrait">
+			android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar">
 		</activity>
 		<activity
 			android:name="com.mediaportal.ampdroid.activities.TvServerOverviewActivity"

@@ -14,12 +14,12 @@
 		<CheckBoxPreference android:summary="@string/settings_preference_vibrate_desc"
 			android:title="@string/settings_preference_vibrate_title"
 			android:key="general_vibrate"></CheckBoxPreference>
-		<CheckBoxPreference android:key="listview_preload_number"
-			android:summary="@string/settings_general_preloaditems_desc"
-			android:title="@string/settings_general_preloaditems_title"></CheckBoxPreference>
 		<CheckBoxPreference android:key="general_fullscreen"
 			android:summary="@string/settings_general_fullscreen_desc"
 			android:title="@string/settings_general_fullscreen" android:enabled="true"></CheckBoxPreference>
+		<CheckBoxPreference android:key="auto_connect" android:title="@string/settings_general_autoconnect_title" android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
+		<CheckBoxPreference android:key="auto_wol" android:title="@string/settings_general_autowol_title" android:summary="@string/settings_general_autowol_desc"></CheckBoxPreference>
+		<ListPreference android:summary="@string/settings_general_statusbar_hide_desc" android:key="statusbar_autohide" android:title="@string/settings_general_statusbar_hide_title" android:entries="@array/settings_general_statusbar_autohide_text" android:entryValues="@array/settings_general_statusbar_autohide_values" android:dialogTitle="@string/settings_general_statusbar_hide_dialog_title"></ListPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_tvserver"
 		android:key="cat_tvserver">

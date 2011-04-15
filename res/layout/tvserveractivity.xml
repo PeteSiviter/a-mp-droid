@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="fill_parent" android:layout_width="fill_parent"
-	android:orientation="vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:background="@drawable/background">
 	<com.mediaportal.ampdroid.activities.actionbar.ActionBar
-		android:id="@+id/actionbar" style="@style/ActionBar" />
-	<FrameLayout android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:layout_marginBottom="60dip"
-		android:background="@drawable/background">
+		android:id="@+id/actionbar" style="@style/ActionBar"
+		android:layout_gravity="top" />
+	<LinearLayout android:layout_width="fill_parent"
+		android:gravity="center" android:layout_marginTop="50dip"
+		android:layout_marginBottom="90dip" android:layout_gravity="top"
+		android:layout_height="fill_parent" android:id="@+id/BottomMarginLayout">
 		<ListView android:layout_height="fill_parent"
 			android:layout_width="fill_parent" android:id="@+id/ListViewItems"
-			android:layout_marginBottom="30dip" android:divider="@drawable/list_divider"
-			android:dividerHeight="3px" android:cacheColorHint="#00000000">>
+			android:divider="@drawable/list_divider" android:dividerHeight="3px"
+			android:cacheColorHint="#00000000" android:layout_marginTop="10dip">>
 		</ListView>
-		<include layout="@layout/include_sliding_drawer" />
-	</FrameLayout>
-	<include layout="@layout/include_bottom_bar" />
-</LinearLayout>
+	</LinearLayout>
+	<include layout="@layout/include_sliding_drawer" />
+	<include layout="@layout/include_bottom_bar"></include>
+</FrameLayout>

@@ -166,6 +166,16 @@
 	<string name="settings_general_preloaditems_title">Items to preload</string>
 	<string name="settings_general_preloaditems_desc">Number of items that are loaded when end of list is
 		reached</string>
+	<string name="settings_general_autoconnect_title">Auto-Connect</string>
+	<string name="settings_general_autoconnect_desc">Automatically connect to MediaPortal client on
+		startup</string>
+	<string name="settings_general_autowol_title">WOL on connect</string>
+	<string name="settings_general_autowol_desc">Automatically wake pc on connect</string>
+	<string name="settings_general_statusbar_hide_title">Hide Statusbar</string>
+	<string name="settings_general_statusbar_hide_desc">Auto-hide the statusbar</string>
+	<string name="settings_general_statusbar_hide_dialog_title">Hide Statusbar Mode</string>
+	
+
 	<string name="settings_media_defaultview_series_title">Default View Series</string>
 	<string name="settings_media_defaultview_series_desc">Default View for browsing your tv shows</string>
 	<string name="settings_media_defaultview_movies_title">Default View Movies</string>
@@ -185,6 +195,9 @@
 	<string name="menu_settings">Settings</string>
 	<string name="menu_refresh">Refresh</string>
 	<string name="menu_addhost">Add host</string>
+	<string name="menu_connect">Connect</string>
+	<string name="menu_disconnect">Disconnect</string>
+	<string name="remote_menu_keyboard">Keyboard</string>
 
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Yes</string>
@@ -199,6 +212,23 @@
 	<string name="quickactions_stoptimeshift">Cancel</string>
 	<string name="quickactions_record">Record</string>
 	<string name="quickactions_cancelrecord">Cancel Rec.</string>
+
+	<string name="connection_successful">Successfully established connection</string>
+	<string name="connection_failed">Connection couldn\'t be established</string>
+	<string name="connection_closed">Connection closed</string>
+
+	<string-array name="settings_general_statusbar_autohide_text">
+		<item>Always Show</item>
+		<item>Always Hide</item>
+		<item>Show when connected</item>
+		<item>Manually show/hide</item>
+	</string-array>
+	<string-array name="settings_general_statusbar_autohide_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
 
 	<string-array name="settings_media_defaultview_series_text">
 		<item>Text</item>
@@ -238,6 +268,6 @@
 	<string-array name="settings_media_defaultview_shares_values">
 		<item>0</item>
 	</string-array>
-		<string name="settings_host_useauth">Use Authentification</string>
-		<string name="remote_button_info">i</string>
+	<string name="settings_host_useauth">Use Authentification</string>
+	<string name="remote_button_info">info</string>
 </resources>

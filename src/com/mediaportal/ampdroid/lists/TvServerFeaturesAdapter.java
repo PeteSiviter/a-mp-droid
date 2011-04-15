@@ -62,7 +62,7 @@ public class TvServerFeaturesAdapter extends BaseAdapter {
 
       if (_convertView == null) {
          try {
-            vi = mInflater.inflate(R.layout.listitem_poster, null);
+            vi = mInflater.inflate(R.layout.listitem_serverfeature, null);
          } catch (Exception ex) {
             Log.d("Adapter", ex.getMessage());
          }

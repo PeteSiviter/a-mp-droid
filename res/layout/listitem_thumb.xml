@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="wrap_content">
-	<ImageView android:id="@+id/ImageViewEventImage"
-		android:layout_marginRight="10dip" android:scaleType="fitCenter"
-		android:layout_width="0dip" android:layout_weight="2"
-		android:layout_height="80dip" android:layout_marginTop="5dip"
-		android:layout_marginBottom="5dip"></ImageView>
-	
+	<LinearLayout android:id="@+id/linearLayout1"
+		android:layout_marginTop="5dip" android:layout_height="80dip" android:layout_marginRight="10dip"
+		android:layout_weight="2" android:padding="5dip" android:layout_width="0dip">
+		<ImageView android:scaleType="fitCenter"
+			android:background="@drawable/rounded_image_background"
+			android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ImageViewEventImage" android:padding="5dip" android:minHeight="50dip" android:minWidth="50dip"></ImageView>
+	</LinearLayout>
+
 	<LinearLayout android:layout_height="wrap_content"
 		android:orientation="vertical" android:id="@+id/LinearLayoutWeeklyItemText"
 		android:layout_width="0dip" android:layout_weight="2">

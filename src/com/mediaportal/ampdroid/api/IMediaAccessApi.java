@@ -9,6 +9,8 @@ import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
+import com.mediaportal.ampdroid.data.MusicArtist;
+import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
@@ -50,10 +52,6 @@ public interface IMediaAccessApi extends IApiInterface {
 
    SupportedFunctions getSupportedFunctions();
 
-   List<MusicAlbum> getAllAlbums();
-
-   List<MusicAlbum> getAlbums(int _start, int _end);
-
    String getDownloadUri(String _filePath);
 
    List<VideoShare> getVideoShares();
@@ -73,4 +71,30 @@ public interface IMediaAccessApi extends IApiInterface {
    List<Movie> getVideos(int _start, int _end);
 
    FileInfo getFileInfo(String _path);
+
+   int getAlbumsCount();
+   
+   List<MusicAlbum> getAllAlbums();
+
+   List<MusicAlbum> getAlbums(int _start, int _end);
+   
+   MusicTrack getMusicTrack(int trackId);
+
+   MusicAlbum getAlbum(String albumArtistName, String albumName);
+
+   int getArtistsCount();
+
+   List<MusicArtist> getAllArtists();
+
+   List<MusicArtist> getArtists(int _start, int _end);
+
+   List<MusicAlbum> getAlbumsByArtist(String artistName);
+
+   List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName);
+
+   List<MusicTrack> findMusicTracks(String album, String artist, String title);
+
+
+
+   
 }

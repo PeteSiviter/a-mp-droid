@@ -2,19 +2,16 @@ package com.mediaportal.ampdroid.api.gmawebservice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.deser.CustomDeserializerFactory;
-import org.codehaus.jackson.map.deser.StdDeserializerProvider;
 
 import android.util.Log;
 
-import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
+import com.mediaportal.ampdroid.utils.LogUtils;
 
 class GmaJsonWebserviceVideoApi {
    private JsonClient mJsonClient;
@@ -45,10 +42,10 @@ class GmaJsonWebserviceVideoApi {
          if (returnObject != null) {
             return new ArrayList<Movie>(Arrays.asList(returnObject));
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -63,10 +60,10 @@ class GmaJsonWebserviceVideoApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return -99;
    }
@@ -81,10 +78,10 @@ class GmaJsonWebserviceVideoApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -100,10 +97,10 @@ class GmaJsonWebserviceVideoApi {
          if (returnObject != null) {
             return new ArrayList<Movie>(Arrays.asList(returnObject));
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -118,10 +115,10 @@ class GmaJsonWebserviceVideoApi {
          if (returnObject != null) {
             return new ArrayList<Movie>(Arrays.asList(returnObject));
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }

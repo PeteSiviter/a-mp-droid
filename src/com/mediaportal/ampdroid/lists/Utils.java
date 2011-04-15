@@ -52,8 +52,11 @@ public class Utils {
    }
 
    public static String getFileNameWithExtension(String _path, String _pathSeperator) {
-      int sepPos = _path.lastIndexOf(_pathSeperator);
-      return _path.substring(sepPos + 1);
+      if (_path != null) {
+         int sepPos = _path.lastIndexOf(_pathSeperator);
+         return _path.substring(sepPos + 1);
+      }
+      return "";
    }
 
    public static String getFileNameWithoutExtension(String _path, String _pathSeperator,
@@ -66,7 +69,7 @@ public class Utils {
          return "Unknown";
       }
    }
-   
+
    public static String getFolderNameWithoutExtension(String _path, String _pathSeperator) {
       try {
          int sep = _path.lastIndexOf(_pathSeperator);

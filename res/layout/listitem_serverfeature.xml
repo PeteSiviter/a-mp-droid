@@ -4,7 +4,7 @@
 	<LinearLayout android:layout_width="0dip" android:layout_height="wrap_content" android:layout_gravity="center" android:gravity="center" android:layout_weight="2">
 		<ImageView android:id="@+id/ImageViewEventImage"
 			android:layout_gravity="center" android:layout_width="wrap_content"
-			android:layout_height="75dip" android:src="@drawable/dexter_150_300" android:scaleType="fitCenter" android:background="@drawable/rounded_image_background" android:padding="5dip"></ImageView>
+			android:layout_height="75dip" android:scaleType="fitCenter" android:padding="5dip" android:minWidth="50dip" android:minHeight="50dip"></ImageView>
 	</LinearLayout>
 	
 	<LinearLayout android:layout_height="wrap_content"

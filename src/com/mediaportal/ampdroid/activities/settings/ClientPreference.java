@@ -166,17 +166,13 @@ public class ClientPreference extends DialogPreference {
          String pass = mPassView.getText().toString();
          boolean auth = mUseAuthView.isChecked();
          
-         mClient.setUserName(user);
-         mClient.setUserPassword(pass);
-         mClient.setUseAuth(auth);
-         
          GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr, 44321, user, pass, auth);
          mClient.setRemoteAccessApi(api);
 
          Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, 4321, user, pass, auth);
          mClient.setTvControlApi(tvApi);
 
-         WifiRemoteMpController clientApi = new WifiRemoteMpController(addr, 8017, user, pass, auth);
+         WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, addr, 8017, user, pass, auth);
          mClient.setClientControlApi(clientApi);
 
          if (create) {

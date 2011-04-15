@@ -17,20 +17,13 @@
 			android:layout_width="fill_parent" android:orientation="vertical"
 			android:padding="5dip">
 			<LinearLayout android:layout_height="wrap_content"
-				android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent">
-				<LinearLayout android:id="@+id/LinearLayout03"
-					android:layout_height="wrap_content" android:layout_width="0dip"
-					android:layout_weight="3" android:layout_gravity="center"
-					android:gravity="center">
-					<LinearLayout android:layout_height="wrap_content"
-						android:layout_marginTop="10dip" android:layout_marginBottom="10dip"
-						android:background="@drawable/rounded" android:padding="10dip"
-						android:layout_gravity="center" android:layout_width="wrap_content">
-						<ImageView android:id="@+id/ImageViewEpisodeBanner"
-							android:scaleType="fitCenter" android:layout_height="wrap_content"
-							android:layout_width="wrap_content"></ImageView>
-					</LinearLayout>
-				</LinearLayout>
+				android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_marginBottom="20dip">
+				<ImageView android:scaleType="fitCenter" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/ImageViewEpisodeBanner" android:background="@drawable/rounded_image_background" android:minHeight="100dip" android:minWidth="200dip" android:paddingLeft="10dip" android:paddingRight="10dip"></ImageView>
+			</LinearLayout>
+			<LinearLayout android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/LinearLayoutPlayActions">
+				<Button android:layout_width="wrap_content" android:text="@string/quickactions_playclient" android:layout_height="wrap_content" android:id="@+id/ButtonPlayPc"></Button>
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/quickactions_playdevice" android:id="@+id/ButtonPlayMobile"></Button>
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/quickactions_downloadsd" android:id="@+id/ButtonDownload"></Button>
 			</LinearLayout>
 
 			<TextView android:layout_width="wrap_content"

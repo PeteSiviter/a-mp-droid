@@ -6,8 +6,7 @@ public class RemoteNowPlaying {
    private int mDuration;
    private String mFile;
    private int mPosition;
-   private String mTitle;
-   private String mDescription;
+   private boolean mIsTv;
 
    @JsonProperty("Duration")
    public int getDuration() {
@@ -38,25 +37,15 @@ public class RemoteNowPlaying {
    public void setPosition(int position) {
       mPosition = position;
    }
-
-   @JsonProperty("Title")
-   public String getTitle() {
-      return mTitle;
+   
+   @JsonProperty("IsTv")
+   public void setIsTv(boolean isTv) {
+      mIsTv = isTv;
    }
 
-   @JsonProperty("Title")
-   public void setTitle(String title) {
-      mTitle = title;
-   }
-
-   @JsonProperty("Description")
-   public String getDescription() {
-      return mDescription;
-   }
-
-   @JsonProperty("Description")
-   public void setDescription(String description) {
-      mDescription = description;
+   @JsonProperty("IsTv")
+   public boolean isTv() {
+      return mIsTv;
    }
 
 }

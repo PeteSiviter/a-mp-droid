@@ -12,23 +12,15 @@
 			android:layout_width="fill_parent" android:textSize="20dip"></TextView>
 	</LinearLayout>
 	<ScrollView android:id="@+id/ScrollViewRoot"
-		android:layout_height="wrap_content" android:layout_width="fill_parent">
+		android:layout_height="wrap_content" android:layout_width="fill_parent" android:padding="5dip">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:orientation="vertical">
 			<LinearLayout android:layout_height="wrap_content"
-				android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent">
+				android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent" android:layout_marginBottom="10dip">
 				<LinearLayout android:id="@+id/LinearLayout03"
 					android:layout_height="wrap_content" android:layout_width="0dip"
 					android:layout_weight="3">
-					<LinearLayout android:layout_marginRight="10dip"
-						android:layout_height="wrap_content" android:layout_marginTop="10dip"
-						android:layout_marginBottom="10dip" android:background="@drawable/rounded"
-						android:layout_marginLeft="10dip" android:padding="10dip"
-						android:layout_width="wrap_content">
-						<ImageView android:id="@+id/ImageViewSeriesPoster"
-							android:scaleType="fitCenter" android:layout_height="wrap_content"
-							android:layout_width="wrap_content"></ImageView>
-					</LinearLayout>
+					<ImageView android:scaleType="fitCenter" android:minWidth="100dip" android:minHeight="125dip" android:padding="10dip" android:layout_height="wrap_content" android:background="@drawable/rounded_image_background" android:layout_width="wrap_content" android:id="@+id/ImageViewSeriesPoster" android:layout_marginTop="10dip" android:layout_marginLeft="10dip"></ImageView>
 				</LinearLayout>
 				<LinearLayout android:id="@+id/LinearLayout01"
 					android:layout_height="wrap_content" android:layout_marginTop="10dip"
@@ -89,28 +81,25 @@
 				android:layout_marginLeft="10dip" android:layout_marginRight="10dip"
 				android:layout_height="0dip" android:layout_weight="2" />
 			<TextView android:layout_height="wrap_content" android:id="@+id/TextViewOverview"
-				android:layout_marginLeft="10dip" android:layout_marginRight="10dip"
+				android:layout_marginRight="10dip"
 				android:layout_marginTop="10dip" android:layout_width="fill_parent"></TextView>
 			<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/series_seasons"
 				android:textStyle="bold" android:layout_marginTop="10dip"
-				android:layout_marginBottom="10dip" android:layout_marginLeft="20dip"
-				android:textSize="18dip"></TextView>
+				android:layout_marginBottom="10dip" android:textSize="18dip"></TextView>
 			<LinearLayout android:layout_height="wrap_content"
 				android:id="@+id/LinearLayoutSeasons" android:orientation="vertical"
 				android:layout_width="fill_parent"></LinearLayout>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/series_actors"
 				android:textStyle="bold" android:layout_marginBottom="10dip"
-				android:layout_marginTop="10dip" android:layout_marginLeft="20dip"
-				android:textSize="18dip" android:id="@+id/TextViewSeriesActorsLabel"></TextView>
+				android:layout_marginTop="10dip" android:textSize="18dip" android:id="@+id/TextViewSeriesActorsLabel"></TextView>
 
 			<LinearLayout android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/LinearLayoutActors"></LinearLayout>
 
 			<TextView android:layout_height="wrap_content" android:id="@+id/TextViewSeriesActors"
-				android:layout_width="fill_parent" android:layout_marginLeft="10dip"
-				android:layout_marginRight="10dip">
+				android:layout_width="fill_parent" android:layout_marginRight="10dip">
 			</TextView>
 		</LinearLayout>
 	</ScrollView>

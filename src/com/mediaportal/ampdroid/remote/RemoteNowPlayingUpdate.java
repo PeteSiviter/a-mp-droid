@@ -6,6 +6,7 @@ public class RemoteNowPlayingUpdate {
    private int mDuration;
    private int mPosition;
    private int mSpeed;
+   private boolean mIsTv;
    
    @JsonProperty("Duration")
    public int getDuration() {
@@ -35,6 +36,16 @@ public class RemoteNowPlayingUpdate {
    @JsonProperty("Speed")
    public void setSpeed(int speed) {
       mSpeed = speed;
+   }
+
+   @JsonProperty("IsTv")
+   public void setIsTv(boolean isTv) {
+      mIsTv = isTv;
+   }
+
+   @JsonProperty("IsTv")
+   public boolean isTv() {
+      return mIsTv;
    }
 
 }

@@ -34,24 +34,28 @@ import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
+import com.mediaportal.ampdroid.data.MusicArtist;
+import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.utils.LogUtils;
 
 public class GmaJsonWebserviceApi implements IMediaAccessApi {
-   private GmaJsonWebserviceMovieApi m_moviesAPI;
-   private GmaJsonWebserviceSeriesApi m_seriesAPI;
-   private GmaJsonWebserviceVideoApi m_videosAPI;
+   private GmaJsonWebserviceMovieApi mMoviesAPI;
+   private GmaJsonWebserviceSeriesApi mSeriesAPI;
+   private GmaJsonWebserviceVideoApi mVideosAPI;
+   private GmaJsonWebserviceMusicApi mMusicAPI;
 
    private String mServer;
    private int mPort;
-   
-   private String m_user;
-   private String m_pass;
-   private boolean m_useAuth;
+
+   private String mUser;
+   private String mPass;
+   private boolean mUseAuth;
 
    private final String GET_SUPPORTED_FUNCTIONS = "MP_GetSupportedFunctions";
 
@@ -66,8 +70,13 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public GmaJsonWebserviceApi(String _server, int _port, String _user, String _pass, boolean _auth) {
       mServer = _server;
       mPort = _port;
+      
+      mUser = _user;
+      mPass = _pass;
+      mUseAuth = _auth;
 
-      mJsonClient = new JsonClient(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX, _user, _pass, _auth);
+      mJsonClient = new JsonClient(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX, _user, _pass,
+            _auth);
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -75,17 +84,17 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       mJsonObjectMapper.setDeserializerProvider(new StdDeserializerProvider(sf));
       sf.addSpecificMapping(Date.class, new CustomDateDeserializer());
 
-      m_moviesAPI = new GmaJsonWebserviceMovieApi(mJsonClient, mJsonObjectMapper);
-      m_seriesAPI = new GmaJsonWebserviceSeriesApi(mJsonClient, mJsonObjectMapper);
-      m_videosAPI = new GmaJsonWebserviceVideoApi(mJsonClient, mJsonObjectMapper);
+      mMoviesAPI = new GmaJsonWebserviceMovieApi(mJsonClient, mJsonObjectMapper);
+      mSeriesAPI = new GmaJsonWebserviceSeriesApi(mJsonClient, mJsonObjectMapper);
+      mVideosAPI = new GmaJsonWebserviceVideoApi(mJsonClient, mJsonObjectMapper);
+      mMusicAPI = new GmaJsonWebserviceMusicApi(mJsonClient, mJsonObjectMapper);
       // m_musicAPI = new GmaWebserviceMusicApi(m_wcfService,
       // mJsonObjectMapper);
    }
-   
+
    public GmaJsonWebserviceApi(String _server, int _port) {
       this(_server, _port, "", "", false);
    }
-
 
    @Override
    public String getServer() {
@@ -96,20 +105,20 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public int getPort() {
       return mPort;
    }
-   
+
    @Override
    public String getUserName() {
-      return m_user;
+      return mUser;
    }
 
    @Override
    public String getUserPass() {
-      return m_pass;
+      return mPass;
    }
 
    @Override
    public boolean getUseAuth() {
-      return m_useAuth;
+      return mUseAuth;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -119,11 +128,11 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
          return returnObjects;
       } catch (JsonParseException e) {
-         Log.e("aMPed JSON", e.toString());
+         Log.e(LogUtils.LOG_CONST, e.toString());
       } catch (JsonMappingException e) {
-         Log.e("aMPed JSON", e.toString());
+         Log.e(LogUtils.LOG_CONST, e.toString());
       } catch (IOException e) {
-         Log.e("aMPed JSON", e.toString());
+         Log.e(LogUtils.LOG_CONST, e.toString());
       }
       return null;
    }
@@ -144,10 +153,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -163,10 +172,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<VideoShare>(Arrays.asList(returnObject));
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -182,10 +191,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<FileInfo>(Arrays.asList(returnObject));
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -201,10 +210,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -226,103 +235,103 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
             return retList;
          } else {
-            Log.d("aMPdroid JSON", "Error parsing result from JSON method " + methodName);
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d("aMPdroid JSON", "Error retrieving data for method" + methodName);
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
 
    @Override
    public List<Movie> getAllMovies() {
-      return m_moviesAPI.getAllMovies();
+      return mMoviesAPI.getAllMovies();
    }
 
    @Override
    public int getMovieCount() {
-      return m_moviesAPI.getMovieCount();
+      return mMoviesAPI.getMovieCount();
    }
 
    @Override
    public MovieFull getMovieDetails(int _movieId) {
-      return m_moviesAPI.getMovieDetails(_movieId);
+      return mMoviesAPI.getMovieDetails(_movieId);
    }
 
    @Override
    public List<Movie> getMovies(int _start, int _end) {
-      return m_moviesAPI.getMovies(_start, _end);
+      return mMoviesAPI.getMovies(_start, _end);
    }
 
    @Override
    public List<Movie> getAllVideos() {
-      return m_videosAPI.getAllMovies();
+      return mVideosAPI.getAllMovies();
    }
 
    @Override
    public int getVideosCount() {
-      return m_videosAPI.getMovieCount();
+      return mVideosAPI.getMovieCount();
    }
 
    @Override
    public MovieFull getVideoDetails(int _movieId) {
-      return m_videosAPI.getMovieDetails(_movieId);
+      return mVideosAPI.getMovieDetails(_movieId);
    }
 
    @Override
    public List<Movie> getVideos(int _start, int _end) {
-      return m_videosAPI.getMovies(_start, _end);
+      return mVideosAPI.getMovies(_start, _end);
    }
 
    @Override
    public List<Series> getAllSeries() {
-      return m_seriesAPI.getAllSeries();
+      return mSeriesAPI.getAllSeries();
    }
 
    @Override
    public List<Series> getSeries(int _start, int _end) {
-      return m_seriesAPI.getSeries(_start, _end);
+      return mSeriesAPI.getSeries(_start, _end);
    }
 
    @Override
    public SeriesFull getFullSeries(int _seriesId) {
-      return m_seriesAPI.getFullSeries(_seriesId);
+      return mSeriesAPI.getFullSeries(_seriesId);
    }
 
    @Override
    public int getSeriesCount() {
-      return m_seriesAPI.getSeriesCount();
+      return mSeriesAPI.getSeriesCount();
    }
 
    @Override
    public List<SeriesSeason> getAllSeasons(int _seriesId) {
-      return m_seriesAPI.getAllSeasons(_seriesId);
+      return mSeriesAPI.getAllSeasons(_seriesId);
    }
 
    @Override
    public List<SeriesEpisode> getAllEpisodes(int _seriesId) {
-      return m_seriesAPI.getAllEpisodes(_seriesId);
+      return mSeriesAPI.getAllEpisodes(_seriesId);
    }
 
    @Override
    public List<SeriesEpisode> getAllEpisodesForSeason(int _seriesId, int _seasonNumber) {
-      return m_seriesAPI.getAllEpisodesForSeason(_seriesId, _seasonNumber);
+      return mSeriesAPI.getAllEpisodesForSeason(_seriesId, _seasonNumber);
    }
 
    @Override
    public List<SeriesEpisode> getEpisodesForSeason(int _seriesId, int _seasonNumber, int _begin,
          int _end) {
-      return m_seriesAPI.getEpisodesForSeason(_seriesId, _seasonNumber, _begin, _end);
+      return mSeriesAPI.getEpisodesForSeason(_seriesId, _seasonNumber, _begin, _end);
    }
 
    @Override
    public int getEpisodesCountForSeason(int _seriesId, int _seasonNumber) {
-      return m_seriesAPI.getEpisodesCountForSeason(_seriesId, _seasonNumber);
+      return mSeriesAPI.getEpisodesCountForSeason(_seriesId, _seasonNumber);
    }
 
    @Override
    public EpisodeDetails getEpisode(int _seriesId, int _episodeId) {
-      return m_seriesAPI.getFullEpisode(_seriesId, _episodeId);
+      return mSeriesAPI.getFullEpisode(_seriesId, _episodeId);
    }
 
    @Override
@@ -330,15 +339,17 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort
-               + STREAM_SUFFIX + "/FS_GetImage?path=" + URLEncoder.encode(_url, "UTF-8"));
-         
-         Authenticator.setDefault(new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-               return new PasswordAuthentication("DieBagger", "Opperate20".toCharArray());
-            }
-         });
-         
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
+               + "/FS_GetImage?path=" + URLEncoder.encode(_url, "UTF-8"));
+
+         if (mUseAuth) {
+            Authenticator.setDefault(new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(mUser, mPass.toCharArray());
+               }
+            });
+         }
+
          HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
          conn.setDoInput(true);
          conn.connect();
@@ -361,15 +372,17 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort
-               + STREAM_SUFFIX + "/FS_GetImageResized?path=" + URLEncoder.encode(_url, "UTF-8")
-               + "&maxWidth=" + _maxWidth + "&maxHeight=" + _maxHeight);
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
+               + "/FS_GetImageResized?path=" + URLEncoder.encode(_url, "UTF-8") + "&maxWidth="
+               + _maxWidth + "&maxHeight=" + _maxHeight);
 
-         Authenticator.setDefault(new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-               return new PasswordAuthentication("DieBagger", "Opperate20".toCharArray());
-            }
-         });
+         if (mUseAuth) {
+            Authenticator.setDefault(new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(mUser, mPass.toCharArray());
+               }
+            });
+         }
 
          HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
          conn.setDoInput(true);
@@ -400,16 +413,60 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       return fileUrl;
 
    }
+   
+   @Override
+   public MusicTrack getMusicTrack(int trackId) {
+      return mMusicAPI.getMusicTrack(trackId);
+   }
+   
+   @Override
+   public MusicAlbum getAlbum(String albumArtistName, String albumName) {      
+      return mMusicAPI.getAlbum(albumArtistName, albumName);
+   }
 
    @Override
    public List<MusicAlbum> getAllAlbums() {
-      // TODO Auto-generated method stub
-      return null;
+      return mMusicAPI.getAllAlbums();
    }
 
    @Override
    public List<MusicAlbum> getAlbums(int _start, int _end) {
-      // TODO Auto-generated method stub
-      return null;
+      return mMusicAPI.getAlbums(_start, _end);
    }
+   
+   @Override
+   public int getAlbumsCount() {
+      return mMusicAPI.getAlbumsCount();
+   }
+   
+   @Override
+   public List<MusicArtist> getAllArtists() {
+      return mMusicAPI.getAllArtists();
+   }
+
+   @Override
+   public List<MusicArtist> getArtists(int _start, int _end) {
+      return mMusicAPI.getArtists(_start, _end);
+   }
+   
+   @Override
+   public int getArtistsCount() {
+      return mMusicAPI.getArtistsCount();
+   }
+   
+   @Override
+   public List<MusicAlbum> getAlbumsByArtist(String artistName) {
+      return mMusicAPI.getAlbumsByArtist(artistName);
+   }
+   
+   @Override
+   public List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName) {
+      return mMusicAPI.getSongsOfAlbum(albumName, albumArtistName);
+   }
+   
+   @Override
+   public List<MusicTrack> findMusicTracks(String album, String artist, String title) {
+      return mMusicAPI.findMusicTracks(album, artist, title);
+   }
+   
 }

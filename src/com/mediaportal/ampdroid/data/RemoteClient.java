@@ -5,7 +5,6 @@ import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;
 import com.mediaportal.ampdroid.api.ITvServiceApi;
 
-
 public class RemoteClient {
    private int mClientId;
    private String mClientName;
@@ -16,12 +15,11 @@ public class RemoteClient {
    private String mUserName;
    private String mUserPassword;
    private boolean mUseAuth;
-   
+
    private IMediaAccessApi mRemoteAccessApi;
    private ITvServiceApi mTvControlApi;
    private IClientControlApi mClientControlApi;
 
-   
    public RemoteClient(int _clientId) {
       mClientId = _clientId;
    }
@@ -62,67 +60,73 @@ public class RemoteClient {
    public void setClientDescription(String clientDescription) {
       this.mClientDescription = clientDescription;
    }
-   
+
    public int getRemoteAccessApiId() {
       return mRemoteAccessApiId;
    }
-   
+
    public void setRemoteAccessApiId(int mRemoteAccessApiId) {
       this.mRemoteAccessApiId = mRemoteAccessApiId;
    }
-   
+
    public int getTvControlApiId() {
       return mTvControlApiId;
    }
-   
+
    public void setTvControlApiId(int mTvControlApiId) {
       this.mTvControlApiId = mTvControlApiId;
    }
-   
+
    public int getClientControlApiId() {
       return mClientControlApiId;
    }
-   
+
    public void setClientControlApiId(int mClientControlApiId) {
       this.mClientControlApiId = mClientControlApiId;
    }
 
    public String getClientAddress() {
-      if (!compareApiClients()) {//all clients have same address
+      if (!compareApiClients(0)) {// all clients have same address
          return "Different";
-      }
-      else{
-         if(mRemoteAccessApi != null){
+      } else {
+         if (mRemoteAccessApi != null) {
             return mRemoteAccessApi.getAddress();
          }
-         if(mClientControlApi != null){
+         if (mClientControlApi != null) {
             return mClientControlApi.getAddress();
          }
-         if(mTvControlApi != null){
+         if (mTvControlApi != null) {
             return mTvControlApi.getAddress();
          }
       }
-      return "No api defined";//shouldn't be possible
+      return "No api defined";// shouldn't be possible
    }
 
-   private boolean compareApiClients() {
+   /**
+    * Compare the api clients
+    * 
+    * @param _field
+    *           which field to compare (0: address, 1:user, 2:pass, 3: auth)
+    * @return true if similar, false otherwise
+    */
+   private boolean compareApiClients(int _field) {
       if (mRemoteAccessApi != null) {
-         if (!compareApi(mRemoteAccessApi, mTvControlApi)
-               || !compareApi(mRemoteAccessApi, mClientControlApi)) {
+         if (!compareApi(mRemoteAccessApi, mTvControlApi, _field)
+               || !compareApi(mRemoteAccessApi, mClientControlApi, _field)) {
             return false;
          }
       }
-      
+
       if (mTvControlApi != null) {
-         if (!compareApi(mTvControlApi, mRemoteAccessApi)
-               || !compareApi(mTvControlApi, mClientControlApi)) {
+         if (!compareApi(mTvControlApi, mRemoteAccessApi, _field)
+               || !compareApi(mTvControlApi, mClientControlApi, _field)) {
             return false;
          }
       }
-      
+
       if (mClientControlApi != null) {
-         if (!compareApi(mClientControlApi, mRemoteAccessApi)
-               || !compareApi(mClientControlApi, mTvControlApi)) {
+         if (!compareApi(mClientControlApi, mRemoteAccessApi, _field)
+               || !compareApi(mClientControlApi, mTvControlApi, _field)) {
             return false;
          }
       }
@@ -130,10 +134,31 @@ public class RemoteClient {
       return true;
    }
 
-   private boolean compareApi(IApiInterface _api1, IApiInterface _api2) {
+   private boolean compareApi(IApiInterface _api1, IApiInterface _api2, int _field) {
       if (_api1 == null || _api2 == null)
          return true;
-      return _api1.getAddress().equals(_api2.getAddress());
+      switch (_field) {
+      case 0:
+         if(_api1.getAddress() == null || _api2.getAddress() == null){
+            return false;
+         }
+         return _api1.getAddress().equals(_api2.getAddress());
+      case 1:
+         if(_api1.getUserName() == null || _api2.getUserName() == null){
+            return false;
+         }
+         return _api1.getUserName().equals(_api2.getUserName());
+      case 2:
+         if(_api1.getUserPass() == null || _api2.getUserPass() == null){
+            return false;
+         }
+         return _api1.getUserPass().equals(_api2.getUserPass());
+      case 3:
+         return _api1.getUseAuth() == _api2.getUseAuth();
+      default:
+         return true;
+      }
+
    }
 
    @Override
@@ -144,7 +169,7 @@ public class RemoteClient {
          return "Client" + mClientId;
       }
    }
-   
+
    public IMediaAccessApi getRemoteAccessApi() {
       return mRemoteAccessApi;
    }
@@ -169,30 +194,46 @@ public class RemoteClient {
       this.mClientControlApi = clientControlApi;
    }
 
-   public void setUseAuth(boolean useAuth) {
-      mUseAuth = useAuth;
-   }
-
    public boolean useAuth() {
-      return mUseAuth;
-   }
-
-   public void setUserPassword(String userPassword) {
-      mUserPassword = userPassword;
+      if (!compareApiClients(3)) {// not all clients have same address
+         return false;
+      } else {
+         return true;
+      }
    }
 
    public String getUserPassword() {
-      return mUserPassword;
-   }
-
-   public void setUserName(String userName) {
-      mUserName = userName;
+      if (!compareApiClients(2)) {// all clients have same address
+         return "Different";
+      } else {
+         if (mRemoteAccessApi != null) {
+            return mRemoteAccessApi.getUserPass();
+         }
+         if (mClientControlApi != null) {
+            return mClientControlApi.getUserPass();
+         }
+         if (mTvControlApi != null) {
+            return mTvControlApi.getUserPass();
+         }
+         return "No api defined";// shouldn't be possible
+      }
    }
 
    public String getUserName() {
-      return mUserName;
+      if (!compareApiClients(1)) {// all clients have same address
+         return "Different";
+      } else {
+         if (mRemoteAccessApi != null) {
+            return mRemoteAccessApi.getUserName();
+         }
+         if (mClientControlApi != null) {
+            return mClientControlApi.getUserName();
+         }
+         if (mTvControlApi != null) {
+            return mTvControlApi.getUserName();
+         }
+         return "No api defined";// shouldn't be possible
+      }
    }
-
-
 
 }

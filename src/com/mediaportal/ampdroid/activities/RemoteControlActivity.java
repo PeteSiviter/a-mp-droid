@@ -1,11 +1,11 @@
 package com.mediaportal.ampdroid.activities;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -14,26 +14,22 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.activities.RemoteControlActivity.RequestPluginsTask;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.api.RemoteCommands;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
-import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
-import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
-import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
-import com.mediaportal.ampdroid.remote.RemoteWelcomeMessage;
+import com.mediaportal.ampdroid.utils.SoftkeyboardUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
-public class RemoteControlActivity extends BaseActivity implements IClientControlListener {
+public class RemoteControlActivity extends BaseActivity {
    protected class SendKeyTask extends AsyncTask<RemoteKey, String, String> {
       private DataHandler mController;
       private boolean mRepeat;
@@ -69,17 +65,6 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
                   e.printStackTrace();
                }
             }
-
-            /*
-             * if (mRepeat) {
-             * 
-             * 
-             * mController.sendRemoteButtonDown((RemoteKey) _keys[0], 40);
-             * waitForMilliseconds(120);
-             * 
-             * while (mRepeat) { mController.sendRemoteButtonDown((RemoteKey)
-             * _keys[0], 20); waitForMilliseconds(1000); } }
-             */
             return null;
          } else {
             return getString(R.string.info_remote_notconnected);
@@ -133,7 +118,7 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
          return null;
       }
    }
-   
+
    protected class RequestPluginsTask extends AsyncTask<Void, String, String> {
       private DataHandler mController;
       private Context mContext;
@@ -154,9 +139,7 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
       }
    }
 
-   private StatusBarActivityHandler mStatusBarHandler;
    private TextView mStatusLabel;
-   private DataHandler mService;
    private RequestPluginsTask mRequestPluginsTask;
    private RemotePlugin[] mRemotePlugins;
 
@@ -165,12 +148,6 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
       super.onCreate(_savedInstanceState);
       setContentView(R.layout.remotecontrolactivity);
 
-      mService = DataHandler.getCurrentRemoteInstance();
-      mService.addClientControlListener(this);
-
-      mStatusBarHandler = new StatusBarActivityHandler(this, mService);
-      mStatusBarHandler.setupRemoteStatus();
-      
       mRequestPluginsTask = new RequestPluginsTask(this, mService);
       mRequestPluginsTask.execute();
 
@@ -230,7 +207,7 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             return false;
          }
       });
-      
+
       final ImageButton switchFullscreenButton = (ImageButton) findViewById(R.id.ImageButtonSwitchFullscreen);
       switchFullscreenButton.setOnTouchListener(new OnTouchListener() {
          @Override
@@ -238,7 +215,8 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             if (_event.getAction() == MotionEvent.ACTION_DOWN) {
                Util.Vibrate(_view.getContext(), 30);
 
-               new SendKeyTask(_view.getContext(), mService).execute(RemoteCommands.switchFullscreenButton);
+               new SendKeyTask(_view.getContext(), mService)
+                     .execute(RemoteCommands.switchFullscreenButton);
                switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen);
                return true;
             }
@@ -350,37 +328,21 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
 
    @Override
    public void messageReceived(Object _message) {
-
+      super.messageReceived(_message);
       if (_message != null) {
          if (_message.getClass().equals(RemoteStatusMessage.class)) {
             String module = ((RemoteStatusMessage) _message).getCurrentModule();
             mStatusLabel.setText(module);
-            mStatusBarHandler.setStatusText(module);
-            mStatusBarHandler.setStatus((RemoteStatusMessage) _message);
-         } else if (_message.getClass().equals(RemoteNowPlaying.class)) {
-            mStatusBarHandler.setNowPlaying((RemoteNowPlaying) _message);
-         } else if (_message.getClass().equals(RemoteNowPlayingUpdate.class)) {
-            mStatusBarHandler.setNowPlaying((RemoteNowPlayingUpdate) _message);
-         }else if (_message.getClass().equals(RemotePluginMessage.class)) {
-            mRemotePlugins = ((RemotePluginMessage)_message).getPlugins();
-         } else if (_message.getClass().equals(RemoteWelcomeMessage.class)) {
-            RemoteVolumeMessage vol = ((RemoteWelcomeMessage) _message).getVolume();
-            mStatusBarHandler.setVolume(vol);
-         } else if (_message.getClass().equals(RemoteVolumeMessage.class)) {
-            RemoteVolumeMessage vol = ((RemoteVolumeMessage) _message);
-            mStatusBarHandler.setVolume(vol);
+         } else if (_message.getClass().equals(RemotePluginMessage.class)) {
+            mRemotePlugins = ((RemotePluginMessage) _message).getPlugins();
          }
       }
 
    }
 
    @Override
-   public void stateChanged(String _state) {
-      mStatusBarHandler.setStatusText(_state);
-   }
-
-   @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
+      super.onCreateOptionsMenu(_menu);
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.remote_menu_morecommands));
       createMoreCommandsMen8(viewItem);
@@ -393,12 +355,31 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             getString(R.string.remote_menu_plugins));
       createPluginsMenu(pluginsItem);
 
+      MenuItem keyboardItem = _menu.add(0, Menu.FIRST + 4, Menu.NONE,
+            getString(R.string.remote_menu_keyboard));
+      keyboardItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            InputMethodManager m = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            m.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+            return false;
+         }
+      });
+
       return true;
+   }
+   
+   
+
+   @Override
+   public boolean onKeyUp(int keyCode, KeyEvent event) {
+      mService.sendRemoteKey(keyCode, 0);
+      return super.onKeyUp(keyCode, event);
    }
 
    private void createPluginsMenu(SubMenu _menu) {
-      if(mRemotePlugins != null){
-         for(final RemotePlugin p : mRemotePlugins){
+      if (mRemotePlugins != null) {
+         for (final RemotePlugin p : mRemotePlugins) {
             MenuItem pluginItem = _menu.add(0, Menu.FIRST, Menu.NONE, p.getName());
             pluginItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
                @Override
@@ -409,7 +390,6 @@ public class RemoteControlActivity extends BaseActivity implements IClientContro
             });
          }
       }
-
 
    }
 

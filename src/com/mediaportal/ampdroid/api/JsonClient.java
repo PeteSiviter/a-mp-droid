@@ -15,7 +15,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -29,6 +28,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 import android.util.Log;
+
+import com.mediaportal.ampdroid.utils.LogUtils;
 
 public class JsonClient {
    public enum RequestMethod {
@@ -88,7 +89,7 @@ public class JsonClient {
       try {
          return DoExecute(methodName, methodType, _params);
       } catch (Exception e) {
-         Log.e("aMPed JSON", e.toString());
+         Log.e(LogUtils.LOG_CONST, e.toString());
          return null;
       }
    }

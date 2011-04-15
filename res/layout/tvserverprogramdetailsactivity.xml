@@ -1,89 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:orientation="vertical">
+	android:background="@drawable/background">
 	<com.mediaportal.ampdroid.activities.actionbar.ActionBar
-		android:id="@+id/actionbar" style="@style/ActionBar" />
-
-	<FrameLayout android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:layout_marginBottom="60dip"
-		android:background="@drawable/background">
+		android:id="@+id/actionbar" style="@style/ActionBar"
+		android:layout_gravity="top" />
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_marginTop="50dip"
+		android:layout_marginBottom="90dip" android:layout_gravity="top"
+		android:layout_height="fill_parent" android:id="@+id/BottomMarginLayout"
+		android:orientation="vertical" android:gravity="top">
 		<LinearLayout android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:orientation="vertical">
-			<LinearLayout android:layout_width="fill_parent"
-				android:id="@+id/LinearLayout02" android:background="@drawable/bottom_bar_bg"
-				android:layout_height="40dip">
-				<TextView android:layout_height="wrap_content"
-					android:layout_gravity="center" android:textStyle="bold"
-					android:gravity="center" android:layout_width="fill_parent"
-					android:textSize="20dip" android:id="@+id/TextViewProgramName"
-					android:text="[ Program Name ]"></TextView>
-			</LinearLayout>
-			<ScrollView android:id="@+id/ScrollViewRoot"
-				android:layout_height="wrap_content" android:layout_width="fill_parent">
+			android:id="@+id/LinearLayout02" android:background="@drawable/bottom_bar_bg"
+			android:layout_height="40dip">
+			<TextView android:layout_height="wrap_content"
+				android:layout_gravity="center" android:textStyle="bold"
+				android:gravity="center" android:layout_width="fill_parent"
+				android:textSize="20dip" android:id="@+id/TextViewProgramName"
+				android:text="[ Program Name ]"></TextView>
+		</LinearLayout>
+		<ScrollView android:id="@+id/ScrollViewRoot"
+			android:layout_height="wrap_content" android:layout_width="fill_parent">
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:orientation="vertical">
 				<LinearLayout android:layout_height="wrap_content"
-					android:layout_width="fill_parent" android:orientation="vertical">
-					<LinearLayout android:layout_height="wrap_content"
-						android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent">
-						<LinearLayout android:id="@+id/LinearLayout03"
-							android:layout_height="wrap_content" android:layout_width="0dip"
-							android:layout_weight="3" android:visibility="gone">
-							<LinearLayout android:layout_marginRight="10dip"
-								android:layout_height="wrap_content" android:layout_marginTop="10dip"
-								android:layout_marginBottom="10dip" android:background="@drawable/rounded"
-								android:layout_marginLeft="10dip" android:padding="10dip"
-								android:layout_width="wrap_content">
-								<ImageView android:id="@+id/ImageViewSeriesPoster"
-									android:scaleType="fitCenter" android:layout_height="wrap_content"
-									android:layout_width="wrap_content"></ImageView>
-							</LinearLayout>
-						</LinearLayout>
-						<LinearLayout android:id="@+id/LinearLayout01"
+					android:id="@+id/LinearLayoutSeriesHeader" android:layout_width="fill_parent">
+					<LinearLayout android:id="@+id/LinearLayout03"
+						android:layout_height="wrap_content" android:layout_width="0dip"
+						android:layout_weight="3" android:visibility="gone">
+						<LinearLayout android:layout_marginRight="10dip"
 							android:layout_height="wrap_content" android:layout_marginTop="10dip"
-							android:orientation="vertical" android:layout_width="0dip"
-							android:layout_weight="3" android:layout_margin="5dip" >
-							<TextView android:layout_width="wrap_content"
-								android:layout_height="wrap_content" android:textStyle="bold"
-								android:textSize="18dip" android:text="@string/tvserver_program_start">
-							</TextView>
-
-							<TextView android:layout_height="wrap_content"
-								android:layout_width="fill_parent" android:id="@+id/TextViewProgramStart">
-							</TextView>
-
-							<TextView android:layout_width="wrap_content"
-								android:layout_height="wrap_content" android:textStyle="bold"
-								android:textSize="18dip" android:layout_marginTop="10dip"
-								android:text="@string/tvserver_program_end">
-							</TextView>
-
-							<TextView android:layout_height="wrap_content"
-								android:layout_width="fill_parent" android:id="@+id/TextViewProgramEnd">
-							</TextView>
-
-							<TextView android:layout_width="wrap_content"
-								android:layout_height="wrap_content" android:textStyle="bold"
-								android:textSize="18dip" android:layout_marginTop="10dip"
-								android:text="@string/tvserver_program_duration">
-							</TextView>
-
-							<TextView android:layout_height="wrap_content"
-								android:layout_width="fill_parent" android:id="@+id/TextViewProgramDuration">
-							</TextView>
-							<TextView android:layout_width="wrap_content"
-								android:layout_height="wrap_content" android:textSize="18dip"
-								android:textStyle="bold" android:text="@string/tvserver_program_desc"
-								android:layout_marginTop="10dip"></TextView>
-							<TextView android:layout_width="fill_parent"
-								android:id="@+id/TextViewProgramDescription"
-								android:layout_height="wrap_content" android:layout_marginBottom="10dip"></TextView>
-
+							android:layout_marginBottom="10dip" android:background="@drawable/rounded"
+							android:layout_marginLeft="10dip" android:padding="10dip"
+							android:layout_width="wrap_content">
+							<ImageView android:id="@+id/ImageViewSeriesPoster"
+								android:scaleType="fitCenter" android:layout_height="wrap_content"
+								android:layout_width="wrap_content"></ImageView>
 						</LinearLayout>
 					</LinearLayout>
+					<LinearLayout android:id="@+id/LinearLayout01"
+						android:layout_height="wrap_content" android:layout_marginTop="10dip"
+						android:orientation="vertical" android:layout_width="0dip"
+						android:layout_weight="3" android:layout_margin="5dip">
+						<TextView android:layout_width="wrap_content"
+							android:layout_height="wrap_content" android:textStyle="bold"
+							android:textSize="18dip" android:text="@string/tvserver_program_start">
+						</TextView>
+
+						<TextView android:layout_height="wrap_content"
+							android:layout_width="fill_parent" android:id="@+id/TextViewProgramStart">
+						</TextView>
+
+						<TextView android:layout_width="wrap_content"
+							android:layout_height="wrap_content" android:textStyle="bold"
+							android:textSize="18dip" android:layout_marginTop="10dip"
+							android:text="@string/tvserver_program_end">
+						</TextView>
+
+						<TextView android:layout_height="wrap_content"
+							android:layout_width="fill_parent" android:id="@+id/TextViewProgramEnd">
+						</TextView>
+
+						<TextView android:layout_width="wrap_content"
+							android:layout_height="wrap_content" android:textStyle="bold"
+							android:textSize="18dip" android:layout_marginTop="10dip"
+							android:text="@string/tvserver_program_duration">
+						</TextView>
+
+						<TextView android:layout_height="wrap_content"
+							android:layout_width="fill_parent" android:id="@+id/TextViewProgramDuration">
+						</TextView>
+						<TextView android:layout_width="wrap_content"
+							android:layout_height="wrap_content" android:textSize="18dip"
+							android:textStyle="bold" android:text="@string/tvserver_program_desc"
+							android:layout_marginTop="10dip"></TextView>
+						<TextView android:layout_width="fill_parent"
+							android:id="@+id/TextViewProgramDescription"
+							android:layout_height="wrap_content" android:layout_marginBottom="10dip"></TextView>
+
+					</LinearLayout>
 				</LinearLayout>
-			</ScrollView>
-		</LinearLayout>
-		<include layout="@layout/include_sliding_drawer" />
-	</FrameLayout>
-	<include layout="@layout/include_bottom_bar" />
-</LinearLayout>
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+	<include layout="@layout/include_sliding_drawer" />
+	<include layout="@layout/include_bottom_bar"></include>
+</FrameLayout>

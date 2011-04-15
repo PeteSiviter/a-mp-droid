@@ -178,7 +178,7 @@ public class ImageHandler {
             return BitmapFactory.decodeStream(is, null, o);
          }
 
-      } catch (FileNotFoundException e) {
+      } catch (Exception e) {
       }
       return null;
    }
