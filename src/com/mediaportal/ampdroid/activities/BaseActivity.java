@@ -24,6 +24,7 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePropertiesUpdate;
@@ -89,6 +90,10 @@ public class BaseActivity extends Activity implements IClientControlListener {
       mService.addClientControlListener(this);
 
       handleAutoHide();
+      
+      if(mService != null){
+         mStatusBarHandler.setConnected(mService.isClientControlConnected());
+      }
 
    }
 
@@ -228,13 +233,24 @@ public class BaseActivity extends Activity implements IClientControlListener {
       } else if (_message.getClass().equals(RemoteNowPlayingUpdate.class)) {
          mStatusBarHandler.setNowPlaying((RemoteNowPlayingUpdate) _message);
       } else if (_message.getClass().equals(RemotePropertiesUpdate.class)) {
-         mStatusBarHandler.setNowPlaying((RemotePropertiesUpdate) _message);
+         if (((RemotePropertiesUpdate) _message).getTag().equals("#Play.Current.Thumb")) {
+            String filePath = ((RemotePropertiesUpdate) _message).getValue();
+            if (filePath == null || filePath.equals("")) {
+               mStatusBarHandler.setImage(null);
+            } else if (mStatusBarHandler.isNewImage(filePath)) {
+               mService.getClientImage(filePath);
+            }
+         }
+         mStatusBarHandler.setPropertiesUpdate((RemotePropertiesUpdate) _message);
       } else if (_message.getClass().equals(RemoteWelcomeMessage.class)) {
          RemoteVolumeMessage vol = ((RemoteWelcomeMessage) _message).getVolume();
          mStatusBarHandler.setVolume(vol);
       } else if (_message.getClass().equals(RemoteVolumeMessage.class)) {
          RemoteVolumeMessage vol = ((RemoteVolumeMessage) _message);
          mStatusBarHandler.setVolume(vol);
+      } else if (_message.getClass().equals(RemoteImageMessage.class)) {
+         RemoteImageMessage img = (RemoteImageMessage) _message;
+         mStatusBarHandler.setImage(img);
       }
    }
 
@@ -244,12 +260,21 @@ public class BaseActivity extends Activity implements IClientControlListener {
          @Override
          public void run() {
             handleAutoHide();
-
-            if (mConnectItem != null) {
-               if (_state == ConnectionState.Disconnected) {
+            if (_state == ConnectionState.Disconnected) {
+               if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_connect));
-               } else if (_state == ConnectionState.Connected) {
+               }
+               if (mStatusBarHandler != null) {
+                  mStatusBarHandler.setNowPlayingInfoVisible(false);
+                  mStatusBarHandler.setConnected(false);
+               }
+            } else if (_state == ConnectionState.Connected) {
+               if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_disconnect));
+               }
+               if (mStatusBarHandler != null) {
+                  mStatusBarHandler.setNowPlayingInfoVisible(true);
+                  mStatusBarHandler.setConnected(true);
                }
             }
          }

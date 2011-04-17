@@ -50,10 +50,10 @@ public class TabEpisodesActivity extends Activity {
    private class LoadEpisodesTask extends AsyncTask<Integer, List<SeriesEpisode>, Boolean> {
       private Context mContext;
 
-      private LoadEpisodesTask(Context _context){
+      private LoadEpisodesTask(Context _context) {
          mContext = _context;
       }
-      
+
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
@@ -205,7 +205,7 @@ public class TabEpisodesActivity extends Activity {
                                  download.putExtra("length", info.getLength());
                               }
                               startService(download);
-                              
+
                               qa.dismiss();
                            }
                         }
@@ -223,7 +223,7 @@ public class TabEpisodesActivity extends Activity {
                         @Override
                         public void onClick(View _view) {
                            mService.playFileOnClient(epFile);
-                           
+
                            qa.dismiss();
                         }
                      });

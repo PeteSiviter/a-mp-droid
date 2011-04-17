@@ -27,5 +27,6 @@ public interface IClientControlApi extends IApiInterface {
    void sendPowerMode(PowerModes _mode);
    void sendPosition(int _position);
    void sendRemoteKey(int keyCode, int i);
+   void getClientImage(String filePath);
    
 }

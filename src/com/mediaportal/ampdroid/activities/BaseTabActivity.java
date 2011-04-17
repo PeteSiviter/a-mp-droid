@@ -229,7 +229,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
       } else if (_message.getClass().equals(RemoteNowPlayingUpdate.class)) {
          mStatusBarHandler.setNowPlaying((RemoteNowPlayingUpdate) _message);
       } else if (_message.getClass().equals(RemotePropertiesUpdate.class)) {
-         mStatusBarHandler.setNowPlaying((RemotePropertiesUpdate) _message);
+         mStatusBarHandler.setPropertiesUpdate((RemotePropertiesUpdate) _message);
       } else if (_message.getClass().equals(RemoteWelcomeMessage.class)) {
          RemoteVolumeMessage vol = ((RemoteWelcomeMessage) _message).getVolume();
          mStatusBarHandler.setVolume(vol);

@@ -190,6 +190,8 @@
 	<string name="info_remote_notconnected">Remote not connected</string>
 	<string name="info_loading_title">Loading. Please wait ...</string>
 	<string name="info_loading_failed">Loading failed, check your connection</string>
+	<string name="info_file_not_found">File has to be downloaded first</string>
+	<string name="info_file_already_downloaded">File is already downloaded</string>
 
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Settings</string>
@@ -269,5 +271,7 @@
 		<item>0</item>
 	</string-array>
 	<string name="settings_host_useauth">Use Authentification</string>
-	<string name="remote_button_info">info</string>
+	<string name="remote_button_info">Info</string>
+	<string name="remote_button_subtitle">Subtitles</string>
+	<string name="remote_button_menu">Menu</string>
 </resources>

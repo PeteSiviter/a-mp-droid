@@ -659,4 +659,8 @@ public class DataHandler {
    public void sendRemoteKey(int keyCode, int i) {
       client.getClientControlApi().sendRemoteKey(keyCode, i);
    }
+
+   public void getClientImage(String filePath) {
+      client.getClientControlApi().getClientImage(filePath);
+   }
 }

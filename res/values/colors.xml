@@ -9,4 +9,5 @@
 	<color name="details_view_header_background">#3B3E40</color>
 	<color name="listitem_epg_current">#FFFFFF</color>
 	<color name="listitem_epg_default">#000000</color>
+	<color name="background_sliding_drawer">#aabbbb</color>
 </resources>

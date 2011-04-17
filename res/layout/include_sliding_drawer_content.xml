@@ -1,36 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<LinearLayout android:id="@id/content"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:background="@drawable/background"
-		android:clickable="true" android:orientation="vertical">
-
-		<TextView android:layout_width="wrap_content"
-	android:layout_height="wrap_content" android:textSize="18dip"
-	android:textStyle="bold" android:layout_gravity="center"
-	android:layout_marginTop="10dip" android:layout_marginBottom="10dip"
-	android:id="@+id/TextViewSliderTitle" android:text="[Title]"
-	android:maxLines="1" android:lines="1"></TextView>
-		<LinearLayout android:id="@+id/LinearLayout01"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10dip" android:visibility="gone">
-			<ImageView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:src="@drawable/mp_logo_2" android:layout_marginRight="10dip" android:id="@+id/ImageViewSlider"></ImageView>
-			<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextViewSliderText"></TextView>
+	<FrameLayout android:id="@id/content" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:clickable="true" android:orientation="vertical" android:background="@drawable/background">
+		<LinearLayout android:layout_gravity="center" android:orientation="vertical" android:id="@+id/LinearLayoutDefault" android:layout_height="wrap_content" android:layout_width="wrap_content">
+			<ImageView android:layout_gravity="center" android:id="@+id/ImageViewDefault" android:layout_height="wrap_content" android:src="@drawable/background_logo" android:layout_width="wrap_content"></ImageView>
+			<ImageView android:layout_width="wrap_content" android:id="@+id/imageView1" android:layout_height="wrap_content" android:src="@drawable/background_text" android:layout_gravity="center"></ImageView>
 		</LinearLayout>
-		<ScrollView android:id="@+id/scrollView1" android:layout_width="fill_parent" android:layout_marginLeft="10dip" android:layout_marginRight="10dip" android:layout_height="200dip">
-			<LinearLayout android:id="@+id/linearLayout4" android:layout_width="fill_parent" android:layout_height="fill_parent">
-				<TextView android:layout_width="wrap_content" android:id="@+id/TextViewSliderTextDetail" android:layout_height="wrap_content" android:text="[Overview]"></TextView>
-			</LinearLayout>
-		</ScrollView>
-		<LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:gravity="bottom">
-			<LinearLayout android:id="@+id/linearLayout5" android:layout_width="fill_parent" android:orientation="vertical" android:layout_height="wrap_content">
-				<LinearLayout android:layout_marginLeft="10dip" android:layout_marginTop="10dip" android:gravity="right" android:layout_marginRight="10dip" android:id="@+id/linearLayout3" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginBottom="-6dip">
-					<Button android:layout_height="50dip" android:id="@+id/ButtonInfo" android:text="@string/remote_button_info" android:layout_width="100dip"></Button>
+		<ImageView android:id="@+id/ImageViewSlider"
+			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="top|center" android:scaleType="fitCenter"></ImageView>
+		<LinearLayout android:visibility="visible" android:layout_marginTop="10dip"
+			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:layout_marginBottom="100dip" android:id="@+id/LinearLayoutContent">
+			<TextView android:id="@+id/TextViewSliderTitle"
+				android:textStyle="bold" android:text="[Title]" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_height="wrap_content" android:textSize="18dip" android:layout_marginLeft="20dip" android:layout_marginRight="20dip"></TextView>
+			<ScrollView android:layout_width="fill_parent" android:id="@+id/scrollView1" android:layout_marginTop="20dip" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingRight="10dip">
+				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="[Overview]" android:textSize="16dip"></TextView>
+			</ScrollView>
+		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:orientation="vertical" android:gravity="bottom" android:id="@+id/LinearLayoutControls">
+			<LinearLayout android:id="@+id/linearLayout5"
+				android:layout_width="fill_parent" android:orientation="vertical"
+				android:layout_height="wrap_content">
+				<LinearLayout android:layout_marginLeft="10dip"
+					android:layout_marginTop="10dip" android:gravity="right"
+					android:layout_marginRight="10dip" android:id="@+id/linearLayout3"
+					android:layout_width="fill_parent" android:layout_height="fill_parent"
+					android:layout_marginBottom="-6dip" android:visibility="gone">
+					<Button android:id="@+id/Button01" android:layout_height="50dip" android:layout_width="100dip" android:text="@string/remote_button_menu"></Button>
+					<Button android:id="@+id/Button02" android:layout_height="50dip" android:layout_width="100dip" android:text="@string/remote_button_subtitle"></Button>
+					<Button android:layout_height="50dip" android:id="@+id/ButtonInfo"
+						android:text="@string/remote_button_info" android:layout_width="100dip"></Button>
 				</LinearLayout>
-				<LinearLayout android:id="@+id/linearLayout2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:background="@drawable/bottom_bar_bg">
-					<SeekBar android:max="100" android:progress="100" android:layout_gravity="bottom" android:thumb="@drawable/media_button_background" android:paddingBottom="5dip" android:paddingLeft="10dip" android:paddingRight="10dip" android:id="@+id/SeekBarSliderPosition" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingTop="5dip"></SeekBar>
+				<LinearLayout android:id="@+id/linearLayout2"
+					android:layout_width="fill_parent" android:layout_height="wrap_content">
+					<SeekBar android:max="100" android:progress="100"
+						android:layout_gravity="bottom" android:thumb="@drawable/media_button_background"
+						android:paddingBottom="5dip" android:paddingLeft="10dip"
+						android:paddingRight="10dip" android:id="@+id/SeekBarSliderPosition"
+						android:layout_width="fill_parent" android:layout_height="wrap_content"
+						android:paddingTop="5dip" android:progressDrawable="@drawable/progressbar_background"></SeekBar>
 				</LinearLayout>
 			</LinearLayout>
 		</LinearLayout>
-	</LinearLayout>
+	</FrameLayout>
 </merge>

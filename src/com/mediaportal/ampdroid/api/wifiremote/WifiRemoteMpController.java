@@ -21,7 +21,6 @@ import android.os.AsyncTask;
 
 import com.google.myjson.Gson;
 import com.google.myjson.GsonBuilder;
-import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IClientControlListener;
@@ -461,5 +460,11 @@ public class WifiRemoteMpController implements IClientControlApi {
          String msgString = gson.toJson(new WifiRemoteKeyMessage(s));
          writeLine(msgString);
       }
+   }
+
+   @Override
+   public void getClientImage(String _filePath) {
+      String msgString = gson.toJson(new WifiRemoteImageMessage(_filePath));
+      writeLine(msgString);
    }
 }

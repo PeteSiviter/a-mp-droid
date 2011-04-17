@@ -2,6 +2,7 @@ package com.mediaportal.ampdroid.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -25,6 +27,7 @@ import com.mediaportal.ampdroid.activities.actionbar.ActionBar;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.RemoteCommands;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
+import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePropertiesUpdate;
@@ -53,10 +56,13 @@ public class StatusBarActivityHandler {
    private int mIgnoreProgressChangedCounter = 0;
    private boolean mVolumeSeekBarChanging;
    private Button mInfoButton;
-   private TextView mSliderText;
    private TextView mSliderTextDetails;
    private RelativeLayout mStatusBar;
    private View mBottomMarginLayout;
+   private ImageView mImage;
+   private LinearLayout mLayoutDefault;
+   private LinearLayout mLayoutContent;
+   private LinearLayout mLayoutControls;
 
    private static String currentStatusString;
    private static RemoteNowPlaying currentNowPlayingMessage;
@@ -65,6 +71,8 @@ public class StatusBarActivityHandler {
    private static String currentTitle;
    private static String currentDesc;
    private static int currentProgress;
+   private static String currentImagePath;
+   private static RemoteStatusMessage currentStatusMessage;
 
    public StatusBarActivityHandler(Activity _parent, DataHandler _remote) {
       this(_parent, _remote, false);
@@ -85,6 +93,10 @@ public class StatusBarActivityHandler {
       mRemoteButton = (ImageButton) mParent.findViewById(R.id.ImageButtonBottomRemote);
       mVolumeButton = (ImageButton) mParent.findViewById(R.id.ImageButtonBottomVolume);
       mInfoButton = (Button) mParent.findViewById(R.id.ButtonInfo);
+      mImage = (ImageView) mParent.findViewById(R.id.ImageViewSlider);
+      mLayoutDefault = (LinearLayout) mParent.findViewById(R.id.LinearLayoutDefault);
+      mLayoutContent = (LinearLayout) mParent.findViewById(R.id.LinearLayoutContent);
+      mLayoutControls = (LinearLayout) mParent.findViewById(R.id.LinearLayoutControls);
 
       mPositionSlider = (SeekBar) mParent.findViewById(R.id.SeekBarSliderPosition);
       mPositionSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -163,12 +175,6 @@ public class StatusBarActivityHandler {
                   Intent myIntent = new Intent(_view.getContext(), RemoteControlActivity.class);
                   mParent.startActivity(myIntent);
                }
-
-               /*
-                * if (!mParent.getClass().equals(HomeActivity.class)) {
-                * mSlider.close(); mParent.finish(); } else {
-                * mSlider.animateClose(); }
-                */
             }
          });
       }
@@ -178,9 +184,9 @@ public class StatusBarActivityHandler {
             @Override
             public void onClick(View _view) {
                if (mSeekBar.getVisibility() == View.VISIBLE) {
-                  setControlsVisibility(true);
+                  setVolumeControlsVisibility(true);
                } else {
-                  setControlsVisibility(false);
+                  setVolumeControlsVisibility(false);
                }
             }
          });
@@ -207,7 +213,6 @@ public class StatusBarActivityHandler {
 
       mStatusText = (TextView) mParent.findViewById(R.id.TextViewSliderSatusText);
       mSliderTitleText = (TextView) mParent.findViewById(R.id.TextViewSliderTitle);
-      mSliderText = (TextView) mParent.findViewById(R.id.TextViewSliderText);
       mSliderTextDetails = (TextView) mParent.findViewById(R.id.TextViewSliderTextDetail);
 
       mSeekBar = (SeekBar) mParent.findViewById(R.id.SeekBarBottomVolume);
@@ -284,6 +289,13 @@ public class StatusBarActivityHandler {
    }
 
    private void fillDefaults() {
+      if (StatusBarActivityHandler.currentStatusMessage != null
+            && (StatusBarActivityHandler.currentStatusMessage.isIsPlaying() || StatusBarActivityHandler.currentStatusMessage
+                  .isIsPaused())) {
+         setNowPlayingInfoVisible(true);
+      } else {
+         setNowPlayingInfoVisible(false);
+      }
       if (currentTitle != null) {
          mStatusText.setText(currentTitle);
          mSliderTitleText.setText(currentTitle);
@@ -295,6 +307,44 @@ public class StatusBarActivityHandler {
 
       setProgress(currentProgress);
       setVolume(currentVolumeMessage);
+   }
+
+   public void setNowPlayingInfoVisible(boolean _visible) {
+      if (_visible) {
+         if (mStatusText != null) {
+            mStatusText.setVisibility(View.VISIBLE);
+         }
+         if (mLayoutContent != null) {
+            mLayoutContent.setVisibility(View.VISIBLE);
+         }
+         if (mLayoutControls != null) {
+            mLayoutControls.setVisibility(View.VISIBLE);
+         }
+         if (mLayoutDefault != null) {
+            mLayoutDefault.setVisibility(View.INVISIBLE);
+         }
+      } else {
+         if (mStatusText != null) {
+            mStatusText.setVisibility(View.INVISIBLE);
+         }
+         if (mLayoutContent != null) {
+            mLayoutContent.setVisibility(View.INVISIBLE);
+         }
+         if (mLayoutControls != null) {
+            mLayoutControls.setVisibility(View.INVISIBLE);
+         }
+         if (mLayoutDefault != null) {
+            mLayoutDefault.setVisibility(View.VISIBLE);
+         }
+      }
+   }
+
+   public void setConnected(boolean _connected) {
+      if (_connected) {
+         mRemoteButton.setBackgroundResource(R.drawable.home_mepo_connected);
+      } else {
+         mRemoteButton.setBackgroundResource(R.drawable.home_mepo);
+      }
    }
 
    public void setHome(boolean isHome) {
@@ -323,7 +373,7 @@ public class StatusBarActivityHandler {
 
    }
 
-   private void setControlsVisibility(boolean _visibility) {
+   public void setVolumeControlsVisibility(boolean _visibility) {
       if (_visibility) {
          if (mPrevButton != null)
             mPrevButton.setVisibility(View.VISIBLE);
@@ -352,6 +402,9 @@ public class StatusBarActivityHandler {
    }
 
    public void setNowPlaying(RemoteNowPlaying _nowPlayingMessage) {
+      if (_nowPlayingMessage != null) {
+         setNowPlayingInfoVisible(true);
+      }
       StatusBarActivityHandler.currentNowPlayingMessage = _nowPlayingMessage;
       StatusBarActivityHandler.currentIsTvPlaying = _nowPlayingMessage.isTv();
 
@@ -387,14 +440,7 @@ public class StatusBarActivityHandler {
       }
    }
 
-   private void setProgress(int _progress) {
-      currentProgress = _progress;
-      if (mPositionSlider != null) {
-         mPositionSlider.setProgress(_progress);
-      }
-   }
-
-   public void setNowPlaying(final RemotePropertiesUpdate _property) {
+   public void setPropertiesUpdate(final RemotePropertiesUpdate _property) {
       if (_property != null) {
          mParent.runOnUiThread(new Runnable() {
             @Override
@@ -413,6 +459,9 @@ public class StatusBarActivityHandler {
                   } else if (_property.getTag().equals("#Play.Current.Plot")) {
                      setTextDetails(_property.getValue());
                   }
+               }
+               if (_property.getTag().equals("#Play.Current.Thumb")) {
+
                }
             }
          });
@@ -440,18 +489,25 @@ public class StatusBarActivityHandler {
       }
    }
 
+   private void setProgress(int _progress) {
+      currentProgress = _progress;
+      if (mPositionSlider != null) {
+         mPositionSlider.setProgress(_progress);
+      }
+   }
+
    public void setStatus(RemoteStatusMessage _statusMessage) {
+      StatusBarActivityHandler.currentStatusMessage = _statusMessage;
       if (_statusMessage != null) {
          if (!_statusMessage.isIsPlaying()) {
             mParent.runOnUiThread(new Runnable() {
                @Override
                public void run() {
-                  setStatusText("");
-                  setTextDetails("");
-                  setTextTitle("");
+                  setNowPlayingInfoVisible(false);
                }
             });
-
+         } else {
+            setNowPlayingInfoVisible(true);
          }
       }
    }
@@ -500,6 +556,27 @@ public class StatusBarActivityHandler {
          lp.gravity = Gravity.TOP;
          lp.setMargins(0, DpiUtils.getPxFromDpi(mParent, 50), 0, DpiUtils.getPxFromDpi(mParent, 90));
          mBottomMarginLayout.setLayoutParams(lp);
+      }
+   }
+
+   public void setImage(RemoteImageMessage _img) {
+      if (_img == null) {
+         StatusBarActivityHandler.currentImagePath = null;
+         mImage.setImageBitmap(null);
+      } else {
+         StatusBarActivityHandler.currentImagePath = _img.getImagePath();
+         byte[] bytes = _img.getImage();
+         mImage.setAlpha(50);
+         mImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+      }
+   }
+
+   public boolean isNewImage(String _filePath) {
+      if (StatusBarActivityHandler.currentImagePath != null && _filePath != null
+            && !StatusBarActivityHandler.currentImagePath.equals(_filePath)) {
+         return false;
+      } else {
+         return true;
       }
    }
 }
