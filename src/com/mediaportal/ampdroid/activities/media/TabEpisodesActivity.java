@@ -21,9 +21,9 @@ import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.api.ItemDownloaderService;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -222,7 +222,7 @@ public class TabEpisodesActivity extends Activity {
                      playOnClientAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           mService.playFileOnClient(epFile);
+                           mService.playVideoFileOnClient(epFile);
 
                            qa.dismiss();
                         }

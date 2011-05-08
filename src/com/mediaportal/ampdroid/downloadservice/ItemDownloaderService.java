@@ -1,4 +1,4 @@
-package com.mediaportal.ampdroid.api;
+package com.mediaportal.ampdroid.downloadservice;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +137,7 @@ public class ItemDownloaderService extends Service {
             String myFileName = _job.getName();
 
             Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
-            
+
             // configure the intent
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                   homeIntent, 0);
@@ -162,6 +164,12 @@ public class ItemDownloaderService extends Service {
 
             HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
             Map<String, List<String>> headers2 = conn.getRequestProperties();
+
+            Authenticator.setDefault(new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication("admin", "admin".toCharArray());
+               }
+            });
 
             conn.setDoInput(true);
             conn.connect();
@@ -191,11 +199,13 @@ public class ItemDownloaderService extends Service {
                out.write(buf, 0, len);
 
                read += len;
-               int progress = (int) (read * 100 / fileSize);
-               if (progress > currentProgress) {
-                  currentProgress = progress;
+               if (fileSize > 0) {
+                  int progress = (int) (read * 100 / fileSize);
+                  if (progress > currentProgress + 4) {
+                     currentProgress = progress;
 
-                  publishProgress(progress);
+                     publishProgress(progress);
+                  }
                }
             }
             out.close();
@@ -233,8 +243,14 @@ public class ItemDownloaderService extends Service {
 
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationProgressText,
                progressText);
-         mNotification.contentView.setProgressBar(R.id.ProgressBarNotificationTransferStatus, 100,
-               _progress, false);
+
+         if (_progress != -1) {
+            mNotification.contentView.setProgressBar(R.id.ProgressBarNotificationTransferStatus,
+                  100, _progress, false);
+         } else {
+            mNotification.contentView.setProgressBar(R.id.ProgressBarNotificationTransferStatus,
+                  100, 0, true);
+         }
 
       }
 

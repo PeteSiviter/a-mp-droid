@@ -144,7 +144,7 @@ public class RemoteClientsDatabaseHandler {
    }
 
    public boolean removeRemoteClient(RemoteClient _client) {
-      if (mDatabase != null) {
+      if (mDatabase != null && _client != null) {
          int numDeleted = mDatabase.delete(REMOTE_CLIENTS_TABLE,
                "ClientId=" + _client.getClientId(), null);
          return numDeleted == 1;

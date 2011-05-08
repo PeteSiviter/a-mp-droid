@@ -67,7 +67,7 @@ public class SoftkeyboardUtils {
       case KeyEvent.KEYCODE_T:
          return "t";
       case KeyEvent.KEYCODE_U:
-         return "u";
+         return "ü";
       case KeyEvent.KEYCODE_V:
          return "v";
       case KeyEvent.KEYCODE_W:
@@ -79,7 +79,20 @@ public class SoftkeyboardUtils {
       case KeyEvent.KEYCODE_Z:
          return "z";
       case KeyEvent.KEYCODE_DEL:
-         return "delete";
+         return "{BKSP}";
+      case KeyEvent.KEYCODE_ENTER:
+      case KeyEvent.KEYCODE_DPAD_CENTER:
+         return "{ENTER}";
+      case KeyEvent.KEYCODE_SPACE:
+         return " ";
+      case KeyEvent.KEYCODE_DPAD_DOWN:
+         return "{DOWN}";
+      case KeyEvent.KEYCODE_DPAD_UP:
+         return "{UP}";
+      case KeyEvent.KEYCODE_DPAD_LEFT:
+         return "{LEFT}";
+      case KeyEvent.KEYCODE_DPAD_RIGHT:
+         return "{RIGHT}";
       }
       return null;
    }

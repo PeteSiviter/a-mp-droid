@@ -27,6 +27,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    private MediaDatabaseHelper mDbHelper;
    private SQLiteDatabase mDatabase;
    private int mClientId;
+   private boolean mUseCaching = false;
 
    public int getClientId() {
       return mClientId;
@@ -59,6 +60,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public ArrayList<Movie> getAllMovies() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Movie.TABLE_NAME, null, CLIENT_ID + "=" + mClientId, null,
                null, null, null);
          ArrayList<Movie> movies = null;
@@ -79,6 +81,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<Movie> getMovies(int _start, int _end) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Movie.TABLE_NAME, null, CLIENT_ID + "=" + mClientId, null,
                null, null, null);
          ArrayList<Movie> movies = null;
@@ -99,6 +102,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveMovie(Movie movie) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(movie,
                Movie.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -119,6 +123,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public CacheItemsSetting getMovieCount() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(CacheItemsSetting.TABLE_NAME, null, CLIENT_ID + "="
                + mClientId + " AND CacheType=" + Movie.CACHE_ID, null, null, null, null);
 
@@ -138,6 +143,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    public CacheItemsSetting setMovieCount(int _movieCount) {
       try {
          CacheItemsSetting setting = new CacheItemsSetting(Movie.CACHE_ID, _movieCount, new Date());
+         if(!mUseCaching) return setting;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(setting,
                CacheItemsSetting.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -158,6 +164,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public MovieFull getMovieDetails(int _movieId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(MovieFull.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND Id=" + _movieId, null, null, null, null);
          MovieFull movie = null;
@@ -179,6 +186,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveMovieDetails(MovieFull _movie) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_movie,
                MovieFull.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -200,6 +208,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<Movie> getAllVideos() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Movie.TABLE_NAME_VIDEOS, null, CLIENT_ID + "=" + mClientId, null,
                null, null, null);
          ArrayList<Movie> movies = null;
@@ -220,6 +229,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<Movie> getVideos(int _start, int _end) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Movie.TABLE_NAME_VIDEOS, null, CLIENT_ID + "=" + mClientId, null,
                null, null, null);
          ArrayList<Movie> movies = null;
@@ -240,6 +250,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveVideo(Movie _video) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_video,
                Movie.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -261,6 +272,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public CacheItemsSetting getVideosCount() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(CacheItemsSetting.TABLE_NAME, null, CLIENT_ID + "="
                + mClientId + " AND CacheType=" + CacheItemsSetting.CACHE_ID_VIDEOS, null, null, null, null);
 
@@ -280,6 +292,8 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    public CacheItemsSetting setVideosCount(int _videosCount) {
       try {
          CacheItemsSetting setting = new CacheItemsSetting(CacheItemsSetting.CACHE_ID_VIDEOS, _videosCount, new Date());
+         if(!mUseCaching) return setting;
+         
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(setting,
                CacheItemsSetting.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -300,6 +314,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public MovieFull getVideoDetails(int _videoId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(MovieFull.TABLE_NAME_VIDEOS, null, CLIENT_ID + "=" + mClientId
                + " AND Id=" + _videoId, null, null, null, null);
          MovieFull movie = null;
@@ -321,6 +336,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveVideoDetails(MovieFull _video) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_video,
                MovieFull.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -340,6 +356,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<Series> getSeries(int _start, int _end) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Series.TABLE_NAME, null, CLIENT_ID + "=" + mClientId, null, null,
                null, null);
          ArrayList<Series> series = null;
@@ -361,6 +378,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveSeries(Series _series) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_series,
                Series.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -381,6 +399,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<Series> getAllSeries() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(Series.TABLE_NAME, null, CLIENT_ID + "=" + mClientId, null, null,
                null, null);
 
@@ -400,6 +419,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public CacheItemsSetting getSeriesCount() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(CacheItemsSetting.TABLE_NAME, null, CLIENT_ID + "="
                + mClientId + " AND CacheType=" + Series.CACHE_ID, null, null, null, null);
 
@@ -420,6 +440,8 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
       try {
          CacheItemsSetting setting = new CacheItemsSetting(Series.CACHE_ID, _seriesCount,
                new Date());
+         if(!mUseCaching) return setting;
+         
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(setting,
                CacheItemsSetting.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -440,6 +462,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public SeriesFull getFullSeries(int _seriesId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(SeriesFull.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND Id=" + _seriesId, null, null, null, null);
          SeriesFull series = null;
@@ -460,6 +483,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveSeriesDetails(SeriesFull series) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(series,
                SeriesFull.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -478,6 +502,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<SeriesSeason> getAllSeasons(int _seriesId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(SeriesSeason.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND SeriesId=" + _seriesId, null, null, null, null);
 
@@ -497,6 +522,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveSeason(SeriesSeason _season) {
       try {
+         if(!mUseCaching) return;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_season,
                SeriesSeason.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -515,6 +541,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<SeriesEpisode> getAllEpisodes(int _seriesId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(SeriesEpisode.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND SeriesId=" + _seriesId, null, null, null, null);
 
@@ -534,6 +561,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveEpisode(int _seriesId, SeriesEpisode _episode) {
       try {
+         if(!mUseCaching) return;
          _episode.setSeriesId(_seriesId);
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_episode,
                SeriesEpisode.class);
@@ -553,6 +581,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public List<SeriesEpisode> getAllEpisodesForSeason(int _seriesId, int _seasonNumber) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(SeriesEpisode.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND SeasonNumber=" + _seasonNumber + " AND SeriesId=" + _seriesId, null, null,
                null, null);
@@ -573,19 +602,9 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public SupportedFunctions getSupportedFunctions() {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(SupportedFunctions.TABLE_NAME, null, CLIENT_ID + "=" + mClientId,
                null, null, null, null);
-
-         /*
-          * ArrayList<RemoteFunction> functions = null; if
-          * (result.moveToFirst()) { functions = (ArrayList<RemoteFunction>)
-          * SqliteAnnotationsHelper.getObjectsFromCursor(result,
-          * RemoteFunction.class, 0); } SupportedFunctions retObject = new
-          * SupportedFunctions(); if(functions != null){ for(RemoteFunction f :
-          * functions){ if(f.getId() == 0){
-          * 
-          * } } }
-          */
 
          SupportedFunctions retObject = null;
          if (result.getCount() == 1) {
@@ -606,6 +625,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void setSupportedFunctions(SupportedFunctions _supported) {
       try {
+         if(!mUseCaching) return ;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_supported,
                SupportedFunctions.class);
          dbValues.put(CLIENT_ID, mClientId);
@@ -625,6 +645,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public EpisodeDetails getEpisodeDetails(int _seriesId, int _episodeId) {
       try {
+         if(!mUseCaching) return null;
          Cursor result = mDatabase.query(EpisodeDetails.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND SeriesId=" + _seriesId + " AND Id=" + _episodeId, null, null, null, null);
          EpisodeDetails episode = null;
@@ -645,6 +666,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    @Override
    public void saveEpisodeDetails(int _seriesId, EpisodeDetails _episode) {
       try {
+         if(!mUseCaching) return;
          _episode.setSeriesId(_seriesId);
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_episode,
                EpisodeDetails.class);

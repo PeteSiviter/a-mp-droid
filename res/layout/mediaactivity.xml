@@ -6,7 +6,7 @@
 		android:id="@+id/actionbar" style="@style/ActionBar"
 		android:layout_gravity="top" />
 	<LinearLayout android:layout_width="fill_parent"
-		android:gravity="center" android:layout_marginTop="50dip"
+		android:gravity="center" android:layout_marginTop="20dip"
 		android:layout_marginBottom="90dip" android:layout_gravity="top"
 		android:layout_height="wrap_content" android:id="@+id/BottomMarginLayout">
 		<TabHost android:id="@android:id/tabhost"
@@ -14,7 +14,7 @@
 			<LinearLayout android:orientation="vertical"
 				android:layout_width="fill_parent" android:layout_height="fill_parent">
 				<TabWidget android:id="@android:id/tabs"
-					android:layout_width="fill_parent" android:layout_height="40dip" />
+					android:layout_width="fill_parent" android:layout_height="45dip" android:background="@color/actionbar_background_end"/>
 				<FrameLayout android:id="@android:id/tabcontent"
 					android:layout_width="fill_parent" android:layout_height="fill_parent" />
 			</LinearLayout>

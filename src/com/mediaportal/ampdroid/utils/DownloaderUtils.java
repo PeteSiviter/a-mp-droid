@@ -36,4 +36,28 @@ public class DownloaderUtils {
       String dirName = "Movies/" + _movie.getName() + "/";
       return dirName;
    }
+   
+   public static String getMusicTrackPath(){
+      return getMusicTrackPath(null, null);
+   }
+   
+   public static String getMusicTrackPath(String _albumTitle){
+      return getMusicTrackPath(null, _albumTitle);
+   }
+
+   public static String getMusicTrackPath(String _artistTitle, String _albumTitle) {
+      String dirName = "Music/";
+      if(_artistTitle != null && !_artistTitle.equals("")){
+         dirName += _artistTitle + "/";
+      }
+      if(_albumTitle != null && !_albumTitle.equals("")){
+         dirName += _albumTitle + "/";
+      }
+      
+      if(_albumTitle == null && _artistTitle == null){
+         dirName += "Songs/";
+      }
+
+      return dirName;
+   }
 }

@@ -135,7 +135,7 @@ public class TabMovieDetailsActivity extends Activity {
          mImageViewMoviePoster.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-               mService.playFileOnClient(mMovie.getFilename());
+               mService.playVideoFileOnClient(mMovie.getFilename());
             }
          });
 

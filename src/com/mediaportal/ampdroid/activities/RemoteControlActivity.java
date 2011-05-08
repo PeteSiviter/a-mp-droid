@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +16,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -140,6 +144,9 @@ public class RemoteControlActivity extends BaseActivity {
    private TextView mStatusLabel;
    private RequestPluginsTask mRequestPluginsTask;
    private RemotePlugin[] mRemotePlugins;
+   protected InputMethodManager m;
+   protected EditText mEditTextKeyboardInput;
+   protected boolean mKeyboardShown;
 
    @Override
    public void onCreate(Bundle _savedInstanceState) {
@@ -322,6 +329,8 @@ public class RemoteControlActivity extends BaseActivity {
 
       });
 
+      mEditTextKeyboardInput = (EditText) findViewById(R.id.EditTextKeyboardInput);
+
    }
 
    @Override
@@ -358,21 +367,39 @@ public class RemoteControlActivity extends BaseActivity {
       keyboardItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            InputMethodManager m = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            m = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             m.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+            mKeyboardShown = true;
+            // FrameLayout keyboardLayout = (FrameLayout)
+            // findViewById(R.id.FrameLayoutKeyboard);
+            // keyboardLayout.setVisibility(View.VISIBLE);
+
+            // mEditTextKeyboardInput.requestFocus();
             return false;
          }
       });
 
       return true;
    }
-   
-   
 
    @Override
    public boolean onKeyUp(int keyCode, KeyEvent event) {
-      mService.sendRemoteKey(keyCode, 0);
-      return super.onKeyUp(keyCode, event);
+      if (mKeyboardShown && keyCode != KeyEvent.KEYCODE_BACK) {
+         mService.sendRemoteKey(keyCode, 0);
+         return true;
+      } else {
+         mKeyboardShown = false;
+         return super.onKeyUp(keyCode, event);
+      }
+   }
+
+   @Override
+   public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if (mKeyboardShown) {
+         return true;
+      } else {
+         return super.onKeyDown(keyCode, event);
+      }
    }
 
    private void createPluginsMenu(SubMenu _menu) {

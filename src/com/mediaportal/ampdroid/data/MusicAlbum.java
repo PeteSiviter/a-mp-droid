@@ -12,15 +12,16 @@ public class MusicAlbum {
    private String Genre;
    private String Composer;
    private String Publisher;
+   private String CoverPathLarge;
 
-   @ColumnProperty(value="Directors", type="text")
-   @JsonProperty("AlbumArtistString")
+   @ColumnProperty(value="AlbumArtistsString", type="text")
+   @JsonProperty("AlbumArtistsString")
    public String getAlbumArtistString() {
       return AlbumArtistString;
    }
 
-   @ColumnProperty(value="Directors", type="text")
-   @JsonProperty("AlbumArtistString")
+   @ColumnProperty(value="AlbumArtistsString", type="text")
+   @JsonProperty("AlbumArtistsString")
    public void setAlbumArtistString(String albumArtistString) {
       AlbumArtistString = albumArtistString;
    }
@@ -95,6 +96,18 @@ public class MusicAlbum {
    @JsonProperty("Publisher")
    public void setPublisher(String publisher) {
       Publisher = publisher;
+   }
+
+   @ColumnProperty(value="CoverPathL", type="text")
+   @JsonProperty("CoverPathL")
+   public void setCoverPathLarge(String coverPathLarge) {
+      CoverPathLarge = coverPathLarge;
+   }
+
+   @ColumnProperty(value="CoverPathL", type="text")
+   @JsonProperty("CoverPathL")
+   public String getCoverPathLarge() {
+      return CoverPathLarge;
    }
 
 }

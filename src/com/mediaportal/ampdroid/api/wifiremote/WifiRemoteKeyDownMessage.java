@@ -4,11 +4,11 @@ import com.mediaportal.ampdroid.data.commands.RemoteKey;
 
 public class WifiRemoteKeyDownMessage extends WifiRemoteMessage {
    public WifiRemoteKeyDownMessage(RemoteKey _key, int _pause){
-      this.Type = "keydown";
-      this.Key = _key.getAction();
+      this.Type = "commandstartrepeat";
+      this.Command = _key.getAction();
       this.Pause = _pause;
    }
    
-   public String Key;
+   public String Command;
    public int Pause;
 }

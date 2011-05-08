@@ -94,6 +94,16 @@ public interface IMediaAccessApi extends IApiInterface {
 
    List<MusicTrack> findMusicTracks(String album, String artist, String title);
 
+   int getMusicTracksCount();
+
+   List<MusicTrack> getMusicTracks(int _start, int _end);
+
+   List<MusicTrack> getAllMusicTracks();
+
+   List<VideoShare> getMusicShares();
+
+   List<MusicAlbum> getMusicAlbumsByArtist(String _artist);
+
 
 
    

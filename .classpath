@@ -3,8 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="C:/Users/DieBagger/Documents/Work/Android/aMPdroid/libs/jackson-core-lgpl-1.7.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/DieBagger/Documents/Work/Android/aMPdroid/libs/jackson-mapper-lgpl-1.7.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/DieBagger/Documents/Work/Android/aMPdroid/libs/myjson-1.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/DieBagger/Documents/Android/aMPdroid/libs/jackson-core-lgpl-1.7.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/DieBagger/Documents/Android/aMPdroid/libs/jackson-mapper-lgpl-1.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

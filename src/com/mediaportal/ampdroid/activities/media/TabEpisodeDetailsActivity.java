@@ -24,11 +24,11 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.api.ItemDownloaderService;
 import com.mediaportal.ampdroid.data.EpisodeDetails;
 import com.mediaportal.ampdroid.data.EpisodeFile;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -200,7 +200,7 @@ public class TabEpisodeDetailsActivity extends Activity {
          public void onClick(View v) {
             if (mService.isClientControlConnected()) {
                String epFile = mEpisodeDetails.getEpisodeFile().getFileName();
-               mService.playFileOnClient(epFile);
+               mService.playVideoFileOnClient(epFile);
             } else {
                Util.showToast(v.getContext(), getString(R.string.info_remote_notconnected));
             }

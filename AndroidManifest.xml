@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.mediaportal.ampdroid" android:versionCode="1"
-	android:versionName="0.1">
+	package="com.mediaportal.ampdroid" android:versionCode="2"
+	android:versionName="0.2">
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="7" />
 
 	<supports-screens android:smallScreens="true"
@@ -80,6 +80,46 @@
 			android:screenOrientation="portrait">
 		</activity>
 		<activity android:name="com.mediaportal.ampdroid.activities.MusicActivity"
+			android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabAlbumsActivityGroup"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabAlbumDetailsActivity"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabAlbumsActivity"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabTracksActivityGroup"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabTracksActivity"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabMusicSharesActivityGroup"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabMusicDirectoryActivity"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabMusicSharesActivity"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabArtistsActivityGroup"
+			android:screenOrientation="portrait">
+		</activity>
+		<activity
+			android:name="com.mediaportal.ampdroid.activities.music.TabArtistsActivity"
 			android:screenOrientation="portrait">
 		</activity>
 		<activity android:name="com.mediaportal.ampdroid.activities.PicturesActivity"
@@ -124,7 +164,7 @@
 			android:screenOrientation="portrait">
 		</activity>
 		<service android:enabled="true"
-			android:name="com.mediaportal.ampdroid.api.ItemDownloaderService">
+			android:name="com.mediaportal.ampdroid.downloadservice.ItemDownloaderService">
 		</service>
 		<activity
 			android:name="com.mediaportal.ampdroid.activities.settings.SettingsActivity"

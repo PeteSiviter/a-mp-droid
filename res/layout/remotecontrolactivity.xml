@@ -9,7 +9,7 @@
 		android:layout_width="fill_parent" android:orientation="vertical"
 		android:layout_marginTop="50dip" android:layout_marginBottom="90dip"
 		android:layout_gravity="top" android:id="@+id/BottomMarginLayout"
-		>
+		android:focusable="true" android:focusableInTouchMode="true">
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_marginBottom="20dip"
 			android:id="@+id/ImageButtonSwitchFullscreen" android:layout_gravity="top|right"
@@ -38,6 +38,14 @@
 			android:layout_gravity="top|center" android:id="@+id/TextViewRemoteState"
 			android:text="Status" android:textSize="18dip" android:textStyle="bold"></TextView>
 	</FrameLayout>
+	
+		<FrameLayout android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:orientation="vertical"
+		android:layout_marginTop="50dip" android:layout_marginBottom="90dip"
+		android:layout_gravity="top" android:id="@+id/FrameLayoutKeyboard" android:visibility="gone">
+			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/EditTextKeyboardInput" android:layout_gravity="bottom"></EditText>
+		
+		</FrameLayout>
 	<include layout="@layout/include_sliding_drawer" />
 	<include layout="@layout/include_bottom_bar"></include>
 </FrameLayout>

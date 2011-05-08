@@ -19,6 +19,7 @@ import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
 import com.mediaportal.ampdroid.data.MusicArtist;
 import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.utils.LogUtils;
 
 class GmaJsonWebserviceMusicApi {
@@ -36,6 +37,10 @@ class GmaJsonWebserviceMusicApi {
    private static final String GET_ALBUMS_BY_ARTIST = "MP_GetAlbumsByArtist";
    private static final String GET_SONGS_OF_ALBUM = "MP_GetSongsOfAlbum";
    private static final String FIND_MUSIC_TRACKS = "MP_FindMusicTracks";
+   private static final String GET_MUSIC_TRACKS_COUNT = "MP_GetMusicTracksCount";
+   private static final String GET_ALL_MUSIC_TRACKS = "MP_GetAllMusicTracks";
+   private static final String GET_MUSIC_TRACKS = "MP_GetMusicTracks";
+   private static final String GET_MUSIC_SHARES = "MP_GetAllMusicShares";
 
    public GmaJsonWebserviceMusicApi(JsonClient _jsonClient, ObjectMapper _mapper) {
       mJsonClient = _jsonClient;
@@ -44,6 +49,24 @@ class GmaJsonWebserviceMusicApi {
 
    private Object getObjectsFromJson(String _jsonString, Class _class) {
       return JsonUtils.getObjectsFromJson(_jsonString, _class, mJsonObjectMapper);
+   }
+
+   public List<VideoShare> getMusicShares() {
+      String methodName = GET_MUSIC_SHARES;
+      String response = mJsonClient.Execute(methodName);
+
+      if (response != null) {
+         VideoShare[] returnObject = (VideoShare[]) getObjectsFromJson(response, VideoShare[].class);
+
+         if (returnObject != null) {
+            return new ArrayList<VideoShare>(Arrays.asList(returnObject));
+         } else {
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
    }
 
    public MusicTrack getMusicTrack(int trackId) {
@@ -62,6 +85,61 @@ class GmaJsonWebserviceMusicApi {
          Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
+   }
+
+   public List<MusicTrack> getMusicTracks(int _start, int _end) {
+      String methodName = GET_MUSIC_TRACKS;
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
+            JsonUtils.newPair("endIndex", _end));
+
+      if (response != null) {
+         MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);
+
+         if (returnObject != null) {
+            return new ArrayList<MusicTrack>(Arrays.asList(returnObject));
+         } else {
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   public List<MusicTrack> getAllMusicTracks() {
+      String methodName = GET_ALL_MUSIC_TRACKS;
+      String response = mJsonClient.Execute(methodName);
+
+      if (response != null) {
+         MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);
+
+         if (returnObject != null) {
+            return new ArrayList<MusicTrack>(Arrays.asList(returnObject));
+         } else {
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   public int getMusicTracksCount() {
+      String methodName = GET_MUSIC_TRACKS_COUNT;
+      String response = mJsonClient.Execute(methodName);
+
+      if (response != null) {
+         Integer returnObject = (Integer) getObjectsFromJson(response, Integer.class);
+
+         if (returnObject != null) {
+            return returnObject;
+         } else {
+            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return -99;
    }
 
    public MusicAlbum getAlbum(String albumArtistName, String albumName) {
@@ -104,8 +182,8 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicAlbum> getAlbums(int _start, int _end) {
       String methodName = GET_ALBUMS;
-      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("_start", _start),
-            JsonUtils.newPair("_end", _end));
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
+            JsonUtils.newPair("endIndex", _end));
 
       if (response != null) {
          MusicAlbum[] returnObject = (MusicAlbum[]) getObjectsFromJson(response, MusicAlbum[].class);
@@ -160,8 +238,8 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicArtist> getArtists(int _start, int _end) {
       String methodName = GET_ARTISTS;
-      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("_start", _start),
-            JsonUtils.newPair("_end", _end));
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
+            JsonUtils.newPair("endIndex", _end));
 
       if (response != null) {
          MusicArtist[] returnObject = (MusicArtist[]) getObjectsFromJson(response,
@@ -217,6 +295,18 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName) {
       String methodName = GET_SONGS_OF_ALBUM;
+
+      if (albumArtistName != null) {
+         albumArtistName = albumArtistName.trim();
+         if (albumArtistName.startsWith("|")) {
+            albumArtistName = albumArtistName.substring(1);
+         }
+         if (albumArtistName.endsWith("|")) {
+            albumArtistName = albumArtistName.substring(0, albumArtistName.length() - 2);
+         }
+         albumArtistName = albumArtistName.trim();
+      }
+
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("albumName", albumName),
             JsonUtils.newPair("albumArtistName", albumArtistName));
 

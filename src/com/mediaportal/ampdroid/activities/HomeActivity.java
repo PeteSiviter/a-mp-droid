@@ -7,6 +7,8 @@ import android.widget.ImageButton;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.barcodes.IntentIntegrator;
+import com.mediaportal.ampdroid.barcodes.IntentResult;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class HomeActivity extends BaseActivity {
@@ -62,8 +64,8 @@ public class HomeActivity extends BaseActivity {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
             Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
-            Intent myIntent = new Intent(_view.getContext(), PicturesActivity.class);
-            startActivity(myIntent);
+//            Intent myIntent = new Intent(_view.getContext(), PicturesActivity.class);
+//            startActivity(myIntent);
          }
       });
 
@@ -72,6 +74,8 @@ public class HomeActivity extends BaseActivity {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
             Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
+            //
+           
          }
       });
    }
@@ -80,4 +84,6 @@ public class HomeActivity extends BaseActivity {
    protected void onStart() {
       super.onStart();
    }
+   
+
 }

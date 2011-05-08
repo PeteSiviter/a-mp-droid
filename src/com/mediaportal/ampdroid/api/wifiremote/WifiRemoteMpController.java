@@ -13,19 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.google.myjson.Gson;
-import com.google.myjson.GsonBuilder;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.api.PowerModes;
+import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteLoginMessage.AuthMessage;
+import com.mediaportal.ampdroid.api.wifiremote.WifiRemotePlayFileMessage.FileType;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
+import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
@@ -52,14 +55,11 @@ public class WifiRemoteMpController implements IClientControlApi {
    private List<IClientControlListener> mListeners;
    private ObjectMapper mJsonObjectMapper;
    private Context mContext;
-   private GsonBuilder gsonb;
-   private Gson gson;
    private BufferedReader input;;
 
    private class TcpListenerTask extends AsyncTask<DataInputStream, Object, ConnectionState> {
       private List<IClientControlListener> listeners;
       private boolean listening = false;
-      
 
       public boolean isListening() {
          return listening;
@@ -79,7 +79,7 @@ public class WifiRemoteMpController implements IClientControlApi {
          listening = true;
          try {
             input = new BufferedReader(new InputStreamReader(mInstream, "UTF8"));
-            
+
             while (listening) {
                String response = input.readLine();
 
@@ -128,6 +128,17 @@ public class WifiRemoteMpController implements IClientControlApi {
                         Object returnObject = mJsonObjectMapper.readValue(response,
                               RemoteImageMessage.class);
                         publishProgress(returnObject);
+                     } else if (type.equals("authenticationresponse")) {
+                        Object returnObject = mJsonObjectMapper.readValue(response,
+                              RemoteAuthenticationResponse.class);
+
+                        if (((RemoteAuthenticationResponse) returnObject).isSuccess()) {
+                           // initialise was successful
+                           registerProperties();
+                        }
+
+                        publishProgress(returnObject);
+
                      }
                   }
                }
@@ -149,8 +160,6 @@ public class WifiRemoteMpController implements IClientControlApi {
       protected void onPostExecute(ConnectionState result) {
          publishState(result);
       }
-      
-      
 
       @Override
       protected void onCancelled() {
@@ -196,9 +205,6 @@ public class WifiRemoteMpController implements IClientControlApi {
 
       mListeners = new ArrayList<IClientControlListener>();
       mContext = _context;
-
-      gsonb = new GsonBuilder();
-      gson = gsonb.create();
 
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -273,7 +279,7 @@ public class WifiRemoteMpController implements IClientControlApi {
             publishState(ConnectionState.Disconnected);
          }
 
-         registerProperties();
+         initialiseConnection();
 
          return true;
 
@@ -283,6 +289,23 @@ public class WifiRemoteMpController implements IClientControlApi {
          e.printStackTrace();
       }
       return false;
+   }
+
+   private void initialiseConnection() {
+      WifiRemoteLoginMessage msg = new WifiRemoteLoginMessage();
+      msg.Name = "aMPdroid";
+      msg.Description = "Android client for MediaPortal";
+      msg.AppName = "aMPdroid";
+      msg.Version = "0.4";
+
+      if (mUseAuth) {
+         msg.SetAuth(mUser, mPass);
+      }
+      else{
+         msg.SetAuth("", "");
+      }
+
+      writeObject(msg);
    }
 
    private void registerProperties() {
@@ -312,8 +335,7 @@ public class WifiRemoteMpController implements IClientControlApi {
       register.Properties.add("#TV.Next.title");
       register.Properties.add("#TV.Next.description");
 
-      String msgString = gson.toJson(register);
-      writeLine(msgString);
+      writeObject(register);
    }
 
    private void publishState(ConnectionState _state) {
@@ -360,38 +382,45 @@ public class WifiRemoteMpController implements IClientControlApi {
 
    @Override
    public void sendKeyCommand(RemoteKey _key) {
-      String msgString = gson.toJson(new WifiRemoteMessageKey(_key));
-      writeLine(msgString);
+      writeObject(new WifiRemoteMessageKey(_key));
    }
 
    @Override
    public void sendKeyDownCommand(RemoteKey _key, int _timeout) {
-      String msgString = gson.toJson(new WifiRemoteKeyDownMessage(_key, _timeout));
-      writeLine(msgString);
+      writeObject(new WifiRemoteKeyDownMessage(_key, _timeout));
    }
 
    @Override
    public void sendKeyUpCommand() {
-      String msgString = gson.toJson(new WifiRemoteKeyUpMessage());
-      writeLine(msgString);
+      writeObject(new WifiRemoteKeyUpMessage());
    }
 
    @Override
    public void sendPowerMode(PowerModes _mode) {
-      String msgString = gson.toJson(new WifiRemotePowermodeMessage(_mode));
-      writeLine(msgString);
+      writeObject(new WifiRemotePowermodeMessage(_mode));
    }
 
    @Override
    public void sendPlayFileCommand(String _file) {
-      String msgString = gson.toJson(new WifiRemotePlayFileMessage(_file));
-      writeLine(msgString);
+      writeObject(new WifiRemotePlayFileMessage(_file, FileType.video));
    }
 
    @Override
    public void sendPosition(int _position) {
-      String msgString = gson.toJson(new WifiRemotePositionMessage(_position));
-      writeLine(msgString);
+      writeObject(new WifiRemotePositionMessage(_position));
+   }
+
+   private void writeObject(Object o) {
+      try {
+         String msgString = mJsonObjectMapper.writeValueAsString(o);
+         writeLine(msgString);
+      } catch (JsonGenerationException e) {
+         e.printStackTrace();
+      } catch (JsonMappingException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
    }
 
    private boolean writeLine(String msgString) {
@@ -425,46 +454,44 @@ public class WifiRemoteMpController implements IClientControlApi {
 
    @Override
    public void setVolume(int level) {
-      String msgString = gson.toJson(new WifiRemoteMessageSetVolume(level));
-      writeLine(msgString);
+      writeObject(new WifiRemoteMessageSetVolume(level));
+   }
+   
+   @Override
+   public void startAudio(String _path) {
+      writeObject(new WifiRemotePlayFileMessage(_path, FileType.audio));
    }
 
    @Override
    public void startVideo(String _path) {
-      String msgString = gson.toJson(new WifiRemotePlayFileMessage(_path));
-      writeLine(msgString);
+      writeObject(new WifiRemotePlayFileMessage(_path, FileType.video));
    }
 
    @Override
    public void playChannelOnClient(int _channel) {
-      String msgString = gson.toJson(new WifiRemoteStartTvMessage(_channel));
-      writeLine(msgString);
+      writeObject(new WifiRemoteStartTvMessage(_channel));
    }
 
    @Override
    public void requestPlugins() {
-      String msgString = gson.toJson(new WifiRemoteMessage("plugins"));
-      writeLine(msgString);
+      writeObject(new WifiRemoteMessage("plugins"));
    }
 
    @Override
    public void openWindow(int _windowId, String _parameter) {
-      String msgString = gson.toJson(new WifiRemoteOpenWindowMessage(_windowId));
-      writeLine(msgString);
+      writeObject(new WifiRemoteOpenWindowMessage(_windowId));
    }
 
    @Override
    public void sendRemoteKey(int keyCode, int i) {
       String s = SoftkeyboardUtils.getChar(keyCode);
-      if(s != null){
-         String msgString = gson.toJson(new WifiRemoteKeyMessage(s));
-         writeLine(msgString);
+      if (s != null) {
+         writeObject(new WifiRemoteKeyMessage(s));
       }
    }
 
    @Override
    public void getClientImage(String _filePath) {
-      String msgString = gson.toJson(new WifiRemoteImageMessage(_filePath));
-      writeLine(msgString);
+      writeObject(new WifiRemoteImageMessage(_filePath));
    }
 }

@@ -42,12 +42,11 @@ public class WelcomeScreenActivity extends Activity {
          PreferencesManager.intitialisePreferencesManager(mContext);
 
          DataHandler.setupRemoteHandler(_clients[0], mContext, false);
-
-         try {
-            // for testing, show welcomescreen longer than necessary
-            Thread.sleep(0);
-         } catch (InterruptedException e) {
-            e.printStackTrace();
+         
+         if(PreferencesManager.connectOnStartup()){
+            DataHandler client = DataHandler.getCurrentRemoteInstance();
+            boolean success = client.connectClientControl();
+            return success;
          }
          return true;
       }
@@ -59,7 +58,11 @@ public class WelcomeScreenActivity extends Activity {
 
       @Override
       protected void onPostExecute(Boolean _result) {
-
+         if (_result) {
+            Util.showToast(mContext, mContext.getString(R.string.connection_successful));
+         } else {
+            Util.showToast(mContext, mContext.getString(R.string.connection_failed));
+         }
          Intent myIntent = new Intent(mContext, HomeActivity.class);
          startActivity(myIntent);
       }

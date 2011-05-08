@@ -24,6 +24,10 @@ public class FileInfo {
    public FileInfo(String _fullPath, boolean _isFolder) {
       FullPath = _fullPath;
       IsFolder = _isFolder;
+      
+      if(_isFolder){
+         Name = Utils.getFolderNameWithoutExtension(FullPath, "\\");
+      }
    }
    
    public FileInfo(){

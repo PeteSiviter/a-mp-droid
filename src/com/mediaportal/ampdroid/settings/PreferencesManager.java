@@ -61,4 +61,13 @@ public class PreferencesManager {
       return StatusbarAutohide.AlwaysShow;
    }
 
+   public static boolean connectOnStartup() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("auto_connect", false);
+      } else {
+         Log.w("aMPdroid", "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
 }

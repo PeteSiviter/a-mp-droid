@@ -13,6 +13,8 @@ import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
+import com.mediaportal.ampdroid.data.MusicArtist;
+import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
@@ -39,6 +41,7 @@ public class DataHandler {
    private static int currentClient = 0;
    private static DataHandler dataHandler;
    private IMediaAccessDatabase mediaDatabase;
+   
 
    private DataHandler(RemoteClient _client, Context _context) {
       client = _client;
@@ -454,11 +457,6 @@ public class DataHandler {
       return episode;
    }
 
-   public List<MusicAlbum> getAllAlbums() {
-      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
-      return remoteAccess.getAllAlbums();
-   }
-
    public SupportedFunctions getSupportedFunctions() {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       mediaDatabase.open();
@@ -475,9 +473,65 @@ public class DataHandler {
       return supported;
    }
 
+   public int getAlbumsCount() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+
+      int albumsCount = remoteAccess.getAlbumsCount();
+
+      return albumsCount;
+   }
+
+   public List<VideoShare> getAllMusicShares() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getMusicShares();
+   }
+
+   public List<MusicAlbum> getAllAlbums() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getAllAlbums();
+   }
+
    public List<MusicAlbum> getAlbums(int _start, int _end) {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       return remoteAccess.getAlbums(_start, _end);
+   }
+
+   public int getArtistsCount() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+
+      int albumsCount = remoteAccess.getArtistsCount();
+
+      return albumsCount;
+   }
+
+   public List<MusicArtist> getArtists(int _start, int _end) {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getArtists(_start, _end);
+   }
+
+   public int getMusicTracksCount() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getMusicTracksCount();
+   }
+
+   public List<MusicTrack> getMusicTracks(int _start, int _end) {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getMusicTracks(_start, _end);
+   }
+
+   public List<MusicTrack> getAllMusicTracks() {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getAllMusicTracks();
+   }
+   
+   public List<MusicAlbum> getMusicAlbumsByArtist(String _artist) {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getMusicAlbumsByArtist(_artist);
+   }
+   
+   public List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName) {
+      IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
+      return remoteAccess.getSongsOfAlbum(albumName, albumArtistName);
    }
 
    public Bitmap getImage(String _url) {
@@ -623,8 +677,12 @@ public class DataHandler {
       return client.getRemoteAccessApi().getDownloadUri(_filePath);
    }
 
-   public void playFileOnClient(String _fileName) {
+   public void playVideoFileOnClient(String _fileName) {
       client.getClientControlApi().startVideo(_fileName);
+   }
+   
+   public void playAudioFileOnClient(String _fileName) {
+      client.getClientControlApi().startAudio(_fileName);
    }
 
    public void sendRemoteButtonDown(RemoteKey _remoteKey, int _pause) {
@@ -663,4 +721,8 @@ public class DataHandler {
    public void getClientImage(String filePath) {
       client.getClientControlApi().getClientImage(filePath);
    }
+
+
+
+
 }

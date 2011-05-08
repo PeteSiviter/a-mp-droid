@@ -4,9 +4,7 @@
 		android:key="cat_clients" android:summary="@string/settings_categories_clients_desc">
 		<PreferenceScreen android:summary="@string/settings_clients_newclient_desc"
 			android:title="@string/settings_clients_newclient_title">
-			<intent android:action="android.intent.action.MAIN"
-				android:data="" android:targetPackage="com.mediaportal.ampdroid"
-				android:targetClass="com.mediaportal.ampdroid.activities.settings.ClientSettingsActivity" />
+			<intent android:action="android.intent.action.MAIN" android:targetClass="com.mediaportal.ampdroid.activities.settings.ClientSettingsActivity" android:targetPackage="com.mediaportal.ampdroid"/>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_general"
@@ -18,7 +16,7 @@
 			android:summary="@string/settings_general_fullscreen_desc"
 			android:title="@string/settings_general_fullscreen" android:enabled="true"></CheckBoxPreference>
 		<CheckBoxPreference android:key="auto_connect" android:title="@string/settings_general_autoconnect_title" android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
-		<CheckBoxPreference android:key="auto_wol" android:title="@string/settings_general_autowol_title" android:summary="@string/settings_general_autowol_desc"></CheckBoxPreference>
+		<CheckBoxPreference android:key="auto_wol" android:title="@string/settings_general_autowol_title" android:summary="@string/settings_general_autowol_desc" android:enabled="false"></CheckBoxPreference>
 		<ListPreference android:summary="@string/settings_general_statusbar_hide_desc" android:key="statusbar_autohide" android:title="@string/settings_general_statusbar_hide_title" android:entries="@array/settings_general_statusbar_autohide_text" android:entryValues="@array/settings_general_statusbar_autohide_values" android:dialogTitle="@string/settings_general_statusbar_hide_dialog_title"></ListPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_tvserver"
@@ -31,7 +29,7 @@
 			android:defaultValue="aMPdroid"></EditTextPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_media"
-		android:key="cat_media">
+		android:key="cat_media" android:enabled="false">
 		<EditTextPreference android:title="@string/settings_media_cachevalid_title"
 			android:key="media_cache_valid" android:summary="@string/settings_media_cachevalid_desc"></EditTextPreference>
 		<CheckBoxPreference android:key="media_load_details"

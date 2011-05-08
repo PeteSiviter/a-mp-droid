@@ -70,7 +70,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public GmaJsonWebserviceApi(String _server, int _port, String _user, String _pass, boolean _auth) {
       mServer = _server;
       mPort = _port;
-      
+
       mUser = _user;
       mPass = _pass;
       mUseAuth = _auth;
@@ -415,12 +415,18 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
    
    @Override
+   public List<VideoShare> getMusicShares() {
+      return mMusicAPI.getMusicShares();
+      
+   }
+
+   @Override
    public MusicTrack getMusicTrack(int trackId) {
       return mMusicAPI.getMusicTrack(trackId);
    }
-   
+
    @Override
-   public MusicAlbum getAlbum(String albumArtistName, String albumName) {      
+   public MusicAlbum getAlbum(String albumArtistName, String albumName) {
       return mMusicAPI.getAlbum(albumArtistName, albumName);
    }
 
@@ -433,12 +439,12 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public List<MusicAlbum> getAlbums(int _start, int _end) {
       return mMusicAPI.getAlbums(_start, _end);
    }
-   
+
    @Override
    public int getAlbumsCount() {
       return mMusicAPI.getAlbumsCount();
    }
-   
+
    @Override
    public List<MusicArtist> getAllArtists() {
       return mMusicAPI.getAllArtists();
@@ -448,25 +454,44 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public List<MusicArtist> getArtists(int _start, int _end) {
       return mMusicAPI.getArtists(_start, _end);
    }
-   
+
    @Override
    public int getArtistsCount() {
       return mMusicAPI.getArtistsCount();
    }
-   
+
    @Override
    public List<MusicAlbum> getAlbumsByArtist(String artistName) {
       return mMusicAPI.getAlbumsByArtist(artistName);
    }
-   
+
    @Override
    public List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName) {
       return mMusicAPI.getSongsOfAlbum(albumName, albumArtistName);
    }
-   
+
    @Override
    public List<MusicTrack> findMusicTracks(String album, String artist, String title) {
       return mMusicAPI.findMusicTracks(album, artist, title);
    }
-   
+
+   @Override
+   public int getMusicTracksCount() {
+      return mMusicAPI.getMusicTracksCount();
+   }
+
+   @Override
+   public List<MusicTrack> getMusicTracks(int _start, int _end) {
+      return mMusicAPI.getMusicTracks(_start, _end);
+   }
+
+   @Override
+   public List<MusicTrack> getAllMusicTracks() {
+      return mMusicAPI.getAllMusicTracks();
+   }
+
+   @Override
+   public List<MusicAlbum> getMusicAlbumsByArtist(String _artist) {
+      return mMusicAPI.getAlbumsByArtist(_artist);
+   }
 }

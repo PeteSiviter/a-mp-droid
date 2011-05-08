@@ -70,6 +70,22 @@
 	<string name="media_videos_loadvideodetails">Loading Video Details</string>
 	<string name="media_videos_loadvideos">Loading Videos ...</string>
 
+	<string name="music_tabs_shares">Folders</string>
+	<string name="music_tabs_albums">Albums</string>
+	<string name="music_tabs_artists">Artists</string>
+	<string name="music_tabs_songs">Songs</string>
+
+	<string name="music_album_details_tracks">Tracks</string>
+	<string name="music_album_details_year">Year</string>
+	<string name="music_album_details_num_track">Tracks</string>
+	<string name="music_album_details_length">Length</string>
+	<string name="music_album_details_year_seperator">\u0020-\u0020</string>
+	<string name="music_share_loadshares">Loading Shares ...</string>
+	<string name="music_share_loaddirectory">Loading Directory ...</string>
+	<string name="music_albums_loadalbums">Loading Albums ...</string>
+	<string name="music_artists_loadartists">Loading Artists ...</string>
+	<string name="music_tracks_loadtracks">Loading Tracks ...</string>
+
 	<string name="days_yesterday">Yesterday</string>
 	<string name="days_today">Today</string>
 	<string name="days_tomorrow">Tomorrow</string>
@@ -162,6 +178,8 @@
 
 	<string name="settings_categories_clients_desc">Edit Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
+	<string name="settings_clients_usesimple">Simple Mode</string>
+	<string name="settings_clients_switchsimple">Switch to Simple Mode</string>
 	<string name="settings_clients_newclient_desc">Add, edit, remove clients</string>
 	<string name="settings_general_preloaditems_title">Items to preload</string>
 	<string name="settings_general_preloaditems_desc">Number of items that are loaded when end of list is
@@ -174,7 +192,21 @@
 	<string name="settings_general_statusbar_hide_title">Hide Statusbar</string>
 	<string name="settings_general_statusbar_hide_desc">Auto-hide the statusbar</string>
 	<string name="settings_general_statusbar_hide_dialog_title">Hide Statusbar Mode</string>
-	
+
+
+	<string name="settings_clients_clientname">Name of this Instance:</string>
+	<string name="settings_clients_clienthost">Host or IP Address:</string>
+	<string name="settings_clients_clientport">Port:</string>
+	<string name="settings_clients_clientusername">Username:</string>
+	<string name="settings_clients_clientpassword">Password:</string>
+	<string name="settings_clients_clientuseauth">Use Authentication:</string>
+	<string name="settings_clients_enableservice">Enable Service</string>
+	<string name="settings_clients_gma">GmaWebservice</string>
+	<string name="settings_clients_tv4home">Tv4Home</string>
+	<string name="settings_clients_wifiremote">WifiRemote</string>
+	<string name="settings_delete_client_title">Delete Client?</string>
+	<string name="settings_delete_client_start">Are you sure you want to delete the client \"</string>
+	<string name="settings_delete_client_end">\"?</string>
 
 	<string name="settings_media_defaultview_series_title">Default View Series</string>
 	<string name="settings_media_defaultview_series_desc">Default View for browsing your tv shows</string>
@@ -197,6 +229,7 @@
 	<string name="menu_settings">Settings</string>
 	<string name="menu_refresh">Refresh</string>
 	<string name="menu_addhost">Add host</string>
+	<string name="menu_addhost_scan">QR Scan</string>
 	<string name="menu_connect">Connect</string>
 	<string name="menu_disconnect">Disconnect</string>
 	<string name="remote_menu_keyboard">Keyboard</string>

@@ -24,6 +24,7 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
@@ -251,7 +252,12 @@ public class BaseActivity extends Activity implements IClientControlListener {
       } else if (_message.getClass().equals(RemoteImageMessage.class)) {
          RemoteImageMessage img = (RemoteImageMessage) _message;
          mStatusBarHandler.setImage(img);
-      }
+      } else if (_message.getClass().equals(RemoteAuthenticationResponse.class)) {
+         RemoteAuthenticationResponse auth = (RemoteAuthenticationResponse) _message;
+         if(!auth.isSuccess()){
+            Util.showToast(this, auth.getErrorMessage());
+         }
+      } 
    }
 
    @Override
