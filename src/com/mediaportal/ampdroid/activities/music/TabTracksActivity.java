@@ -24,11 +24,9 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.activities.media.TabSeriesActivityGroup;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicTrack;
-import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -42,7 +40,7 @@ import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
-public class TabTracksActivity  extends Activity implements ILoadingListener {
+public class TabTracksActivity extends Activity implements ILoadingListener {
    private ListView mListView;
    private LazyLoadingAdapter mAdapter;
    DataHandler mService;
@@ -54,10 +52,11 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
 
    private class LoadMusicTask extends AsyncTask<Integer, List<MusicTrack>, Boolean> {
       private Context mContext;
-      private LoadMusicTask(Context _context){
+
+      private LoadMusicTask(Context _context) {
          mContext = _context;
       }
-      
+
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
@@ -66,16 +65,16 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
 
          while (mItemsLoaded < loadItems && mItemsLoaded <= albumsCount) {
             int end = mItemsLoaded + 4;
-            if(end >= albumsCount){
+            if (end >= albumsCount) {
                end = albumsCount - 1;
             }
             List<MusicTrack> series = mService.getMusicTracks(mItemsLoaded, end);
-            
+
             publishProgress(series);
             if (series == null) {
                return false;
             }
-            
+
             mItemsLoaded += 5;
          }
 
@@ -92,13 +91,14 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
             List<MusicTrack> items = values[0];
             if (items != null) {
                for (MusicTrack t : items) {
-                  mAdapter.addItem(ViewTypes.TextView.ordinal(), new MusicTrackTextViewAdapterItem(t, true));
-                  mAdapter
-                        .addItem(ViewTypes.ThumbView.ordinal(), new MusicTrackThumbViewAdapterItem(t, true));
+                  mAdapter.addItem(ViewTypes.TextView.ordinal(), new MusicTrackTextViewAdapterItem(
+                        t, true));
+                  mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
+                        new MusicTrackThumbViewAdapterItem(t, true));
                }
             } else {
                mAdapter.showLoadingItem(false);
-               //mAdapter.setLoadingText("Loading failed, check your connection");
+               // mAdapter.setLoadingText("Loading failed, check your connection");
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -138,7 +138,7 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
 
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
-      mAdapter.addView(ViewTypes.ThumbView.ordinal());
+      // mAdapter.addView(ViewTypes.ThumbView.ordinal());
       mAdapter.setView(ViewTypes.TextView.ordinal());
       mAdapter.setLoadingListener(this);
 
@@ -152,11 +152,11 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
                   .getItemAtPosition(_position);
             MusicTrack selectedTrack = (MusicTrack) selectedItem.getItem();
             if (selectedTrack != null) {
-               //TODO: Open track detail view
+               // TODO: Open track detail view
             }
          }
       });
-      
+
       mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
          @Override
          public boolean onItemLongClick(AdapterView<?> _item, View _view, final int _position,
@@ -185,7 +185,8 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.parse(localFileName.toString()), "audio/mp3");
+                           playIntent.setDataAndType(Uri.parse(localFileName.toString()),
+                                 "audio/mp3");
                            startActivity(playIntent);
 
                            qa.dismiss();
@@ -219,7 +220,7 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
                      });
                      qa.addActionItem(sdCardAction);
                   }
-                  
+
                   if (mService.isClientControlConnected()) {
                      ActionItem playOnClientAction = new ActionItem();
 
@@ -254,7 +255,7 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
       mAdapter.showLoadingItem(true);
 
       loadFurtherItems();
-      
+
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
          mActivityGroup = extras.getString("activity_group");
@@ -273,11 +274,14 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
 
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views));
+      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views));
 
-      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views_text));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
-      
+      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views_text));
+      // MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3,
+      // Menu.NONE, getString(R.string.media_views_thumbs));
+
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
@@ -287,19 +291,19 @@ public class TabTracksActivity  extends Activity implements ILoadingListener {
          }
       });
 
-
-      thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
-            mAdapter.notifyDataSetInvalidated();
-            return true;
-         }
-      });
+      // thumbsSettingsItem.setOnMenuItemClickListener(new
+      // OnMenuItemClickListener() {
+      // @Override
+      // public boolean onMenuItemClick(MenuItem item) {
+      // mAdapter.setView(ViewTypes.ThumbView.ordinal());
+      // mAdapter.notifyDataSetInvalidated();
+      // return true;
+      // }
+      // });
 
       return true;
    }
-   
+
    @Override
    public void onDestroy() {
       mAdapter.mImageLoader.stopThread();

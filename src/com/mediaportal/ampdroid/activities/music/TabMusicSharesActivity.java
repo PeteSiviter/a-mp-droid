@@ -19,11 +19,8 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.activities.media.TabSeriesActivityGroup;
-import com.mediaportal.ampdroid.activities.media.TabSeriesDetailsActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.MusicTrack;
-import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -146,8 +143,9 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
 
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views_text));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
-            getString(R.string.media_views_thumbs));
+      // MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3,
+      // Menu.NONE,
+      // getString(R.string.media_views_thumbs));
 
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
@@ -158,14 +156,14 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
          }
       });
 
-      thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
-            mAdapter.notifyDataSetInvalidated();
-            return true;
-         }
-      });
+//      thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+//         @Override
+//         public boolean onMenuItemClick(MenuItem item) {
+//            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+//            mAdapter.notifyDataSetInvalidated();
+//            return true;
+//         }
+//      });
 
       return true;
    }

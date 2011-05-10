@@ -26,7 +26,6 @@
 	<string name="button_earlier">Earlier</string>
 	<string name="button_later">Later</string>
 
-
 	<string name="title_home">MediaPortal for Android</string>
 	<string name="title_tvserver">TvServer</string>
 	<string name="title_tvserver_state">Manual Control</string>
@@ -251,6 +250,15 @@
 	<string name="connection_successful">Successfully established connection</string>
 	<string name="connection_failed">Connection couldn\'t be established</string>
 	<string name="connection_closed">Connection closed</string>
+	
+	<string name="settings_host_useauth">Use Authentification</string>
+	<string name="remote_button_info">Info</string>
+	<string name="remote_button_subtitle">Subtitles</string>
+	<string name="remote_button_menu">Menu</string>
+	
+	<string name="notification_download_failed">Download failed</string>
+	<string name="notification_download_succeeded">Download finished</string>
+	<string name="notification_title">aMPdroid</string>
 
 	<string-array name="settings_general_statusbar_autohide_text">
 		<item>Always Show</item>
@@ -303,8 +311,5 @@
 	<string-array name="settings_media_defaultview_shares_values">
 		<item>0</item>
 	</string-array>
-	<string name="settings_host_useauth">Use Authentification</string>
-	<string name="remote_button_info">Info</string>
-	<string name="remote_button_subtitle">Subtitles</string>
-	<string name="remote_button_menu">Menu</string>
+
 </resources>

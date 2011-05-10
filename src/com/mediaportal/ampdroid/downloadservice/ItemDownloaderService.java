@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -48,19 +49,19 @@ public class ItemDownloaderService extends Service {
       private String mUrl;
       private long mLength;
 
-      public int getId() {
+      private int getId() {
          return mId;
       }
 
-      public void setId(int _id) {
+      private void setId(int _id) {
          this.mId = _id;
       }
 
-      public String getName() {
+      private String getName() {
          return mName;
       }
 
-      public String getShortenedName() {
+      private String getShortenedName() {
          String name = mName;
          if (name.length() > 30) {
             name = name.substring(name.length() - 30);
@@ -68,15 +69,15 @@ public class ItemDownloaderService extends Service {
          return name;
       }
 
-      public void setName(String _name) {
+      private void setName(String _name) {
          this.mName = _name;
       }
 
-      public String getUrl() {
+      private String getUrl() {
          return mUrl;
       }
 
-      public void setUrl(String _url) {
+      private void setUrl(String _url) {
          this.mUrl = _url;
       }
 
@@ -87,11 +88,11 @@ public class ItemDownloaderService extends Service {
          setLength(_length);
       }
 
-      public void setLength(long length) {
+      private void setLength(long length) {
          mLength = length;
       }
 
-      public long getLength() {
+      private long getLength() {
          return mLength;
       }
    }
@@ -102,6 +103,7 @@ public class ItemDownloaderService extends Service {
       private DownloadJob mCurrentJob;
       private int mNumberOfJobs;
       private Context mContext;
+      private String mToastMessage;
 
       private DownloaderTask(Context _context) {
          mNumberOfJobs = 0;
@@ -163,7 +165,6 @@ public class ItemDownloaderService extends Service {
             mNotificationManager.notify(NOTIFICATION_ID, mNotification);
 
             HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
-            Map<String, List<String>> headers2 = conn.getRequestProperties();
 
             Authenticator.setDefault(new Authenticator() {
                protected PasswordAuthentication getPasswordAuthentication() {
@@ -175,7 +176,6 @@ public class ItemDownloaderService extends Service {
             conn.connect();
 
             InputStream inputStream = conn.getInputStream();
-            Map<String, List<String>> headers = conn.getHeaderFields();
 
             File downloadFile = new File(DownloaderUtils.getBaseDirectory() + "/" + myFileName);
             File donwloadDir = new File(Utils.getFolder(downloadFile.toString(), "/"));
@@ -192,6 +192,12 @@ public class ItemDownloaderService extends Service {
             if (fileSize == -1) {
                fileSize = _job.getLength();
             }
+            int updateProgressStepsize = 0;
+            if (fileSize < 5000000) {
+               updateProgressStepsize = 9;
+            } else if (fileSize < 10000000) {
+               updateProgressStepsize = 4;
+            }
             long read = 0;
             int currentProgress = 0;
             int len;
@@ -201,7 +207,7 @@ public class ItemDownloaderService extends Service {
                read += len;
                if (fileSize > 0) {
                   int progress = (int) (read * 100 / fileSize);
-                  if (progress > currentProgress + 4) {
+                  if (progress > currentProgress + updateProgressStepsize) {
                      currentProgress = progress;
 
                      publishProgress(progress);
@@ -213,19 +219,25 @@ public class ItemDownloaderService extends Service {
 
             return true;
          } catch (MalformedURLException e) {
-            e.printStackTrace();
-            // Util.showToast(mContext, e.toString());
+            if (e != null) {
+               mToastMessage = e.getMessage();
+               publishProgress(-1);
+            }
          } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            // Util.showToast(mContext, e.toString());
+            if (e != null) {
+               mToastMessage = e.getMessage();
+               publishProgress(-1);
+            }
          } catch (IOException e) {
-            e.printStackTrace();
-            // Util.showToast(mContext, e.toString());
+            if (e != null) {
+               mToastMessage = e.getMessage();
+               publishProgress(-1);
+            }
          } catch (Exception e) {
             if (e != null) {
-               e.printStackTrace();
+               mToastMessage = e.getMessage();
+               publishProgress(-1);
             }
-            // Util.showToast(mContext, e.toString());
          }
 
          return false;
@@ -259,16 +271,19 @@ public class ItemDownloaderService extends Service {
          if (mNotificationManager != null) {
             stopSelf();
             mNotificationManager.cancel(NOTIFICATION_ID);
-            Notification notification = new Notification(R.drawable.mp_logo_2, "Notify",
-                  System.currentTimeMillis());
+            Notification notification = new Notification(R.drawable.mp_logo_2,
+                  mContext.getString(R.string.notification_title), System.currentTimeMillis());
             if (result) {
-               notification.setLatestEventInfo(getApplicationContext(), "aMPdroid",
-                     "Downloads finished", PendingIntent.getActivity(getApplicationContext(), 0,
-                           mIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+               notification.setLatestEventInfo(getApplicationContext(), mContext
+                     .getString(R.string.notification_title), mContext
+                     .getString(R.string.notification_download_succeeded), PendingIntent
+                     .getActivity(getApplicationContext(), 0, mIntent,
+                           PendingIntent.FLAG_CANCEL_CURRENT));
             } else {
-               notification.setLatestEventInfo(getApplicationContext(), "aMPdroid",
-                     "Downloads failed", PendingIntent.getActivity(getApplicationContext(), 0,
-                           mIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+               notification.setLatestEventInfo(getApplicationContext(), mContext
+                     .getString(R.string.notification_title), mContext
+                     .getString(R.string.notification_download_failed), PendingIntent.getActivity(
+                     getApplicationContext(), 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT));
             }
 
             mNotificationManager.notify(49, notification);
@@ -279,9 +294,13 @@ public class ItemDownloaderService extends Service {
       @Override
       protected void onProgressUpdate(Integer... values) {
          int progress = values[0];
-         createNotificationText(progress);
-         // inform the progress bar of updates in progress
-         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+         if (progress != -1) {
+            createNotificationText(progress);
+            // inform the progress bar of updates in progress
+            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+         } else {
+            Util.showToast(mContext, mToastMessage);
+         }
       }
 
    }
@@ -325,17 +344,4 @@ public class ItemDownloaderService extends Service {
 
       return Service.START_STICKY;
    }
-
-   private void broadcastProgress(String _url, int _progress) {
-
-   }
-
-   private void broadcastStarted(String _url) {
-
-   }
-
-   private void broadcastFinished(String _url) {
-
-   }
-
 }

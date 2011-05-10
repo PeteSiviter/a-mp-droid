@@ -175,15 +175,15 @@ public class BaseActivity extends Activity implements IClientControlListener {
 
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
-      MenuItem settingsItem = _menu
-            .add(0, Menu.FIRST, Menu.NONE, getString(R.string.menu_settings));
-      settingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            startSettings();
-            return true;
-         }
-      });
+      // MenuItem settingsItem = _menu
+      // .add(0, Menu.FIRST, Menu.NONE, getString(R.string.menu_settings));
+      // settingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      // @Override
+      // public boolean onMenuItemClick(MenuItem item) {
+      // startSettings();
+      // return true;
+      // }
+      // });
 
       String title = null;
       if (!mService.isClientControlConnected()) {

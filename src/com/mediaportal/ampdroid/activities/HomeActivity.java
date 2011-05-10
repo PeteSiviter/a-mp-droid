@@ -34,7 +34,6 @@ public class HomeActivity extends BaseActivity {
       buttonMusic.setOnClickListener(new View.OnClickListener() {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
-            Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
             
             Intent myIntent = new Intent(_view.getContext(), MusicActivity.class);
             startActivity(myIntent);

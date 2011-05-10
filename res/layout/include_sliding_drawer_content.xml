@@ -11,9 +11,9 @@
 		<LinearLayout android:visibility="visible" android:layout_marginTop="10dip"
 			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:layout_marginBottom="100dip" android:id="@+id/LinearLayoutContent">
 			<TextView android:id="@+id/TextViewSliderTitle"
-				android:textStyle="bold" android:text="[Title]" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_height="wrap_content" android:textSize="18dip" android:layout_marginLeft="20dip" android:layout_marginRight="20dip"></TextView>
+				android:textStyle="bold" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_height="wrap_content" android:textSize="18dip" android:layout_marginLeft="20dip" android:layout_marginRight="20dip"></TextView>
 			<ScrollView android:layout_width="fill_parent" android:id="@+id/scrollView1" android:layout_marginTop="20dip" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingRight="10dip">
-				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="[Overview]" android:textSize="16dip"></TextView>
+				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip"></TextView>
 			</ScrollView>
 		</LinearLayout>
 		<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"

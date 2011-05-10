@@ -20,7 +20,6 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.activities.media.TabSeriesDetailsActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.MusicArtist;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
@@ -127,7 +126,7 @@ public class TabArtistsActivity  extends Activity implements ILoadingListener {
 
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
-      mAdapter.addView(ViewTypes.ThumbView.ordinal());
+      //mAdapter.addView(ViewTypes.ThumbView.ordinal());
       mAdapter.setView(ViewTypes.TextView.ordinal());
       mAdapter.setLoadingListener(this);
 
@@ -182,7 +181,7 @@ public class TabArtistsActivity  extends Activity implements ILoadingListener {
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views));
 
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views_text));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
+      //MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
       
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
@@ -194,14 +193,15 @@ public class TabArtistsActivity  extends Activity implements ILoadingListener {
       });
 
 
-      thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
-            mAdapter.notifyDataSetInvalidated();
-            return true;
-         }
-      });
+      // thumbsSettingsItem.setOnMenuItemClickListener(new
+      // OnMenuItemClickListener() {
+      // @Override
+      // public boolean onMenuItemClick(MenuItem item) {
+      // mAdapter.setView(ViewTypes.ThumbView.ordinal());
+      // mAdapter.notifyDataSetInvalidated();
+      // return true;
+      // }
+      // });
 
       return true;
    }

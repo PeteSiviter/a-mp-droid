@@ -252,7 +252,7 @@ public class RemoteControlActivity extends BaseActivity {
                   if (task != null) {
                      task.setRepeat(false);
                   }
-                  task = (SendKeyTask) new SendKeyTask(_view.getContext(), mService)
+                  task = (SendKeyTask) new SendKeyTask(_view.getContext(), mService, true)
                         .execute(RemoteCommands.leftButton);
                   break;
                case 1:
@@ -260,13 +260,11 @@ public class RemoteControlActivity extends BaseActivity {
                   if (task != null) {
                      task.setRepeat(false);
                   }
-                  task = (SendKeyTask) new SendKeyTask(_view.getContext(), mService)
+                  task = (SendKeyTask) new SendKeyTask(_view.getContext(), mService, true)
                         .execute(RemoteCommands.rightButton);
                   break;
                case 2:
                   remote.setImageResource(R.drawable.remote_up);
-                  // mService.sendRemoteButtonDown(RemoteCommands.upButton,
-                  // 100);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -275,8 +273,6 @@ public class RemoteControlActivity extends BaseActivity {
                   break;
                case 3:
                   remote.setImageResource(R.drawable.remote_down);
-                  // mService.sendRemoteButtonDown(RemoteCommands.downButton,
-                  // 100);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -285,7 +281,11 @@ public class RemoteControlActivity extends BaseActivity {
                   break;
                case 4:
                   remote.setImageResource(R.drawable.remote_enter);
-                  new SendKeyTask(_view.getContext(), mService).execute(RemoteCommands.okButton);
+                  if (task != null) {
+                     task.setRepeat(false);
+                  }
+                  task = (SendKeyTask) new SendKeyTask(_view.getContext(), mService, true)
+                        .execute(RemoteCommands.okButton);
                   break;
                }
 

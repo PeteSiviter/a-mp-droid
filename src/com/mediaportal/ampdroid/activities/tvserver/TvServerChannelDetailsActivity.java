@@ -254,7 +254,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
 
                if (program.isIsScheduled()) {
                   ActionItem addScheduleAction = new ActionItem();
-                  addScheduleAction.setTitle(getString(R.string.tvserver_cancel_recording));
+                  addScheduleAction.setTitle(getString(R.string.quickactions_cancelrecord));
                   addScheduleAction.setIcon(getResources().getDrawable(R.drawable.bubble_del));
                   addScheduleAction.setOnClickListener(new OnClickListener() {
                      @Override
@@ -269,7 +269,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                   qa.addActionItem(addScheduleAction);
                } else {
                   ActionItem addScheduleAction = new ActionItem();
-                  addScheduleAction.setTitle(getString(R.string.tvserver_record_this));
+                  addScheduleAction.setTitle(getString(R.string.quickactions_record));
                   addScheduleAction.setIcon(getResources().getDrawable(
                         R.drawable.quickaction_recording));
                   addScheduleAction.setOnClickListener(new OnClickListener() {

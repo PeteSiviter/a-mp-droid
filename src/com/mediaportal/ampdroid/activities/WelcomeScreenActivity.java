@@ -96,12 +96,20 @@ public class WelcomeScreenActivity extends Activity {
 
    @Override
    protected void onStart() {
+    //disconnect client if one is currently connected
+      DataHandler client = DataHandler.getCurrentRemoteInstance();
+      if(client != null){
+         client.disconnectClientControl();
+      }
+      
       final ProgressBar progress = (ProgressBar) findViewById(R.id.ProgressBarWelcomeScreen);
       progress.setVisibility(View.INVISIBLE);
       final Button connectButton = (Button) findViewById(R.id.ButtonConnect);
       connectButton.setEnabled(true);
 
       final Spinner spinner = (Spinner) findViewById(R.id.SpinnerSelectClients);
+
+      
 
       RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
       remoteClientsDb.open();
