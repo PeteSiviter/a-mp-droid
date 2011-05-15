@@ -33,7 +33,6 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
    private LazyLoadingAdapter mAdapter;
    DataHandler mService;
    private LoadMusicTask mMusicLoaderTask;
-   private int mItemsLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
    private String mActivityGroup;
@@ -45,7 +44,6 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
          mContext = _context;
       }
 
-      @SuppressWarnings("unchecked")
       @Override
       protected List<VideoShare> doInBackground(Integer... _params) {
          List<VideoShare> shares = mService.getAllMusicShares();

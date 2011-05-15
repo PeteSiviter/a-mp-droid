@@ -32,13 +32,11 @@ import com.mediaportal.ampdroid.data.TvVirtualCard;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.database.MediaAccessDatabaseHandler;
-import com.mediaportal.ampdroid.utils.SoftkeyboardUtils;
 
 public class DataHandler {
    private RemoteClient client;
    private RemoteFunctions functions;
    private static List<RemoteClient> clientList = new ArrayList<RemoteClient>();
-   private static int currentClient = 0;
    private static DataHandler dataHandler;
    private IMediaAccessDatabase mediaDatabase;
    

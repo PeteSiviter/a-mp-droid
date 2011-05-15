@@ -25,7 +25,6 @@ import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.api.PowerModes;
-import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteLoginMessage.AuthMessage;
 import com.mediaportal.ampdroid.api.wifiremote.WifiRemotePlayFileMessage.FileType;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
@@ -54,7 +53,6 @@ public class WifiRemoteMpController implements IClientControlApi {
    private TcpListenerTask mTcpReader;
    private List<IClientControlListener> mListeners;
    private ObjectMapper mJsonObjectMapper;
-   private Context mContext;
    private BufferedReader input;;
 
    private class TcpListenerTask extends AsyncTask<DataInputStream, Object, ConnectionState> {
@@ -63,10 +61,6 @@ public class WifiRemoteMpController implements IClientControlApi {
 
       public boolean isListening() {
          return listening;
-      }
-
-      public void setListening(boolean listening) {
-         this.listening = listening;
       }
 
       public TcpListenerTask(List<IClientControlListener> _listeners) {
@@ -204,7 +198,6 @@ public class WifiRemoteMpController implements IClientControlApi {
       mUseAuth = _auth;
 
       mListeners = new ArrayList<IClientControlListener>();
-      mContext = _context;
 
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);

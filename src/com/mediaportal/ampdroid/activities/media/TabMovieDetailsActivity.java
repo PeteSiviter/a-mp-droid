@@ -8,21 +8,28 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.Util;
 
 public class TabMovieDetailsActivity extends Activity {
    private DataHandler mService;
@@ -40,6 +47,10 @@ public class TabMovieDetailsActivity extends Activity {
    private TextView mTextViewMovieRuntime;
    private TextView mTextViewMovieActors;
    private String mMovieName;
+   private Button mButtonPlayPc;
+   private Button mButtonPlayMobile;
+   private Button mButtonDownload;
+   private File mLocalFile;
 
    private class LoadVideoDetailsTask extends AsyncTask<Integer, List<Movie>, MovieFull> {
       Activity mContext;
@@ -51,7 +62,7 @@ public class TabMovieDetailsActivity extends Activity {
       @Override
       protected MovieFull doInBackground(Integer... _params) {
          mMovie = mService.getMovieDetails(mMovieId);
-
+         
          return mMovie;
       }
 
@@ -89,8 +100,27 @@ public class TabMovieDetailsActivity extends Activity {
 
             int rating = (int) _result.getScore();
             mRatingBarMovieRating.setRating(rating);
-
+            
             mTextViewMovieOverview.setText(_result.getSummary());
+            
+            String movieFile = mMovie.getFilename();
+            if (movieFile != null) {
+               String dirName = DownloaderUtils.getMoviePath(mMovie);
+               String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+
+               File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+
+               if (localFileName.exists()) {
+                  mLocalFile = localFileName;
+                  mButtonDownload.setEnabled(false);
+                  mButtonPlayMobile.setEnabled(true);
+               } else {
+                  mLocalFile = null;
+                  mButtonDownload.setEnabled(true);
+                  mButtonPlayMobile.setEnabled(false);
+               }
+            }
+            
             mLoadingDialog.cancel();
          } else {
             mLoadingDialog.cancel();
@@ -132,10 +162,58 @@ public class TabMovieDetailsActivity extends Activity {
          mTextViewMovieRuntime = (TextView) findViewById(R.id.TextViewMovieRuntime);
          mTextViewMovieActors = (TextView) findViewById(R.id.TextViewMovieActors);
 
+         mButtonPlayPc = (Button) findViewById(R.id.ButtonPlayPc);
+         mButtonPlayMobile = (Button) findViewById(R.id.ButtonPlayMobile);
+         mButtonDownload = (Button) findViewById(R.id.ButtonDownload);
+
          mImageViewMoviePoster.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                mService.playVideoFileOnClient(mMovie.getFilename());
+            }
+         });
+
+         mButtonPlayPc.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if (mService.isClientControlConnected()) {
+                  mService.playVideoFileOnClient(mMovie.getFilename());
+               } else {
+                  Util.showToast(v.getContext(), getString(R.string.info_remote_notconnected));
+               }
+            }
+         });
+
+         mButtonPlayMobile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if (mLocalFile != null) {
+                  Intent playIntent = new Intent(Intent.ACTION_VIEW);
+                  playIntent.setDataAndType(Uri.parse(mLocalFile.toString()), "video/*");
+                  startActivity(playIntent);
+               }
+            }
+         });
+
+         mButtonDownload.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View _view) {
+               if (mLocalFile == null) {
+                  String movieFile = mMovie.getFilename();
+                  String url = mService.getDownloadUri(movieFile);
+                  FileInfo info = mService.getFileInfo(movieFile);
+                  String dirName = DownloaderUtils.getMoviePath(mMovie);
+                  String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+                  if (url != null) {
+                     Intent download = new Intent(_view.getContext(), ItemDownloaderService.class);
+                     download.putExtra("url", url);
+                     download.putExtra("name", fileName);
+                     if (info != null) {
+                        download.putExtra("length", info.getLength());
+                     }
+                     startService(download);
+                  }
+               }
             }
          });
 
@@ -147,7 +225,8 @@ public class TabMovieDetailsActivity extends Activity {
          // mPosterGallery.setSpacing(-10);
          // mPosterGallery.setAdapter(mAdapter);
 
-         mLoadingDialog = ProgressDialog.show(getParent(), getString(R.string.media_movie_loadmoviedetails),
+         mLoadingDialog = ProgressDialog.show(getParent(),
+               getString(R.string.media_movie_loadmoviedetails),
                getString(R.string.info_loading_title), true);
          mLoadingDialog.setCancelable(true);
       } else {// activity called without movie id (shouldn't happen ;))

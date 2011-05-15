@@ -8,7 +8,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -61,7 +60,7 @@ public class ClientSettingsActivity extends PreferenceActivity {
          }
       }
       if (clients == null || clients.size() == 0) {
-         Util.showToast(this, "Use menu to add host");
+         Util.showToast(this, getString(R.string.settings_clients_noclients));
       }
 
       setPreferenceScreen(mRoot);
@@ -126,7 +125,6 @@ public class ClientSettingsActivity extends PreferenceActivity {
 
             try {
                String content = scanResult.getContents();
-               final Context context = this;
                ObjectMapper mapper = new ObjectMapper();
                mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                

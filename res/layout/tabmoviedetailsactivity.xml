@@ -11,15 +11,21 @@
 			android:layout_width="fill_parent" android:textSize="20dip"></TextView>
 	</LinearLayout>
 	<ScrollView android:id="@+id/ScrollViewRoot"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" android:padding="5dip">
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:padding="5dip">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:orientation="vertical">
 			<LinearLayout android:layout_height="wrap_content"
-				android:id="@+id/LinearLayoutMovieHeader" android:layout_width="fill_parent" android:layout_marginBottom="10dip">
+				android:id="@+id/LinearLayoutMovieHeader" android:layout_width="fill_parent"
+				android:layout_marginBottom="10dip">
 				<LinearLayout android:id="@+id/LinearLayout03"
 					android:layout_height="wrap_content" android:layout_width="0dip"
 					android:layout_weight="3">
-					<ImageView android:scaleType="fitCenter" android:minWidth="100dip" android:minHeight="125dip" android:layout_height="wrap_content" android:background="@drawable/rounded_image_background" android:layout_width="wrap_content" android:id="@+id/ImageViewMoviePoster" android:layout_marginTop="10dip" android:layout_marginLeft="10dip"></ImageView>
+					<ImageView android:scaleType="fitCenter"
+						android:minWidth="100dip" android:minHeight="125dip"
+						android:layout_height="wrap_content" android:background="@drawable/rounded_image_background"
+						android:layout_width="wrap_content" android:id="@+id/ImageViewMoviePoster"
+						android:layout_marginTop="10dip" android:layout_marginLeft="10dip"></ImageView>
 				</LinearLayout>
 				<LinearLayout android:id="@+id/LinearLayout01"
 					android:layout_height="wrap_content" android:layout_marginTop="10dip"
@@ -60,15 +66,27 @@
 				</LinearLayout>
 			</LinearLayout>
 
+			<LinearLayout android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:id="@+id/LinearLayoutPlayActions">
+				<Button android:text="@string/quickactions_playclient"
+					android:layout_height="wrap_content" android:id="@+id/ButtonPlayPc"
+					android:layout_width="0dip" android:layout_weight="1"></Button>
+				<Button android:layout_width="0dip" android:layout_weight="1"
+					android:layout_height="wrap_content" android:text="@string/quickactions_playdevice"
+					android:id="@+id/ButtonPlayMobile"></Button>
+				<Button android:layout_width="0dip" android:layout_weight="1"
+					android:layout_height="wrap_content" android:text="@string/quickactions_downloadsd"
+					android:id="@+id/ButtonDownload"></Button>
+			</LinearLayout>
+
 			<TextView android:layout_width="wrap_content"
 				android:id="@+id/TextViewMovieRatingLabel" android:textStyle="bold"
 				android:textSize="18dip" android:text="@string/episode_rating"
 				android:layout_height="wrap_content">
 			</TextView>
 			<RatingBar android:layout_height="wrap_content"
-			 	android:layout_marginTop="5dip"
-				android:id="@+id/RatingBarMovieRating" android:max="10"
-				android:stepSize="1" android:layout_width="wrap_content"
+				android:layout_marginTop="5dip" android:id="@+id/RatingBarMovieRating"
+				android:max="10" android:stepSize="1" android:layout_width="wrap_content"
 				android:numStars="10" android:isIndicator="true"
 				style="?android:attr/ratingBarStyleSmall">
 			</RatingBar>
@@ -77,16 +95,16 @@
 				android:layout_width="fill_parent" android:id="@+id/GalleryAllMoviePosters"
 				android:layout_marginLeft="10dip" android:layout_marginRight="10dip"
 				android:layout_height="0dip" android:layout_weight="2" />
-				
+
 			<TextView android:layout_height="wrap_content" android:id="@+id/TextViewMovieOverview"
 				android:layout_marginTop="10dip" android:layout_width="fill_parent">
 			</TextView>
-			
+
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/movie_actors"
 				android:textStyle="bold" android:layout_marginBottom="10dip"
-				android:layout_marginTop="10dip" 
-				android:textSize="18dip" android:id="@+id/TextViewMovieActorsLabel">
+				android:layout_marginTop="10dip" android:textSize="18dip"
+				android:id="@+id/TextViewMovieActorsLabel">
 			</TextView>
 
 			<LinearLayout android:layout_width="wrap_content"

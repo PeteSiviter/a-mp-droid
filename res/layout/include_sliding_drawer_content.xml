@@ -7,7 +7,7 @@
 			<ImageView android:layout_width="wrap_content" android:id="@+id/imageView1" android:layout_height="wrap_content" android:src="@drawable/background_text" android:layout_gravity="center"></ImageView>
 		</LinearLayout>
 		<ImageView android:id="@+id/ImageViewSlider"
-			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_gravity="top|center" android:scaleType="fitCenter"></ImageView>
+			android:layout_gravity="top|center" android:layout_height="fill_parent" android:layout_width="fill_parent" android:scaleType="fitCenter"></ImageView>
 		<LinearLayout android:visibility="visible" android:layout_marginTop="10dip"
 			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:layout_marginBottom="100dip" android:id="@+id/LinearLayoutContent">
 			<TextView android:id="@+id/TextViewSliderTitle"

@@ -28,6 +28,7 @@ class GmaJsonWebserviceVideoApi {
       mJsonObjectMapper = _mapper;
    }
 
+   @SuppressWarnings("rawtypes")
    private Object getObjectsFromJson(String _jsonString, Class _class) {
       return JsonUtils.getObjectsFromJson(_jsonString, _class, mJsonObjectMapper);
    }

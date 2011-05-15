@@ -138,6 +138,9 @@ public class WelcomeScreenActivity extends Activity {
          adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
          spinner.setAdapter(adapter);
       }
+      else{
+         Util.showToast(this, getString(R.string.welcome_no_clients));
+      }
 
       super.onStart();
    }

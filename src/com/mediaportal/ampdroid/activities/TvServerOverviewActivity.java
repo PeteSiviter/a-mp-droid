@@ -1,7 +1,5 @@
 package com.mediaportal.ampdroid.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -34,65 +32,51 @@ public class TvServerOverviewActivity extends BaseActivity {
       statusBarHandler = new StatusBarActivityHandler(this, mService);
       statusBarHandler.setHome(false);
 
-      if (mService.isTvServiceActive()) {
-         mListView = (ListView) findViewById(R.id.ListViewItems);
-         mListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
-               if (_position == 0) {
-                  Intent myIntent = new Intent(_view.getContext(), TvServerStateActivity.class);
-                  startActivity(myIntent);
-               }
-
-               if (_position == 1) {
-                  Intent myIntent = new Intent(_view.getContext(), TvServerEpgActivity.class);
-                  startActivity(myIntent);
-               }
-
-               if (_position == 2) {
-                  Intent myIntent = new Intent(_view.getContext(), TvServerChannelsActivity.class);
-                  startActivity(myIntent);
-               }
-
-               if (_position == 3) {
-                  Intent myIntent = new Intent(_view.getContext(), TvServerSchedulesActivity.class);
-                  startActivity(myIntent);
-               }
-
-               if (_position == 4) {
-                  Intent myIntent = new Intent(_view.getContext(), TvServerRecordingsActivity.class);
-                  startActivity(myIntent);
-               }
+      mListView = (ListView) findViewById(R.id.ListViewItems);
+      mListView.setOnItemClickListener(new OnItemClickListener() {
+         @Override
+         public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
+            if (_position == 0) {
+               Intent myIntent = new Intent(_view.getContext(), TvServerStateActivity.class);
+               startActivity(myIntent);
             }
-         });
 
-         mFeaturesAdapter = new TvServerFeaturesAdapter(this);
-         mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_manual_title),
-               getString(R.string.tvserver_manual_desc), R.drawable.tvserver_manual));
-         mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_epg_title),
-               getString(R.string.tvserver_epg_desc), R.drawable.tvserver_tv));
-         mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_channel_title),
-               getString(R.string.tvserver_channel_desc), R.drawable.tvserver_tv));
-         mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_schedules_title),
-               getString(R.string.tvserver_schedules_desc), R.drawable.tvserver_schedules));
-         mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_recordings_title),
-               getString(R.string.tvserver_recordings_desc), R.drawable.tvserver_recordings));
-
-         mListView.setAdapter(mFeaturesAdapter);
-      } else {
-         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-         builder.setTitle(getString(R.string.tvserver_noconnection_tvserver_title));
-         builder.setMessage(getString(R.string.tvserver_noconnection_tvserver_desc));
-         builder.setCancelable(false);
-         builder.setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-               TvServerOverviewActivity.this.finish();
+            if (_position == 1) {
+               Intent myIntent = new Intent(_view.getContext(), TvServerEpgActivity.class);
+               startActivity(myIntent);
             }
-         });
 
-         AlertDialog alert = builder.create();
-         alert.show();
-      }
+            if (_position == 2) {
+               Intent myIntent = new Intent(_view.getContext(), TvServerChannelsActivity.class);
+               startActivity(myIntent);
+            }
+
+            if (_position == 3) {
+               Intent myIntent = new Intent(_view.getContext(), TvServerSchedulesActivity.class);
+               startActivity(myIntent);
+            }
+
+            if (_position == 4) {
+               Intent myIntent = new Intent(_view.getContext(), TvServerRecordingsActivity.class);
+               startActivity(myIntent);
+            }
+         }
+      });
+
+      mFeaturesAdapter = new TvServerFeaturesAdapter(this);
+      mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_manual_title),
+            getString(R.string.tvserver_manual_desc), R.drawable.tvserver_manual));
+      mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_epg_title),
+            getString(R.string.tvserver_epg_desc), R.drawable.tvserver_tv));
+      mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_channel_title),
+            getString(R.string.tvserver_channel_desc), R.drawable.tvserver_tv));
+      mFeaturesAdapter.addFeature(new TvServerFeature(getString(R.string.tvserver_schedules_title),
+            getString(R.string.tvserver_schedules_desc), R.drawable.tvserver_schedules));
+      mFeaturesAdapter.addFeature(new TvServerFeature(
+            getString(R.string.tvserver_recordings_title),
+            getString(R.string.tvserver_recordings_desc), R.drawable.tvserver_recordings));
+
+      mListView.setAdapter(mFeaturesAdapter);
    }
 
 }

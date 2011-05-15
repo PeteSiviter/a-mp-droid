@@ -26,7 +26,6 @@ import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
-import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -44,7 +43,6 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
    private LazyLoadingAdapter mAdapter;
    DataHandler mService;
    private LoadDirectoryTask mDirLoaderTask;
-   private int mItemsLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
    private String mActivityGroup;

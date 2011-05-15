@@ -8,6 +8,7 @@
 	<string name="welcome_auto_connect">Connect on startup</string>
 	<string name="welcome_no_client">Please select client...</string>
 	<string name="welcome_connect">Connect</string>
+	<string name="welcome_no_clients">No clients defined yet, use the settings screen to add clients</string>
 
 	<string name="series_actors">Actors</string>
 	<string name="series_seasons">Seasons</string>
@@ -192,7 +193,7 @@
 	<string name="settings_general_statusbar_hide_desc">Auto-hide the statusbar</string>
 	<string name="settings_general_statusbar_hide_dialog_title">Hide Statusbar Mode</string>
 
-
+	<string name="settings_clients_noclients">Use menu to add host</string>
 	<string name="settings_clients_clientname">Name of this Instance:</string>
 	<string name="settings_clients_clienthost">Host or IP Address:</string>
 	<string name="settings_clients_clientport">Port:</string>
@@ -247,9 +248,9 @@
 	<string name="quickactions_record">Record</string>
 	<string name="quickactions_cancelrecord">Cancel Rec.</string>
 
-	<string name="connection_successful">Successfully established connection</string>
-	<string name="connection_failed">Connection couldn\'t be established</string>
-	<string name="connection_closed">Connection closed</string>
+	<string name="connection_successful">Successfully established connection to Remote</string>
+	<string name="connection_failed">Remote Connection couldn\'t be established</string>
+	<string name="connection_closed">Remote Connection closed</string>
 	
 	<string name="settings_host_useauth">Use Authentification</string>
 	<string name="remote_button_info">Info</string>

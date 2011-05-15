@@ -2,20 +2,14 @@ package com.mediaportal.ampdroid.api.gmawebservice;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.deser.CustomDeserializerFactory;
-import org.codehaus.jackson.map.deser.StdDeserializerProvider;
 
 import android.util.Log;
 
-import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
-import com.mediaportal.ampdroid.data.Movie;
-import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
 import com.mediaportal.ampdroid.data.MusicArtist;
 import com.mediaportal.ampdroid.data.MusicTrack;
@@ -47,6 +41,7 @@ class GmaJsonWebserviceMusicApi {
       mJsonObjectMapper = _mapper;
    }
 
+   @SuppressWarnings("rawtypes")
    private Object getObjectsFromJson(String _jsonString, Class _class) {
       return JsonUtils.getObjectsFromJson(_jsonString, _class, mJsonObjectMapper);
    }
