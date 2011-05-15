@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.activities.settings.SettingsActivity;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.IClientControlListener;
@@ -91,8 +89,8 @@ public class BaseActivity extends Activity implements IClientControlListener {
       mService.addClientControlListener(this);
 
       handleAutoHide();
-      
-      if(mService != null){
+
+      if (mService != null) {
          mStatusBarHandler.setConnected(mService.isClientControlConnected());
       }
 
@@ -127,24 +125,26 @@ public class BaseActivity extends Activity implements IClientControlListener {
    @Override
    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
       super.onCreateContextMenu(menu, v, menuInfo);
-      menu.setHeaderTitle(getString(R.string.menu_clients));
+      if (v.getTag() != null && v.getTag().equals("switchclients")) {
+         menu.setHeaderTitle(getString(R.string.menu_clients));
 
-      RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
-      remoteClientsDb.open();
-      List<RemoteClient> clients = remoteClientsDb.getClients();
-      remoteClientsDb.close();
+         RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
+         remoteClientsDb.open();
+         List<RemoteClient> clients = remoteClientsDb.getClients();
+         remoteClientsDb.close();
 
-      for (int i = 0; i < clients.size(); i++) {
-         MenuItem item = menu.add(0, Menu.FIRST, Menu.NONE, clients.get(i).getClientName());
-         item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         for (int i = 0; i < clients.size(); i++) {
+            MenuItem item = menu.add(0, Menu.FIRST, Menu.NONE, clients.get(i).getClientName());
+            item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-               // TODO: Client switching
-               notImplemented();
-               return false;
-            }
-         });
+               @Override
+               public boolean onMenuItemClick(MenuItem item) {
+                  // TODO: Client switching
+                  notImplemented();
+                  return false;
+               }
+            });
+         }
       }
    }
 
@@ -218,13 +218,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private void disconnectClientControl() {
       mService.disconnectClientControl();
    }
-
-   private void startSettings() {
-      Intent settingsIntent = new Intent(this, SettingsActivity.class);
-      startActivity(settingsIntent);
-      // startActivityForResult(settingsIntent, 0);
-   }
-
+   
    @Override
    public void messageReceived(Object _message) {
       if (_message.getClass().equals(RemoteStatusMessage.class)) {
@@ -254,10 +248,10 @@ public class BaseActivity extends Activity implements IClientControlListener {
          mStatusBarHandler.setImage(img);
       } else if (_message.getClass().equals(RemoteAuthenticationResponse.class)) {
          RemoteAuthenticationResponse auth = (RemoteAuthenticationResponse) _message;
-         if(!auth.isSuccess()){
+         if (!auth.isSuccess()) {
             Util.showToast(this, auth.getErrorMessage());
          }
-      } 
+      }
    }
 
    @Override

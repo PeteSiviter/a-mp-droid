@@ -63,6 +63,7 @@ public class StatusBarActivityHandler {
    private LinearLayout mLayoutDefault;
    private LinearLayout mLayoutContent;
    private LinearLayout mLayoutControls;
+   private ImageButton mSwitchClientButton;
 
    private static String currentStatusString;
    private static RemoteNowPlaying currentNowPlayingMessage;
@@ -254,12 +255,13 @@ public class StatusBarActivityHandler {
          actionBar.setHome(isHome);
 
          if (!actionBar.isInitialised()) {
-            final ImageButton switchClientButton = (ImageButton) actionBar.getChangeClientButton();
-            mParent.registerForContextMenu(switchClientButton);
-            switchClientButton.setOnClickListener(new OnClickListener() {
+            mSwitchClientButton = (ImageButton) actionBar.getChangeClientButton();
+            mSwitchClientButton.setTag("switchclient");
+            mParent.registerForContextMenu(mSwitchClientButton);
+            mSwitchClientButton.setOnClickListener(new OnClickListener() {
                @Override
                public void onClick(View v) {
-                  switchClientButton.showContextMenu();
+                  mSwitchClientButton.showContextMenu();
                }
             });
             final ProgressBar progress = (ProgressBar) actionBar.getProgressBar();

@@ -1,12 +1,17 @@
 package com.mediaportal.ampdroid.activities;
 
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.test.MoreAsserts;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
 import android.view.SubMenu;
@@ -22,7 +27,9 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.api.RemoteCommands;
+import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
+import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
 import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
@@ -144,6 +151,7 @@ public class RemoteControlActivity extends BaseActivity {
    protected InputMethodManager m;
    protected EditText mEditTextKeyboardInput;
    protected boolean mKeyboardShown;
+   private ImageButton mMoreButton;
 
    @Override
    public void onCreate(Bundle _savedInstanceState) {
@@ -219,11 +227,31 @@ public class RemoteControlActivity extends BaseActivity {
 
                new SendKeyTask(_view.getContext(), mService)
                      .execute(RemoteCommands.switchFullscreenButton);
-               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen);
+               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen_sel);
                return true;
             }
             if (_event.getAction() == MotionEvent.ACTION_UP) {
-               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen_sel);
+               switchFullscreenButton.setImageResource(R.drawable.remote_switch_fullscreen);
+               return true;
+            }
+            return false;
+         }
+      });
+
+      mMoreButton = (ImageButton) findViewById(R.id.ImageButtonMore);
+      mMoreButton.setOnTouchListener(new OnTouchListener() {
+         @Override
+         public boolean onTouch(View _view, MotionEvent _event) {
+            if (_event.getAction() == MotionEvent.ACTION_DOWN) {
+               Util.Vibrate(_view.getContext(), 30);
+
+               mMoreButton.setImageResource(R.drawable.remote_more_sel);
+               return true;
+            }
+            if (_event.getAction() == MotionEvent.ACTION_UP) {
+               mMoreButton.setImageResource(R.drawable.remote_more);
+               registerForContextMenu(mMoreButton);
+               mMoreButton.showContextMenu();
                return true;
             }
             return false;
@@ -245,7 +273,7 @@ public class RemoteControlActivity extends BaseActivity {
 
                switch (index) {
                case 0:
-                  remote.setImageResource(R.drawable.remote_left);
+                  remote.setBackgroundResource(R.drawable.remote_left);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -253,7 +281,7 @@ public class RemoteControlActivity extends BaseActivity {
                         .execute(RemoteCommands.leftButton);
                   break;
                case 1:
-                  remote.setImageResource(R.drawable.remote_right);
+                  remote.setBackgroundResource(R.drawable.remote_right);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -261,7 +289,7 @@ public class RemoteControlActivity extends BaseActivity {
                         .execute(RemoteCommands.rightButton);
                   break;
                case 2:
-                  remote.setImageResource(R.drawable.remote_up);
+                  remote.setBackgroundResource(R.drawable.remote_up);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -269,7 +297,7 @@ public class RemoteControlActivity extends BaseActivity {
                         .execute(RemoteCommands.upButton);
                   break;
                case 3:
-                  remote.setImageResource(R.drawable.remote_down);
+                  remote.setBackgroundResource(R.drawable.remote_down);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -277,7 +305,7 @@ public class RemoteControlActivity extends BaseActivity {
                         .execute(RemoteCommands.downButton);
                   break;
                case 4:
-                  remote.setImageResource(R.drawable.remote_enter);
+                  remote.setBackgroundResource(R.drawable.remote_enter);
                   if (task != null) {
                      task.setRepeat(false);
                   }
@@ -293,7 +321,7 @@ public class RemoteControlActivity extends BaseActivity {
                }
                new SendKeyUpTask(_view.getContext(), mService).execute();
                // mService.sendRemoteButtonUp();
-               remote.setImageResource(R.drawable.remote_default);
+               remote.setBackgroundResource(R.drawable.remote_default);
             }
             return false;
          }
@@ -302,23 +330,25 @@ public class RemoteControlActivity extends BaseActivity {
             int width = remote.getWidth();
             int height = remote.getHeight();
 
-            if (_x < width / 3 && _y > height / 6 && _y < height - height / 6) {
+            if (_x < width * 0.25 && _y > height * 0.10 && _y < height * 0.9) {
+               //left
                return 0;
             }
 
-            if (_x > width * 0.66 && _y > height / 6 && _y < height - height / 6) {
+            if (_x > width * 0.75 && _y > height * 0.10 && _y < height * 0.9) {
+               //right
                return 1;
             }
 
-            if (_y < height / 3 && _x > width / 6 && _x < width - width / 6) {
+            if (_y < height * 0.25 && _x > width * 0.10 && _x < width * 0.9) {
                return 2;
             }
 
-            if (_y > height * 0.66 && _x > width / 6 && _x < width - width / 6) {
+            if (_y > height * 0.75 && _x > width * 0.10 && _x < width * 0.9) {
                return 3;
             }
 
-            if (_x > width / 3 && _x < width * 0.66 && _y > height / 3 && _y < height * 0.66) {
+            if (_x > width * 0.25 && _x < width * 0.75 && _y > height * 0.25 && _y < height * 0.75) {
                return 4;// middle
             }
             return -99;
@@ -345,11 +375,19 @@ public class RemoteControlActivity extends BaseActivity {
    }
 
    @Override
+   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+      super.onCreateContextMenu(menu, v, menuInfo);
+      if (v.equals(mMoreButton)) {
+         createMoreCommandsMenu(menu);
+      }
+   }
+
+   @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.remote_menu_morecommands));
-      createMoreCommandsMen8(viewItem);
+      createMoreCommandsMenu(viewItem);
 
       SubMenu powerItem = _menu.addSubMenu(0, Menu.FIRST + 2, Menu.NONE,
             getString(R.string.remote_menu_powermodes));
@@ -415,7 +453,7 @@ public class RemoteControlActivity extends BaseActivity {
 
    }
 
-   private void createPowerModeMenu(SubMenu _powerItem) {
+   private void createPowerModeMenu(Menu _powerItem) {
       MenuItem logoffSettingsItem = _powerItem.add(0, Menu.FIRST, Menu.NONE,
             getString(R.string.remote_logoff));
       logoffSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -477,7 +515,7 @@ public class RemoteControlActivity extends BaseActivity {
       });
    }
 
-   private void createMoreCommandsMen8(SubMenu _menu) {
+   private void createMoreCommandsMenu(Menu _menu) {
       MenuItem stopSettingsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
             RemoteCommands.stopButton.getName());
       stopSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {

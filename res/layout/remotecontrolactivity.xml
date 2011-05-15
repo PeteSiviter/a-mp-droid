@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="@drawable/background">
+	android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@drawable/background">
 	<com.mediaportal.ampdroid.activities.actionbar.ActionBar
 		android:id="@+id/actionbar" style="@style/ActionBar"
 		android:layout_gravity="top" />
@@ -12,8 +11,7 @@
 		android:focusable="true" android:focusableInTouchMode="true">
 		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_marginBottom="20dip"
-			android:id="@+id/ImageButtonSwitchFullscreen" android:layout_gravity="top|right"
-			android:layout_marginTop="10dip" android:background="@drawable/remote_switch_fullscreen"></ImageButton>
+			android:id="@+id/ImageButtonSwitchFullscreen" android:layout_marginTop="10dip" android:background="@drawable/remote_switch_fullscreen" android:layout_gravity="top|left"></ImageButton>
 		<ImageButton android:id="@+id/ImageButtonBack"
 			android:background="@drawable/remote_back" android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:layout_gravity="bottom|left"
@@ -25,18 +23,17 @@
 			android:layout_height="wrap_content" android:layout_gravity="bottom|right"
 			android:layout_marginBottom="20dip"></ImageButton>
 		<ImageButton android:id="@+id/ImageButtonArrows"
-			android:background="@drawable/remote_default" android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:layout_gravity="center_horizontal|center"
-			android:layout_marginBottom="20dip"></ImageButton>
+			android:background="@drawable/remote_default" android:layout_gravity="center_horizontal|center"
+			android:layout_marginBottom="20dip" android:layout_height="200dip" android:layout_width="205dip"></ImageButton>
 
-		<ImageButton android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/ImageButtonHome"
+		<ImageButton android:id="@+id/ImageButtonHome"
 			android:background="@drawable/remote_home" android:layout_gravity="bottom|center"
-			android:layout_marginBottom="20dip"></ImageButton>
+			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_marginBottom="20dip"></ImageButton>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_marginTop="20dip"
 			android:layout_gravity="top|center" android:id="@+id/TextViewRemoteState"
 			android:text="Status" android:textSize="18dip" android:textStyle="bold"></TextView>
+		<ImageButton android:layout_marginTop="10dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="20dip" android:id="@+id/ImageButtonMore" android:layout_gravity="top|right" android:background="@drawable/remote_more"></ImageButton>
 	</FrameLayout>
 	
 		<FrameLayout android:layout_height="fill_parent"
