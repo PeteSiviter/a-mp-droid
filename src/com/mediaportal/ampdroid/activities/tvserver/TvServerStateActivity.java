@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -246,10 +247,13 @@ public class TvServerStateActivity extends BaseActivity {
                   //TODO: temporary fix for me, remove when releasing
                   playingUrl = playingUrl.replace("bagga-server", "10.1.0.166");
 
-                  Intent i = new Intent(Intent.ACTION_VIEW);
-                  i.setDataAndType(Uri.parse(playingUrl), "video/*");
-                  i.setPackage("me.abitno.vplayer");
-                  startActivityForResult(i, 1);
+                  try {
+                     Intent i = new Intent(Intent.ACTION_VIEW);
+                     i.setDataAndType(Uri.parse(playingUrl), "video/*");
+                     startActivityForResult(i, 1);
+                  } catch (Exception ex) {
+                     Log.e("aMPdroid", ex.toString());
+                  }
 
                   qa.dismiss();
                }

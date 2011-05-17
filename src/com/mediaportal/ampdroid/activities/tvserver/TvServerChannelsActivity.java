@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -165,10 +166,14 @@ public class TvServerChannelsActivity extends BaseActivity {
                         PreferencesManager.getTvClientName());
                   mPlayingUrl = mPlayingUrl.replace("bagga-server", "10.1.0.166");
 
-                  Intent i = new Intent(Intent.ACTION_VIEW);
-                  i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
-                  i.setPackage("me.abitno.vplayer");
-                  startActivityForResult(i, 1);
+                  try {
+                     Intent i = new Intent(Intent.ACTION_VIEW);
+                     i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
+                     //i.setPackage("me.abitno.vplayer.trial");
+                     startActivityForResult(i, 1);
+                  } catch (Exception ex) {
+                     Log.e("aMPdroid", ex.toString());
+                  }
 
                   qa.dismiss();
                }
@@ -184,8 +189,8 @@ public class TvServerChannelsActivity extends BaseActivity {
    }
 
    private void refreshGroups() {
-      mLoadingDialog = ProgressDialog.show(TvServerChannelsActivity.this, getString(R.string.tvserver_loadgroups),
-            getString(R.string.info_loading_title), true);
+      mLoadingDialog = ProgressDialog.show(TvServerChannelsActivity.this,
+            getString(R.string.tvserver_loadgroups), getString(R.string.info_loading_title), true);
       mLoadingDialog.setCancelable(true);
 
       mGroupsUpdater = new UpdateGroupsTask();
@@ -194,8 +199,9 @@ public class TvServerChannelsActivity extends BaseActivity {
 
    private void refreshChannelList(TvChannelGroup _group) {
       mLoadingDialog.cancel();
-      mLoadingDialog = ProgressDialog.show(TvServerChannelsActivity.this, getString(R.string.tvserver_loadchannels),
-            getString(R.string.info_loading_title), true);
+      mLoadingDialog = ProgressDialog
+            .show(TvServerChannelsActivity.this, getString(R.string.tvserver_loadchannels),
+                  getString(R.string.info_loading_title), true);
       mLoadingDialog.setCancelable(true);
 
       mChannelUpdater = new UpdateChannelsTask();
