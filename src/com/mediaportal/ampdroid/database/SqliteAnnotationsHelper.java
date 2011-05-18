@@ -197,14 +197,6 @@ public class SqliteAnnotationsHelper {
       return accessHolders;
    }
 
-   private static String replaceCustomTypes(String _type) {
-      if (_type.equals("date")) {
-         _type = "text";
-      } else if (_type.equals("textarray")) {
-         _type = "text";
-      }
-      return _type;
-   }
 
    private static void fillObjectFromAccessHolders(Object _object, Cursor _cursor,
          List<AccessHolder> _holders) {

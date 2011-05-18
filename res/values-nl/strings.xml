@@ -8,7 +8,8 @@
 	<string name="welcome_auto_connect">Verbinden tijdens startup</string>
 	<string name="welcome_no_client">Kies client a.u.b. ...</string>
 	<string name="welcome_connect">Verbinden</string>
-	<string name="welcome_no_clients">Nog geen clients gedefinieerd, voeg clients toe in settings scherm</string>
+	<string name="welcome_no_clients">Nog geen clients gedefinieerd, voeg clients toe in
+		settings scherm</string>
 
 	<string name="series_actors">Acteurs</string>
 	<string name="series_seasons">Seizoen</string>
@@ -157,7 +158,8 @@
 	<string name="settings_category_media">Media verkennen</string>
 
 	<string name="settings_general_fullscreen">Volledig scherm</string>
-	<string name="settings_general_fullscreen_desc">Verberg titelbalk. Herstart programma om wijzigingen toe te 
+	<string name="settings_general_fullscreen_desc">Verberg titelbalk. Herstart programma om
+		wijzigingen toe te
 		passen)</string>
 	<string name="settings_preference_vibrate_title">Trillen bij aanraken</string>
 	<string name="settings_preference_vibrate_desc">Scherm trilt bij gebruikers bediening</string>
@@ -178,11 +180,15 @@
 
 	<string name="settings_categories_clients_desc">Bewerk Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
-	<string name="settings_clients_usesimple">Eenvoudige stand</string>
-	<string name="settings_clients_switchsimple">Wissel naar eenvoudige stand</string>
+	<string name="settings_clients_switchadvanced">Schakel naar Geavanceerde Modus</string>
+	<string name="settings_clients_switchsimple">Schakel naar Eenvoudige Modus</string>
+	<string name="settings_clients_switchsimple_warning_title">Instellingen vervangen?</string>
+	<string name="settings_clients_switchsimple_warning_text">U heeft nu verschillende instellingen voor uw clients. Als u overschakelt naar Eenvoudige Modus worden deze overschreven</string>
+	
 	<string name="settings_clients_newclient_desc">Toevoegen, bewerk, verwijder clients</string>
 	<string name="settings_general_preloaditems_title">Items vooraf laden</string>
-	<string name="settings_general_preloaditems_desc">Aantal items die geladen zijn als het eind van de lijst is
+	<string name="settings_general_preloaditems_desc">Aantal items die geladen zijn als het eind van de
+		lijst is
 		bereikt</string>
 	<string name="settings_general_autoconnect_title">Automatisch verbinden</string>
 	<string name="settings_general_autoconnect_desc">Automatisch met MediaPortal verbinding maken bij
@@ -192,6 +198,8 @@
 	<string name="settings_general_statusbar_hide_title">Verberg statusbalk</string>
 	<string name="settings_general_statusbar_hide_desc">Auto-verbergen statusbalk</string>
 	<string name="settings_general_statusbar_hide_dialog_title">Verberg de statusbalk stand</string>
+	<string name="settings_clients_default">Standaard:\u0020</string>
+
 
 	<string name="settings_clients_noclients">Gebruik menu voor toevoegen host</string>
 	<string name="settings_clients_clientname">Naam van deze client:</string>
@@ -205,17 +213,22 @@
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Verwijder Client?</string>
-	<string name="settings_delete_client_start">Weet u zeker dat u de client wilt verwijderen \"</string>
+	<string name="settings_delete_client_start">Weet u zeker dat u de client wilt verwijderen \"
+	</string>
 	<string name="settings_delete_client_end">\"?</string>
 
 	<string name="settings_media_defaultview_series_title">Standaard View Series</string>
-	<string name="settings_media_defaultview_series_desc">Standaard View voor het verkennen van uw tv shows</string>
+	<string name="settings_media_defaultview_series_desc">Standaard View voor het verkennen van uw tv shows
+	</string>
 	<string name="settings_media_defaultview_movies_title">Standaard View Films</string>
-	<string name="settings_media_defaultview_movies_desc">Standaard View voor het verkennen van uw films</string>
+	<string name="settings_media_defaultview_movies_desc">Standaard View voor het verkennen van uw films
+	</string>
 	<string name="settings_media_defaultview_videos_title">Standaard View Videos</string>
-	<string name="settings_media_defaultview_videos_desc">Standaard View voor het verkennen van uw videos</string>
+	<string name="settings_media_defaultview_videos_desc">Standaard View voor het verkennen van uw videos
+	</string>
 	<string name="settings_media_defaultview_shares_title">Standaard View Shares</string>
-	<string name="settings_media_defaultview_shares_desc">Standaard View voor het verkennen van uw video shares</string>
+	<string name="settings_media_defaultview_shares_desc">Standaard View voor het verkennen van uw video
+		shares</string>
 
 	<string name="info_not_implemented">werkt nog niet</string>
 	<string name="info_no_connection">Geen verbinding met service</string>
@@ -251,12 +264,12 @@
 	<string name="connection_successful">Verbinden met Remote gelukt!</string>
 	<string name="connection_failed">Kan geen verbinding met de remote maken</string>
 	<string name="connection_closed">Verbinding met remote afgesloten</string>
-	
+
 	<string name="settings_host_useauth">Gebruik Authentificatie</string>
 	<string name="remote_button_info">Info</string>
 	<string name="remote_button_subtitle">Ondertitels</string>
 	<string name="remote_button_menu">Menu</string>
-	
+
 	<string name="notification_download_failed">Download mislukt</string>
 	<string name="notification_download_succeeded">Download klaar</string>
 	<string name="notification_title">aMPdroid</string>

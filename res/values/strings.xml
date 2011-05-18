@@ -179,7 +179,7 @@
 
 	<string name="settings_categories_clients_desc">Edit Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
-	<string name="settings_clients_switchadvanced">Simple to Advanced Mode</string>
+	<string name="settings_clients_switchadvanced">Switch to Advanced Mode</string>
 	<string name="settings_clients_switchsimple">Switch to Simple Mode</string>
 	<string name="settings_clients_switchsimple_warning_title">Overwrite Settings?</string>
 	<string name="settings_clients_switchsimple_warning_text">You currently have different settings for your

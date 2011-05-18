@@ -13,7 +13,6 @@ public class FileInfo {
    
    private long Length;
    private String Name;
-   private String FullName;
    private Date LastAccessTime;
    private Date LastWriteTime;
    private String DirectoryName;
