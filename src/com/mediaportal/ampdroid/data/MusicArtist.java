@@ -7,6 +7,11 @@ import com.mediaportal.ampdroid.database.ColumnProperty;
 public class MusicArtist {
    private String Title;
    
+   @Override
+   public String toString() {
+      return Title;
+   }
+   
    @ColumnProperty(value="Title", type="text")
    @JsonProperty("Title")
    public String getTitle() {

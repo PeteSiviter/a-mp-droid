@@ -42,8 +42,8 @@ public class WelcomeScreenActivity extends Activity {
          PreferencesManager.intitialisePreferencesManager(mContext);
 
          DataHandler.setupRemoteHandler(_clients[0], mContext, false);
-         
-         if(PreferencesManager.connectOnStartup()){
+
+         if (PreferencesManager.connectOnStartup()) {
             DataHandler client = DataHandler.getCurrentRemoteInstance();
             boolean success = client.connectClientControl();
             return success;
@@ -58,10 +58,12 @@ public class WelcomeScreenActivity extends Activity {
 
       @Override
       protected void onPostExecute(Boolean _result) {
-         if (_result) {
-            Util.showToast(mContext, mContext.getString(R.string.connection_successful));
-         } else {
-            Util.showToast(mContext, mContext.getString(R.string.connection_failed));
+         if (PreferencesManager.connectOnStartup()) {
+            if (_result) {
+               Util.showToast(mContext, mContext.getString(R.string.connection_successful));
+            } else {
+               Util.showToast(mContext, mContext.getString(R.string.connection_failed));
+            }
          }
          Intent myIntent = new Intent(mContext, HomeActivity.class);
          startActivity(myIntent);
@@ -73,43 +75,22 @@ public class WelcomeScreenActivity extends Activity {
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
       setContentView(R.layout.welcomescreen);
-
-      // RemoteClientFactory.openDatabase(this);
-      // Client for diebagger -> until setting screen ready
-      // final RemoteClient client = new RemoteClient(0, "Bagga Server");
-
-      // GmaWebserviceApi api = new GmaWebserviceApi("10.1.0.247", 4322);
-      // client.setRemoteAccessApi(api);
-
-      // Tv4HomeApi tvApi = new Tv4HomeApi("10.1.0.166", 4321);
-      // client.setTvControlApi(tvApi);
-
-      // WifiRemoteMpController clientApi = new
-      // WifiRemoteMpController("10.1.0.247", 8017);
-      // client.setClientControlApi(clientApi);
-      // RemoteClientFactory.createRemoteClient(client);
-      // RemoteClientFactory.closeDatabase();
-
-      // RemoteClientFactory.closeDatabase();
-
    }
 
    @Override
    protected void onStart() {
-    //disconnect client if one is currently connected
+      // disconnect client if one is currently connected
       DataHandler client = DataHandler.getCurrentRemoteInstance();
-      if(client != null){
+      if (client != null) {
          client.disconnectClientControl();
       }
-      
+
       final ProgressBar progress = (ProgressBar) findViewById(R.id.ProgressBarWelcomeScreen);
       progress.setVisibility(View.INVISIBLE);
       final Button connectButton = (Button) findViewById(R.id.ButtonConnect);
       connectButton.setEnabled(true);
 
       final Spinner spinner = (Spinner) findViewById(R.id.SpinnerSelectClients);
-
-      
 
       RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
       remoteClientsDb.open();
@@ -137,8 +118,7 @@ public class WelcomeScreenActivity extends Activity {
                android.R.layout.simple_spinner_item, clients);
          adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
          spinner.setAdapter(adapter);
-      }
-      else{
+      } else {
          Util.showToast(this, getString(R.string.welcome_no_clients));
       }
 

@@ -87,7 +87,7 @@ public class RemoteClient {
 
    public String getClientAddress() {
       if (!compareApiClients(0)) {// all clients have same address
-         return "Different";
+         return "";
       } else {
          if (mRemoteAccessApi != null) {
             return mRemoteAccessApi.getAddress();
@@ -139,17 +139,17 @@ public class RemoteClient {
          return true;
       switch (_field) {
       case 0:
-         if(_api1.getAddress() == null || _api2.getAddress() == null){
+         if (_api1.getAddress() == null || _api2.getAddress() == null) {
             return false;
          }
          return _api1.getAddress().equals(_api2.getAddress());
       case 1:
-         if(_api1.getUserName() == null || _api2.getUserName() == null){
+         if (_api1.getUserName() == null || _api2.getUserName() == null) {
             return false;
          }
          return _api1.getUserName().equals(_api2.getUserName());
       case 2:
-         if(_api1.getUserPass() == null || _api2.getUserPass() == null){
+         if (_api1.getUserPass() == null || _api2.getUserPass() == null) {
             return false;
          }
          return _api1.getUserPass().equals(_api2.getUserPass());
@@ -234,6 +234,36 @@ public class RemoteClient {
          }
          return "No api defined";// shouldn't be possible
       }
+   }
+
+   public boolean hasDifferentSettings() {
+      if (!compare(mClientControlApi.getAddress(), mRemoteAccessApi.getAddress(),
+            mTvControlApi.getAddress())) {
+         return true;
+      }
+      
+      if (!compare(mClientControlApi.getUserName(), mRemoteAccessApi.getUserName(),
+            mTvControlApi.getUserName())) {
+         return true;
+      }
+      if (!compare(mClientControlApi.getUserPass(), mRemoteAccessApi.getUserPass(),
+            mTvControlApi.getUserPass())) {
+         return true;
+      }
+      if (!compare(mClientControlApi.getUseAuth(), mRemoteAccessApi.getUseAuth(),
+            mTvControlApi.getUseAuth())) {
+         return true;
+      }
+      return false;
+   }
+
+   public boolean compare(Object... compare) {
+      for (Object o : compare) {
+         if (!compare[0].equals(o)) {
+            return false;
+         }
+      }
+      return true;
    }
 
 }

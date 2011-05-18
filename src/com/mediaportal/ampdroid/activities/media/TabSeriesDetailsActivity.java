@@ -29,12 +29,15 @@ import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingGalleryAdapter;
@@ -91,14 +94,23 @@ public class TabSeriesDetailsActivity extends Activity {
             String dirName = DownloaderUtils.getTvEpisodePath(mSeries.getPrettyName(), ep);
             final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
 
-            Intent download = new Intent(mContext, ItemDownloaderService.class);
-            download.putExtra("url", url);
-            download.putExtra("name", fileName);
-            if (info != null) {
-               download.putExtra("length", info.getLength());
-            }
+            ApiCredentials cred = mService.getDownloadCredentials();
+            if (url != null) {
+               DownloadJob job = new DownloadJob();
+               job.setUrl(url);
+               job.setFileName(fileName);
+               job.setDisplayName(ep.toString());
+               if (info != null) {
+                  job.setLength(info.getLength());
+               }
+               if (cred.useAut()) {
+                  job.setAuth(cred.getUsername(), cred.getPassword());
+               }
 
-            publishProgress(download);
+               Intent download = ItemDownloaderHelper.createDownloadIntent(
+                     mContext, job);
+               publishProgress(download);
+            }
          }
 
          return true;

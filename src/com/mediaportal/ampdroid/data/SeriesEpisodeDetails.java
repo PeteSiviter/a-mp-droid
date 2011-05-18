@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.mediaportal.ampdroid.database.ColumnProperty;
 
-public class EpisodeDetails extends SeriesEpisode {
+public class SeriesEpisodeDetails extends SeriesEpisode {
    public static final String TABLE_NAME = "SeriesEpisodeDetails";
    // Div Info
    private String Summary; // Summary
@@ -39,8 +39,8 @@ public class EpisodeDetails extends SeriesEpisode {
    private int AirsBeforeSesaon;// airsbefore_season
 
    // Physical files
-   private EpisodeFile EpisodeFile;// The physical file on disk
-   private EpisodeFile EpisodeFile2;// Episode consists of a second file
+   private SeriesEpisodeFile EpisodeFile;// The physical file on disk
+   private SeriesEpisodeFile EpisodeFile2;// Episode consists of a second file
 
    @ColumnProperty(value="Summary", type="text")
    @JsonProperty("Summary")
@@ -283,22 +283,22 @@ public class EpisodeDetails extends SeriesEpisode {
    }
 
    @JsonProperty("EpisodeFile")
-   public EpisodeFile getEpisodeFile() {
+   public SeriesEpisodeFile getEpisodeFile() {
       return EpisodeFile;
    }
 
    @JsonProperty("EpisodeFile")
-   public void setEpisodeFile(EpisodeFile episodeFile) {
+   public void setEpisodeFile(SeriesEpisodeFile episodeFile) {
       EpisodeFile = episodeFile;
    }
 
    @JsonProperty("EpisodeFile2")
-   public EpisodeFile getEpisodeFile2() {
+   public SeriesEpisodeFile getEpisodeFile2() {
       return EpisodeFile2;
    }
 
    @JsonProperty("EpisodeFile2")
-   public void setEpisodeFile2(EpisodeFile episodeFile2) {
+   public void setEpisodeFile2(SeriesEpisodeFile episodeFile2) {
       EpisodeFile2 = episodeFile2;
    }
 

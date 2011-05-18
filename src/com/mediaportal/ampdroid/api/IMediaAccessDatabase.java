@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.Series;
@@ -48,8 +48,8 @@ public interface IMediaAccessDatabase {
    //CacheItemsSetting getEpisodesCountForSeason(int _seriesId, int _seasonNumber);
    //CacheItemsSetting setEpisodesCountForSeason(int _seriesId, int _seasonNumber, int _episodesCount);
    
-   EpisodeDetails getEpisodeDetails(int _seriesId, int _episodeId);
-   void saveEpisodeDetails(int _seriesId, EpisodeDetails episode);
+   SeriesEpisodeDetails getEpisodeDetails(int _seriesId, int _episodeId);
+   void saveEpisodeDetails(int _seriesId, SeriesEpisodeDetails episode);
    
    
    MovieFull getVideoDetails(int _movieId);

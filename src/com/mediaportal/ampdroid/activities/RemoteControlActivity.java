@@ -1,17 +1,14 @@
 package com.mediaportal.ampdroid.activities;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.test.MoreAsserts;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
 import android.view.SubMenu;
@@ -27,9 +24,7 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.api.RemoteCommands;
-import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
 import com.mediaportal.ampdroid.remote.RemotePlugin;
 import com.mediaportal.ampdroid.remote.RemotePluginMessage;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
@@ -107,14 +102,8 @@ public class RemoteControlActivity extends BaseActivity {
 
    protected class SendKeyUpTask extends AsyncTask<RemoteKey, String, String> {
       private DataHandler mController;
-      private Context mContext;
-
-      protected SendKeyUpTask(Context _parent) {
-         mContext = _parent;
-      }
 
       private SendKeyUpTask(Context _parent, DataHandler _controller) {
-         this(_parent);
          mController = _controller;
       }
 
@@ -127,14 +116,8 @@ public class RemoteControlActivity extends BaseActivity {
 
    protected class RequestPluginsTask extends AsyncTask<Void, String, String> {
       private DataHandler mController;
-      private Context mContext;
-
-      protected RequestPluginsTask(Context _parent) {
-         mContext = _parent;
-      }
 
       private RequestPluginsTask(Context _parent, DataHandler _controller) {
-         this(_parent);
          mController = _controller;
       }
 

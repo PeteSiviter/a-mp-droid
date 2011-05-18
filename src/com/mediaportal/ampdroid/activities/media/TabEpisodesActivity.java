@@ -20,10 +20,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -162,6 +164,7 @@ public class TabEpisodesActivity extends Activity {
                if (epFile != null) {
                   String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
+                  final String displayName = selected.toString();
 
                   final QuickAction qa = new QuickAction(_view);
 
@@ -196,14 +199,21 @@ public class TabEpisodesActivity extends Activity {
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(epFile);
                            FileInfo info = mService.getFileInfo(epFile);
+                           ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(displayName);
                               if (info != null) {
-                                 download.putExtra("length", info.getLength());
+                                 job.setLength(info.getLength());
                               }
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
+
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
                               startService(download);
 
                               qa.dismiss();

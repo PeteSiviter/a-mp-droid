@@ -13,6 +13,13 @@ public class MusicAlbum {
    private String Composer;
    private String Publisher;
    private String CoverPathLarge;
+   
+
+
+   @Override
+   public String toString() {
+      return Title;
+   }
 
    @ColumnProperty(value="AlbumArtistsString", type="text")
    @JsonProperty("AlbumArtistsString")

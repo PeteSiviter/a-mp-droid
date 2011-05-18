@@ -27,10 +27,13 @@ import android.widget.TextView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -132,24 +135,26 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                         final String trackPath = selected.getFilePath();
                         if (trackTitle != null) {
                            String dirName = DownloaderUtils.getMusicTrackPath();
-                           final String fileName = dirName + Utils.getFileNameWithExtension(trackPath, "\\");
-
+                           final String fileName = dirName
+                                 + Utils.getFileNameWithExtension(trackPath, "\\");
+                           final String displayName = selected.toString();
                            final QuickAction qa = new QuickAction(_view);
 
-                           final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
-                                 + fileName);
+                           final File localFileName = new File(DownloaderUtils.getBaseDirectory()
+                                 + "/" + fileName);
 
                            if (localFileName.exists()) {
                               ActionItem playItemAction = new ActionItem();
 
                               playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                              playItemAction
-                                    .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
+                              playItemAction.setIcon(getResources().getDrawable(
+                                    R.drawable.quickaction_play));
                               playItemAction.setOnClickListener(new OnClickListener() {
                                  @Override
                                  public void onClick(View _view) {
                                     Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                                    playIntent.setDataAndType(Uri.parse(localFileName.toString()), "audio/mp3");
+                                    playIntent.setDataAndType(Uri.parse(localFileName.toString()),
+                                          "audio/mp3");
                                     startActivity(playIntent);
 
                                     qa.dismiss();
@@ -160,34 +165,41 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                            } else {
                               ActionItem sdCardAction = new ActionItem();
                               sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                              sdCardAction
-                                    .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
+                              sdCardAction.setIcon(getResources().getDrawable(
+                                    R.drawable.quickaction_sdcard));
                               sdCardAction.setOnClickListener(new OnClickListener() {
                                  @Override
                                  public void onClick(View _view) {
                                     String url = mService.getDownloadUri(trackPath);
                                     FileInfo info = mService.getFileInfo(trackPath);
+                                    ApiCredentials cred = mService.getDownloadCredentials();
                                     if (url != null) {
-                                       Intent download = new Intent(_view.getContext(),
-                                             ItemDownloaderService.class);
-                                       download.putExtra("url", url);
-                                       download.putExtra("name", fileName);
+                                       DownloadJob job = new DownloadJob();
+                                       job.setUrl(url);
+                                       job.setFileName(fileName);
+                                       job.setDisplayName(displayName);
                                        if (info != null) {
-                                          download.putExtra("length", info.getLength());
+                                          job.setLength(info.getLength());
                                        }
-                                       startService(download);
+                                       if (cred.useAut()) {
+                                          job.setAuth(cred.getUsername(), cred.getPassword());
+                                       }
 
-                                       qa.dismiss();
+                                       Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                             _view.getContext(), job);
+                                       startService(download);
                                     }
+                                    qa.dismiss();
                                  }
                               });
                               qa.addActionItem(sdCardAction);
                            }
-                           
+
                            if (mService.isClientControlConnected()) {
                               ActionItem playOnClientAction = new ActionItem();
 
-                              playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
+                              playOnClientAction
+                                    .setTitle(getString(R.string.quickactions_playclient));
                               playOnClientAction.setIcon(getResources().getDrawable(
                                     R.drawable.quickaction_play_device));
                               playOnClientAction.setOnClickListener(new OnClickListener() {
@@ -239,7 +251,9 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                      + String.valueOf(yearMax));
             }
 
-            mTextViewAlbumLength.setText(String.valueOf(trackLength));
+            if (trackLength > 0) {
+               mTextViewAlbumLength.setText(String.valueOf(trackLength / 60));
+            }
             mTextViewAlbumTracks.setText(String.valueOf(_result.size()));
          }
       }

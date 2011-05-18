@@ -20,10 +20,13 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
@@ -204,14 +207,23 @@ public class TabMovieDetailsActivity extends Activity {
                   FileInfo info = mService.getFileInfo(movieFile);
                   String dirName = DownloaderUtils.getMoviePath(mMovie);
                   String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+                  ApiCredentials cred = mService.getDownloadCredentials();
                   if (url != null) {
-                     Intent download = new Intent(_view.getContext(), ItemDownloaderService.class);
-                     download.putExtra("url", url);
-                     download.putExtra("name", fileName);
+                     DownloadJob job = new DownloadJob();
+                     job.setUrl(url);
+                     job.setFileName(fileName);
+                     job.setDisplayName(mMovie.toString());
                      if (info != null) {
-                        download.putExtra("length", info.getLength());
+                        job.setLength(info.getLength());
                      }
+                     if (cred.useAut()) {
+                        job.setAuth(cred.getUsername(), cred.getPassword());
+                     }
+
+                     Intent download = ItemDownloaderHelper.createDownloadIntent(
+                           _view.getContext(), job);
                      startService(download);
+
                   }
                }
             }

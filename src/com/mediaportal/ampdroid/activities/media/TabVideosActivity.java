@@ -23,9 +23,12 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -51,10 +54,11 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
 
    private class LoadVideosTask extends AsyncTask<Integer, List<Movie>, Boolean> {
       private Context mContext;
-      private LoadVideosTask(Context _context){
+
+      private LoadVideosTask(Context _context) {
          mContext = _context;
       }
-      
+
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
@@ -63,11 +67,11 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
 
          while (mVideosLoaded < loadItems && mVideosLoaded < videosCount) {
             int end = mVideosLoaded + 4;
-            if(end >= videosCount){
+            if (end >= videosCount) {
                end = videosCount - 1;
             }
             List<Movie> videos = mService.getVideos(mVideosLoaded, end);
-            
+
             publishProgress(videos);
             if (videos == null) {
                return false;
@@ -95,7 +99,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                }
             } else {
                mAdapter.showLoadingItem(false);
-               //mAdapter.setLoadingText("Loading failed, check your connection");
+               // mAdapter.setLoadingText("Loading failed, check your connection");
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -175,7 +179,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                if (movieFile != null) {
                   String dirName = DownloaderUtils.getMoviePath(selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
-
+                  final String displayName = selected.toString();
                   final QuickAction qa = new QuickAction(_view);
 
                   final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
@@ -209,17 +213,24 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(movieFile);
                            FileInfo info = mService.getFileInfo(movieFile);
+                           ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(displayName);
                               if (info != null) {
-                                 download.putExtra("length", info.getLength());
+                                 job.setLength(info.getLength());
                               }
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
+
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
                               startService(download);
                            }
-                           
+
                            qa.dismiss();
                         }
                      });
@@ -236,7 +247,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            mService.playVideoFileOnClient(movieFile);
-                           
+
                            qa.dismiss();
                         }
                      });
@@ -277,12 +288,16 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views));
+      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views));
 
-      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views_text));
-      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE, getString(R.string.media_views_poster));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
-  
+      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views_text));
+      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE,
+            getString(R.string.media_views_poster));
+      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
+            getString(R.string.media_views_thumbs));
+
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

@@ -43,60 +43,6 @@ public class ItemDownloaderService extends Service {
    private ArrayList<DownloadJob> mDownloadJobs;
    private AsyncTask<String, Integer, Boolean> mDownloader;
 
-   private class DownloadJob {
-      private int mId;
-      private String mName;
-      private String mUrl;
-      private long mLength;
-
-      private int getId() {
-         return mId;
-      }
-
-      private void setId(int _id) {
-         this.mId = _id;
-      }
-
-      private String getName() {
-         return mName;
-      }
-
-      private String getShortenedName() {
-         String name = mName;
-         if (name.length() > 30) {
-            name = name.substring(name.length() - 30);
-         }
-         return name;
-      }
-
-      private void setName(String _name) {
-         this.mName = _name;
-      }
-
-      private String getUrl() {
-         return mUrl;
-      }
-
-      private void setUrl(String _url) {
-         this.mUrl = _url;
-      }
-
-      private DownloadJob(int _id, String _name, String _url, long _length) {
-         mId = _id;
-         mName = _name;
-         mUrl = _url;
-         setLength(_length);
-      }
-
-      private void setLength(long length) {
-         mLength = length;
-      }
-
-      private long getLength() {
-         return mLength;
-      }
-   }
-
    private class DownloaderTask extends AsyncTask<String, Integer, Boolean> {
       private Notification mNotification;
       private NotificationManager mNotificationManager;
@@ -136,7 +82,7 @@ public class ItemDownloaderService extends Service {
             mNumberOfJobs++;
             mCurrentJob = _job;
             URL myFileUrl = new URL(_job.getUrl());
-            String myFileName = _job.getName();
+            String myFileName = _job.getFileName();
 
             Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
 
@@ -166,11 +112,17 @@ public class ItemDownloaderService extends Service {
 
             HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
 
-            Authenticator.setDefault(new Authenticator() {
-               protected PasswordAuthentication getPasswordAuthentication() {
-                  return new PasswordAuthentication("admin", "admin".toCharArray());
-               }
-            });
+            if (_job.isUseAut()) {
+               final String username = _job.getUsername();
+               final String password = _job.getPassword();
+               Authenticator.setDefault(new Authenticator() {
+                  protected PasswordAuthentication getPasswordAuthentication() {
+                     return new PasswordAuthentication(username, password.toCharArray());
+                  }
+               });
+            } else {
+               Authenticator.setDefault(null);
+            }
 
             conn.setDoInput(true);
             conn.connect();
@@ -245,7 +197,7 @@ public class ItemDownloaderService extends Service {
 
       private void createNotificationText(int _progress) {
          int totalDownloads = mNumberOfJobs + mDownloadJobs.size();
-         String filename = Utils.getFileNameWithExtension(mCurrentJob.getName(), "/");
+         String filename = Utils.getFileNameWithExtension(mCurrentJob.getFileName(), "/");
          String overview = (mDownloadJobs.size() > 0 ? mNumberOfJobs + "/" + totalDownloads
                : "1 File");
          String progressText = _progress + " %";
@@ -324,17 +276,14 @@ public class ItemDownloaderService extends Service {
 
       }
 
-      String url = intent.getStringExtra("url");
-      String fName = intent.getStringExtra("name");
-      String displayName = intent.getStringExtra("display_name");
-      long length = intent.getLongExtra("length", 0);
-
       synchronized (mDownloadJobs) {
-         mDownloadJobs.add(new DownloadJob(0, fName, url, length));
-         if (displayName != null) {
-            Util.showToast(this, "Added " + displayName + " to download list");
+         DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
+
+         mDownloadJobs.add(job);
+         if (job.getDisplayName() != null) {
+            Util.showToast(this, "Added " + job.getDisplayName() + " to download list");
          } else {
-            Util.showToast(this, "Added " + fName + " to download list");
+            Util.showToast(this, "Added " + job.getFileName() + " to download list");
          }
       }
 

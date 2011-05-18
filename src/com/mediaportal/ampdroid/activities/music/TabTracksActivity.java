@@ -24,10 +24,12 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicTrack;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -169,7 +171,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                if (trackTitle != null) {
                   String dirName = DownloaderUtils.getMusicTrackPath();
                   final String fileName = dirName + Utils.getFileNameWithExtension(trackPath, "\\");
-
+                  final String displayName = selected.toString();
                   final QuickAction qa = new QuickAction(_view);
 
                   final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
@@ -204,18 +206,24 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(trackPath);
                            FileInfo info = mService.getFileInfo(trackPath);
+                           ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(displayName);
                               if (info != null) {
-                                 download.putExtra("length", info.getLength());
+                                 job.setLength(info.getLength());
                               }
-                              startService(download);
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
 
-                              qa.dismiss();
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
+                              startService(download);
                            }
+                           qa.dismiss();
                         }
                      });
                      qa.addActionItem(sdCardAction);

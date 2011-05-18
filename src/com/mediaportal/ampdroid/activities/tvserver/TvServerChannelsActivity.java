@@ -27,6 +27,7 @@ import com.mediaportal.ampdroid.data.TvChannelGroup;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.LogUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TvServerChannelsActivity extends BaseActivity {
@@ -169,10 +170,9 @@ public class TvServerChannelsActivity extends BaseActivity {
                   try {
                      Intent i = new Intent(Intent.ACTION_VIEW);
                      i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
-                     //i.setPackage("me.abitno.vplayer.trial");
                      startActivityForResult(i, 1);
                   } catch (Exception ex) {
-                     Log.e("aMPdroid", ex.toString());
+                     Log.e(LogUtils.LOG_CONST, ex.toString());
                   }
 
                   qa.dismiss();

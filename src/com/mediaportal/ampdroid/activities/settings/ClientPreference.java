@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -51,7 +52,6 @@ public class ClientPreference extends DialogPreference {
    private boolean mUseSimple = true;
    private LinearLayout mLinearLayoutSimple;
    private LinearLayout mLinearLayoutAdvanced;
-   private CheckBox mCheckBoxUseSimple;
    private EditText mUserViewGma;
    private EditText mPassViewGma;
    private CheckBox mUseGmaAuth;
@@ -63,13 +63,14 @@ public class ClientPreference extends DialogPreference {
    private EditText mPassViewWifiRemote;
    private QRClientDescription mQrDescription;
    private PreferenceScreen mRoot;
+   private Button mButtonSwitchSimpleAdvanced;
 
    public ClientPreference(Context context, AttributeSet attrs) {
       super(context, attrs);
 
       mContext = context;
 
-      setDialogLayoutResource(R.layout.preference_host_simple);
+      setDialogLayoutResource(R.layout.preference_host);
       setDialogTitle(mContext.getString(R.string.dialog_title_addhost));
       setDialogIcon(R.drawable.bubble_add);
    }
@@ -221,15 +222,34 @@ public class ClientPreference extends DialogPreference {
 
       mLinearLayoutSimple = (LinearLayout) parent.findViewById(R.id.LinearLayoutSimpleHost);
       mLinearLayoutAdvanced = (LinearLayout) parent.findViewById(R.id.LinearLayoutAdvancedHost);
-      mCheckBoxUseSimple = (CheckBox) parent.findViewById(R.id.CheckBoxUseSimpleSetting);
-      mCheckBoxUseSimple.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+      mButtonSwitchSimpleAdvanced = (Button) parent.findViewById(R.id.ButtonSwitchSimpleAdvanced);
+      mButtonSwitchSimpleAdvanced.setOnClickListener(new OnClickListener() {
          @Override
-         public void onCheckedChanged(CompoundButton arg0, boolean _state) {
-            handleUseSimpleSetting(_state);
+         public void onClick(View arg0) {
+            if (!mUseSimple && mClient != null && mClient.hasDifferentSettings()) {
+               //user wants to switch to simple mode AND has different settings for clients
+               //-> warn that those different values will be overwritten
+               AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+               builder.setTitle(mContext.getString(R.string.settings_clients_switchsimple_warning_title));
+               builder.setMessage(mContext.getString(R.string.settings_clients_switchsimple_warning_text));
+               builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
+                     new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                           handleUseSimpleSetting(!mUseSimple);
+                        }
+                     });
+               builder.setNegativeButton(mContext.getString(R.string.dialog_no),
+                     new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                           dialog.cancel();
+                        }
+                     });
+               builder.create().show();
+            } else {
+               handleUseSimpleSetting(!mUseSimple);
+            }
          }
       });
-
-      handleUseSimpleSetting(mUseSimple);
 
       return parent;
    }
@@ -238,9 +258,11 @@ public class ClientPreference extends DialogPreference {
       if (_state) {
          mLinearLayoutSimple.setVisibility(View.VISIBLE);
          mLinearLayoutAdvanced.setVisibility(View.GONE);
+         mButtonSwitchSimpleAdvanced.setText(mContext.getString(R.string.settings_clients_switchadvanced));
       } else {
          mLinearLayoutSimple.setVisibility(View.GONE);
          mLinearLayoutAdvanced.setVisibility(View.VISIBLE);
+         mButtonSwitchSimpleAdvanced.setText(mContext.getString(R.string.settings_clients_switchsimple));
       }
       mUseSimple = _state;
    }
@@ -249,13 +271,18 @@ public class ClientPreference extends DialogPreference {
    protected void onBindDialogView(View view) {
       super.onBindDialogView(view);
       if (mClient != null) {
+
          // general
          mNameView.setText(mClient.getClientName());
 
          // simple
-         mHostView.setText(mClient.getClientAddress());
-         mUserView.setText(mClient.getUserName());
-         mPassView.setText(mClient.getUserPassword());
+         String addr = mClient.getClientAddress();
+         String user = mClient.getUserName();
+         String pwd = mClient.getUserPassword();
+
+         mHostView.setText(addr);
+         mUserView.setText(user);
+         mPassView.setText(pwd);
          setUseAuth(mClient.useAuth(), mUseAuthView, mUserView, mPassView);
 
          // advanced
@@ -279,6 +306,12 @@ public class ClientPreference extends DialogPreference {
          mPassViewWifiRemote.setText(mClient.getClientControlApi().getUserPass());
          setUseAuth(mClient.getClientControlApi().getUseAuth(), mUseWifiRemoteAuth,
                mUserViewWifiRemote, mPassViewWifiRemote);
+
+         if (!mClient.hasDifferentSettings()) {
+            handleUseSimpleSetting(true);
+         } else {
+            handleUseSimpleSetting(false);
+         }
 
       }
    }
@@ -306,12 +339,13 @@ public class ClientPreference extends DialogPreference {
          }
          mClient.setClientName(mNameView.getText().toString());
 
-         String user = mUserView.getText().toString();
-         String pass = mPassView.getText().toString();
-         boolean auth = mUseAuthView.isChecked();
+
 
          if (mUseSimple) {
             String addr = mHostView.getText().toString();
+            String user = mUserView.getText().toString();
+            String pass = mPassView.getText().toString();
+            boolean auth = mUseAuthView.isChecked();
             GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr, 44321, user, pass, auth);
             mClient.setRemoteAccessApi(api);
 
@@ -324,20 +358,30 @@ public class ClientPreference extends DialogPreference {
          } else {
             String gmaAddr = mEditTextGmaHost.getText().toString();
             String gmaPort = mEditTextGmaPort.getText().toString();
+            String gmaUser = mUserViewGma.getText().toString();
+            String gmaPass = mPassViewGma.getText().toString();
+            boolean gmaUseAuth = mUseGmaAuth.isChecked();
             GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(gmaAddr, Integer.valueOf(gmaPort),
-                  user, pass, auth);
+                  gmaUser, gmaPass, gmaUseAuth);
             mClient.setRemoteAccessApi(api);
 
             String tv4homeAddr = mEditTextTv4HomeHost.getText().toString();
             String tv4homePort = mEditTextTv4HomePort.getText().toString();
+            
+            String tvUser = mUserViewTv4Home.getText().toString();
+            String tvPass = mPassViewTv4Home.getText().toString();
+            boolean tvUseAuth = mUseTv4HomeAuth.isChecked();
             Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(tv4homeAddr, Integer.valueOf(tv4homePort),
-                  user, pass, auth);
+                  tvUser, tvPass, tvUseAuth);
             mClient.setTvControlApi(tvApi);
 
             String wifiAddr = mEditTextWifiRemoteHost.getText().toString();
             String wifiPort = mEditTextWifiRemotePort.getText().toString();
+            String wifiUser = mUserViewWifiRemote.getText().toString();
+            String wifiPass = mPassViewWifiRemote.getText().toString();
+            boolean wifiUseAuth = mUseWifiRemoteAuth.isChecked();
             WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, wifiAddr,
-                  Integer.valueOf(wifiPort), user, pass, auth);
+                  Integer.valueOf(wifiPort), wifiUser, wifiPass, wifiUseAuth);
             mClient.setClientControlApi(clientApi);
          }
 

@@ -8,7 +8,8 @@
 	<string name="welcome_auto_connect">Connect on startup</string>
 	<string name="welcome_no_client">Please select client...</string>
 	<string name="welcome_connect">Connect</string>
-	<string name="welcome_no_clients">No clients defined yet, use the settings screen to add clients</string>
+	<string name="welcome_no_clients">No clients defined yet, use the settings screen to
+		add clients</string>
 
 	<string name="series_actors">Actors</string>
 	<string name="series_seasons">Seasons</string>
@@ -178,8 +179,12 @@
 
 	<string name="settings_categories_clients_desc">Edit Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
-	<string name="settings_clients_usesimple">Simple Mode</string>
+	<string name="settings_clients_switchadvanced">Simple to Advanced Mode</string>
 	<string name="settings_clients_switchsimple">Switch to Simple Mode</string>
+	<string name="settings_clients_switchsimple_warning_title">Overwrite Settings?</string>
+	<string name="settings_clients_switchsimple_warning_text">You currently have different settings for your
+		clients. If you switch to simple mode these will get overwritten.
+	</string>
 	<string name="settings_clients_newclient_desc">Add, edit, remove clients</string>
 	<string name="settings_general_preloaditems_title">Items to preload</string>
 	<string name="settings_general_preloaditems_desc">Number of items that are loaded when end of list is
@@ -205,7 +210,8 @@
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Delete Client?</string>
-	<string name="settings_delete_client_start">Are you sure you want to delete the client \"</string>
+	<string name="settings_delete_client_start">Are you sure you want to delete the client \"
+	</string>
 	<string name="settings_delete_client_end">\"?</string>
 
 	<string name="settings_media_defaultview_series_title">Default View Series</string>
@@ -248,15 +254,16 @@
 	<string name="quickactions_record">Record</string>
 	<string name="quickactions_cancelrecord">Cancel Rec.</string>
 
-	<string name="connection_successful">Successfully established connection to Remote</string>
+	<string name="connection_successful">Successfully established connection to Remote
+	</string>
 	<string name="connection_failed">Remote Connection couldn\'t be established</string>
 	<string name="connection_closed">Remote Connection closed</string>
-	
+
 	<string name="settings_host_useauth">Use Authentification</string>
 	<string name="remote_button_info">Info</string>
 	<string name="remote_button_subtitle">Subtitles</string>
 	<string name="remote_button_menu">Menu</string>
-	
+
 	<string name="notification_download_failed">Download failed</string>
 	<string name="notification_download_succeeded">Download finished</string>
 	<string name="notification_title">aMPdroid</string>

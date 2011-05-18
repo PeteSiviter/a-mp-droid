@@ -29,7 +29,7 @@ import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
@@ -330,7 +330,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
 
    @Override
-   public EpisodeDetails getEpisode(int _seriesId, int _episodeId) {
+   public SeriesEpisodeDetails getEpisode(int _seriesId, int _episodeId) {
       return mSeriesAPI.getFullEpisode(_seriesId, _episodeId);
    }
 

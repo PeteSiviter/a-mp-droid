@@ -1,5 +1,7 @@
 package com.mediaportal.ampdroid.settings;
 
+import com.mediaportal.ampdroid.utils.LogUtils;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -20,7 +22,7 @@ public class PreferencesManager {
       if (Preferences != null) {
          return Preferences.getBoolean("general_fullscreen", true);
       } else {
-         Log.w("aMPdroid", "PreferencesManager not initialised");
+         Log.w(LogUtils.LOG_CONST, "PreferencesManager not initialised");
          return false;
       }
    }
@@ -29,7 +31,7 @@ public class PreferencesManager {
       if (Preferences != null) {
          return Preferences.getBoolean("general_vibrate", false);
       } else {
-         Log.w("aMPdroid", "PreferencesManager not initialised");
+         Log.w(LogUtils.LOG_CONST, "PreferencesManager not initialised");
          return false;
       }
    }
@@ -38,7 +40,7 @@ public class PreferencesManager {
       if (Preferences != null) {
          return Preferences.getString("tvserver_clientname", "unknown");
       } else {
-         Log.w("aMPdroid", "PreferencesManager not initialised");
+         Log.w(LogUtils.LOG_CONST, "PreferencesManager not initialised");
          return "unknown";
       }
    }
@@ -56,7 +58,7 @@ public class PreferencesManager {
             return StatusbarAutohide.ShowManually;
          }
       } else {
-         Log.w("aMPdroid", "PreferencesManager not initialised");
+         Log.w(LogUtils.LOG_CONST, "PreferencesManager not initialised");
       }
       return StatusbarAutohide.AlwaysShow;
    }
@@ -65,7 +67,7 @@ public class PreferencesManager {
       if (Preferences != null) {
          return Preferences.getBoolean("auto_connect", false);
       } else {
-         Log.w("aMPdroid", "PreferencesManager not initialised");
+         Log.w(LogUtils.LOG_CONST, "PreferencesManager not initialised");
          return false;
       }
    }

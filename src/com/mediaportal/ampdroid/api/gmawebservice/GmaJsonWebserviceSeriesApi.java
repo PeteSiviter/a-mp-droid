@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
@@ -274,14 +274,14 @@ public class GmaJsonWebserviceSeriesApi {
       return null;
    }
 
-   public EpisodeDetails getFullEpisode(int _seriesId, int _episodeId) {
+   public SeriesEpisodeDetails getFullEpisode(int _seriesId, int _episodeId) {
       String methodName = GET_FULL_EPISODE;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
             JsonUtils.newPair("episodeId", _episodeId));
 
       if (response != null) {
-         EpisodeDetails returnObject = (EpisodeDetails) getObjectsFromJson(response,
-               EpisodeDetails.class);
+         SeriesEpisodeDetails returnObject = (SeriesEpisodeDetails) getObjectsFromJson(response,
+               SeriesEpisodeDetails.class);
 
          if (returnObject != null) {
             return returnObject;

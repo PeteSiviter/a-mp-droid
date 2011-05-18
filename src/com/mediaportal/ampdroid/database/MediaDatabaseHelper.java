@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.Series;
@@ -38,8 +38,8 @@ public class MediaDatabaseHelper extends SQLiteOpenHelper {
             SeriesSeason.class, true);
       mSeriesEpisodeTableString = SqliteAnnotationsHelper.getCreateTableStringFromClass(SeriesEpisode.TABLE_NAME, 
             SeriesEpisode.class, true);
-      mSeriesEpisodeDetailsTableString = SqliteAnnotationsHelper.getCreateTableStringFromClass(EpisodeDetails.TABLE_NAME, 
-            EpisodeDetails.class, true);
+      mSeriesEpisodeDetailsTableString = SqliteAnnotationsHelper.getCreateTableStringFromClass(SeriesEpisodeDetails.TABLE_NAME, 
+            SeriesEpisodeDetails.class, true);
 
       mMovieTableString = SqliteAnnotationsHelper.getCreateTableStringFromClass(Movie.TABLE_NAME, Movie.class, true);
       mMovieDetailsTableString = SqliteAnnotationsHelper.getCreateTableStringFromClass(MovieFull.TABLE_NAME,

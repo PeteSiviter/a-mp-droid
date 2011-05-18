@@ -23,11 +23,14 @@ import android.widget.TextView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
-import com.mediaportal.ampdroid.data.EpisodeFile;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeFile;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
@@ -45,7 +48,7 @@ public class TabEpisodeDetailsActivity extends Activity {
    private String mEpisodeBannerUrl;
    private ProgressDialog mLoadingDialog;
    private LoadEpisodeDetailsTask mLoadSeriesTask;
-   private EpisodeDetails mEpisodeDetails;
+   private SeriesEpisodeDetails mEpisodeDetails;
    private DataHandler mService;
    private ImageHandler mImageHandler;
    private ImageView mImageViewEpisodeImage;
@@ -53,7 +56,6 @@ public class TabEpisodeDetailsActivity extends Activity {
    private TextView mTextViewEpisodeActors;
    private RatingBar mRatingBarEpisodeRating;
    private TextView mTextViewEpisodeOverview;
-   private StatusBarActivityHandler mStatusBarHandler;
    private TextView mTextViewEpisodename;
    private String mEpisodeName;
    private int mEpisodeSeasonNr;
@@ -63,7 +65,7 @@ public class TabEpisodeDetailsActivity extends Activity {
    private Button mButtonPlayMobile;
    private Button mButtonDownload;
 
-   private class LoadEpisodeDetailsTask extends AsyncTask<Integer, List<Movie>, EpisodeDetails> {
+   private class LoadEpisodeDetailsTask extends AsyncTask<Integer, List<Movie>, SeriesEpisodeDetails> {
       Activity mContext;
 
       private LoadEpisodeDetailsTask(Activity _context) {
@@ -71,14 +73,14 @@ public class TabEpisodeDetailsActivity extends Activity {
       }
 
       @Override
-      protected EpisodeDetails doInBackground(Integer... _params) {
+      protected SeriesEpisodeDetails doInBackground(Integer... _params) {
          mEpisodeDetails = mService.getEpisode(_params[0], _params[1]);
 
          return mEpisodeDetails;
       }
 
       @Override
-      protected void onPostExecute(EpisodeDetails _result) {
+      protected void onPostExecute(SeriesEpisodeDetails _result) {
          if (_result != null) {
             String seriesPoster = _result.getBannerUrl();
             if (seriesPoster != null && !seriesPoster.equals("")) {
@@ -120,7 +122,7 @@ public class TabEpisodeDetailsActivity extends Activity {
             int rating = (int) _result.getRating();
             mRatingBarEpisodeRating.setRating(rating);
 
-            EpisodeFile epFile = _result.getEpisodeFile();
+            SeriesEpisodeFile epFile = _result.getEpisodeFile();
             if (epFile != null) {
                mTextViewRuntime.setText(String.valueOf((int) (epFile.getDuration() / 60000))
                      + getString(R.string.media_episodes_minutes));
@@ -227,7 +229,7 @@ public class TabEpisodeDetailsActivity extends Activity {
       mButtonDownload.setOnClickListener(new OnClickListener() {
          @Override
          public void onClick(View _view) {
-            EpisodeFile epFile = mEpisodeDetails.getEpisodeFile();
+            SeriesEpisodeFile epFile = mEpisodeDetails.getEpisodeFile();
             if (epFile != null) {
                String epFileName = epFile.getFileName();
                if (epFileName != null) {
@@ -237,14 +239,21 @@ public class TabEpisodeDetailsActivity extends Activity {
                   if (!localFileName.exists()) {
                      String url = mService.getDownloadUri(epFileName);
                      FileInfo info = mService.getFileInfo(epFileName);
+                     ApiCredentials cred = mService.getDownloadCredentials();
                      if (url != null) {
-                        Intent download = new Intent(_view.getContext(),
-                              ItemDownloaderService.class);
-                        download.putExtra("url", url);
-                        download.putExtra("name", fileName);
+                        DownloadJob job = new DownloadJob();
+                        job.setUrl(url);
+                        job.setFileName(fileName);
+                        job.setDisplayName(epFile.toString());
                         if (info != null) {
-                           download.putExtra("length", info.getLength());
+                           info.setLength(info.getLength());
                         }
+                        if (cred.useAut()) {
+                           job.setAuth(cred.getUsername(), cred.getPassword());
+                        }
+
+                        Intent download = ItemDownloaderHelper.createDownloadIntent(
+                              _view.getContext(), job);
                         startService(download);
                      }
                   }

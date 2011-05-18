@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.mediaportal.ampdroid.api.IMediaAccessDatabase;
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.Series;
@@ -20,6 +20,7 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.utils.LogUtils;
 
 public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    private final String CLIENT_ID = "ClientId";
@@ -48,7 +49,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
       try {
          mDatabase = mDbHelper.getWritableDatabase();
       } catch (Exception ex) {
-         Log.e("aMPdroid", ex.toString());
+         Log.e(LogUtils.LOG_CONST, ex.toString());
       }
    }
 
@@ -643,16 +644,16 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    }
 
    @Override
-   public EpisodeDetails getEpisodeDetails(int _seriesId, int _episodeId) {
+   public SeriesEpisodeDetails getEpisodeDetails(int _seriesId, int _episodeId) {
       try {
          if(!mUseCaching) return null;
-         Cursor result = mDatabase.query(EpisodeDetails.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
+         Cursor result = mDatabase.query(SeriesEpisodeDetails.TABLE_NAME, null, CLIENT_ID + "=" + mClientId
                + " AND SeriesId=" + _seriesId + " AND Id=" + _episodeId, null, null, null, null);
-         EpisodeDetails episode = null;
+         SeriesEpisodeDetails episode = null;
          if (result.getCount() == 1) {
             result.moveToFirst();
-            episode = (EpisodeDetails) SqliteAnnotationsHelper.getObjectFromCursor(result,
-                  EpisodeDetails.class);
+            episode = (SeriesEpisodeDetails) SqliteAnnotationsHelper.getObjectFromCursor(result,
+                  SeriesEpisodeDetails.class);
          }
          result.close();
          return episode;
@@ -664,19 +665,19 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    }
 
    @Override
-   public void saveEpisodeDetails(int _seriesId, EpisodeDetails _episode) {
+   public void saveEpisodeDetails(int _seriesId, SeriesEpisodeDetails _episode) {
       try {
          if(!mUseCaching) return;
          _episode.setSeriesId(_seriesId);
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_episode,
-               EpisodeDetails.class);
+               SeriesEpisodeDetails.class);
          dbValues.put(CLIENT_ID, mClientId);
 
-         int rows = mDatabase.update(EpisodeDetails.TABLE_NAME, dbValues, CLIENT_ID + "=" + mClientId
+         int rows = mDatabase.update(SeriesEpisodeDetails.TABLE_NAME, dbValues, CLIENT_ID + "=" + mClientId
                + " AND SeriesId=" + _seriesId + " AND Id=" + _episode.getId(), null);
 
          if (rows != 1) {
-            mDatabase.insert(EpisodeDetails.TABLE_NAME, null, dbValues);
+            mDatabase.insert(SeriesEpisodeDetails.TABLE_NAME, null, dbValues);
          }
       } catch (Exception ex) {
          Log.e("Database", ex.getMessage());

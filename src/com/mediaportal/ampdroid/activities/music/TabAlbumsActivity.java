@@ -23,10 +23,13 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicAlbum;
 import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -74,14 +77,23 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
             final String fileName = dirName
                   + Utils.getFileNameWithExtension(track.getFilePath(), "\\");
 
-            Intent download = new Intent(mContext, ItemDownloaderService.class);
-            download.putExtra("url", url);
-            download.putExtra("name", fileName);
-            if (info != null) {
-               download.putExtra("length", info.getLength());
-            }
+            ApiCredentials cred = mService.getDownloadCredentials();
+            if (url != null) {
+               DownloadJob job = new DownloadJob();
+               job.setUrl(url);
+               job.setFileName(fileName);
+               job.setDisplayName(track.toString());
+               if (info != null) {
+                  job.setLength(info.getLength());
+               }
+               if (cred.useAut()) {
+                  job.setAuth(cred.getUsername(), cred.getPassword());
+               }
 
-            publishProgress(download);
+               Intent download = ItemDownloaderHelper.createDownloadIntent(
+                     mContext, job);
+               publishProgress(download);
+            }
          }
 
          return true;

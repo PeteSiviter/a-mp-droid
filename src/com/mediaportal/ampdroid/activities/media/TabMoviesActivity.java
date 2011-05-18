@@ -23,9 +23,12 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -172,6 +175,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                if (movieFile != null) {
                   String dirName = DownloaderUtils.getMoviePath(selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+                  final String displayName = selected.toString();
 
                   final QuickAction qa = new QuickAction(_view);
 
@@ -206,18 +210,24 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(movieFile);
                            FileInfo info = mService.getFileInfo(movieFile);
+                           ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(displayName);
                               if (info != null) {
-                                 download.putExtra("length", info.getLength());
+                                 job.setLength(info.getLength());
                               }
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
+
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
                               startService(download);
-                              
-                              qa.dismiss();
                            }
+                           qa.dismiss();
                         }
                      });
                      qa.addActionItem(sdCardAction);

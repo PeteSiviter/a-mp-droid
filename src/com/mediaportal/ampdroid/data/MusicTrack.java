@@ -23,6 +23,11 @@ public class MusicTrack {
    private String Title;
    private String TrackNumber;
    private String FilePath;
+   
+   @Override
+   public String toString() {
+      return Title;
+   }
 
    @ColumnProperty(value="TrackId", type="integer")
    @JsonProperty("TrackId")

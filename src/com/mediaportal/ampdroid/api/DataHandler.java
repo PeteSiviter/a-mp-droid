@@ -8,7 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
-import com.mediaportal.ampdroid.data.EpisodeDetails;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
@@ -102,7 +102,7 @@ public class DataHandler {
    public static void addRemoteClient(RemoteClient _client) {
       clientList.add(_client);
    }
-
+   
    public static List<RemoteClient> getRemoteClients() {
       return clientList;
    }
@@ -440,11 +440,11 @@ public class DataHandler {
       return remoteAccess.getEpisodesForSeason(_seriesId, _seasonNumber, _begin, _end);
    }
 
-   public EpisodeDetails getEpisode(int _seriesId, int _episodeId) {
+   public SeriesEpisodeDetails getEpisode(int _seriesId, int _episodeId) {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
 
       mediaDatabase.open();
-      EpisodeDetails episode = mediaDatabase.getEpisodeDetails(_seriesId, _episodeId);
+      SeriesEpisodeDetails episode = mediaDatabase.getEpisodeDetails(_seriesId, _episodeId);
 
       if (episode == null) {
          episode = remoteAccess.getEpisode(_seriesId, _episodeId);
@@ -673,6 +673,14 @@ public class DataHandler {
 
    public String getDownloadUri(String _filePath) {
       return client.getRemoteAccessApi().getDownloadUri(_filePath);
+   }
+   
+   public ApiCredentials getDownloadCredentials(){
+      ApiCredentials cred = new ApiCredentials();
+      cred.setUseAut(client.getRemoteAccessApi().getUseAuth());
+      cred.setUsername(client.getRemoteAccessApi().getUserName());
+      cred.setPassword(client.getRemoteAccessApi().getUserPass());
+      return cred;
    }
 
    public void playVideoFileOnClient(String _fileName) {

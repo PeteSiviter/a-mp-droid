@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
 import com.mediaportal.ampdroid.utils.Util;
 
