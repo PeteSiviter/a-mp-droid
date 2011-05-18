@@ -14,7 +14,7 @@ import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class GmaJsonWebserviceSeriesApi {
 
@@ -55,10 +55,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<Series>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -74,10 +74,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<Series>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -92,10 +92,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -110,10 +110,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return 0;
    }
@@ -129,10 +129,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<SeriesSeason>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -148,10 +148,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -167,10 +167,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<SeriesEpisode>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -187,10 +187,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<SeriesEpisode>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -205,10 +205,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return -99;
    }
@@ -225,10 +225,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<SeriesEpisode>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -244,10 +244,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return -99;
    }
@@ -266,10 +266,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return new ArrayList<SeriesEpisode>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -286,10 +286,10 @@ public class GmaJsonWebserviceSeriesApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }

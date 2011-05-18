@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import android.util.Log;
 
 import com.mediaportal.ampdroid.utils.IsoDate;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class JsonUtils {
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -22,11 +22,11 @@ public class JsonUtils {
 
          return returnObjects;
       } catch (JsonParseException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (JsonMappingException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (IOException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       }
       return null;
    }

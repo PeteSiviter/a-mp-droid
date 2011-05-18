@@ -52,8 +52,8 @@
 
 	<string name="media_series_loadingerror">Couldn\'t load series</string>
 	<string name="media_series_loadmultiplewarning_title">Downloading multiple episodes!</string>
-	<string name="media_series_loadmultiplewarning_text_begin">Do you really want to download </string>
-	<string name="media_series_loadmultiplewarning_text_end"> episodes?</string>
+	<string name="media_series_loadmultiplewarning_text_begin">Do you really want to download\u0020</string>
+	<string name="media_series_loadmultiplewarning_text_end">\u0020episodes?</string>
 	<string name="media_series_season">Season</string>
 	<string name="media_series_loadseries">Loading Series ...</string>
 	<string name="media_series_loadseriesdetails">Loading Series Details ...</string>
@@ -203,6 +203,7 @@
 	<string name="settings_clients_clienthost">Host or IP Address:</string>
 	<string name="settings_clients_clientport">Port:</string>
 	<string name="settings_clients_clientusername">Username:</string>
+	<string name="settings_clients_default">Default:\u0020</string>
 	<string name="settings_clients_clientpassword">Password:</string>
 	<string name="settings_clients_clientuseauth">Use Authentication:</string>
 	<string name="settings_clients_enableservice">Enable Service</string>

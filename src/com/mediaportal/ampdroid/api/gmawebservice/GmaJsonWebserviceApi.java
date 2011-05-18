@@ -42,7 +42,7 @@ import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
 import com.mediaportal.ampdroid.data.VideoShare;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class GmaJsonWebserviceApi implements IMediaAccessApi {
    private GmaJsonWebserviceMovieApi mMoviesAPI;
@@ -128,11 +128,11 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
          return returnObjects;
       } catch (JsonParseException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (JsonMappingException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (IOException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       }
       return null;
    }
@@ -153,10 +153,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -172,10 +172,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<VideoShare>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -191,10 +191,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<FileInfo>(Arrays.asList(returnObject));
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -210,10 +210,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -235,10 +235,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
             return retList;
          } else {
-            Log.d(LogUtils.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }

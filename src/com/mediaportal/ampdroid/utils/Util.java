@@ -29,4 +29,13 @@ public class Util {
          toast.show();
       }
    }
+   
+   public static boolean compare(Object... compare) {
+      for (Object o : compare) {
+         if (!compare[0].equals(o)) {
+            return false;
+         }
+      }
+      return true;
+   }
 }

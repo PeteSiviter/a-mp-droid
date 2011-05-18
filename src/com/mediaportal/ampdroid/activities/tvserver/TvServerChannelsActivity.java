@@ -27,7 +27,7 @@ import com.mediaportal.ampdroid.data.TvChannelGroup;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TvServerChannelsActivity extends BaseActivity {
@@ -172,7 +172,7 @@ public class TvServerChannelsActivity extends BaseActivity {
                      i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
                      startActivityForResult(i, 1);
                   } catch (Exception ex) {
-                     Log.e(LogUtils.LOG_CONST, ex.toString());
+                     Log.e(Constants.LOG_CONST, ex.toString());
                   }
 
                   qa.dismiss();

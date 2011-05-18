@@ -38,7 +38,7 @@ import com.mediaportal.ampdroid.lists.views.VirtualCardStateAdapterItem;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TvServerStateActivity extends BaseActivity {
@@ -253,7 +253,7 @@ public class TvServerStateActivity extends BaseActivity {
                      i.setDataAndType(Uri.parse(playingUrl), "video/*");
                      startActivityForResult(i, 1);
                   } catch (Exception ex) {
-                     Log.e(LogUtils.LOG_CONST, ex.toString());
+                     Log.e(Constants.LOG_CONST, ex.toString());
                   }
 
                   qa.dismiss();

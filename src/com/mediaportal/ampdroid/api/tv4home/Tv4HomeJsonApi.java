@@ -32,7 +32,7 @@ import com.mediaportal.ampdroid.data.TvSchedule;
 import com.mediaportal.ampdroid.data.TvUser;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
 import com.mediaportal.ampdroid.utils.IsoDate;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class Tv4HomeJsonApi implements ITvServiceApi {
    private final String TEST_SERVICE = "TestConnectionToTVService";
@@ -131,11 +131,11 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
 
          return returnObjects;
       } catch (JsonParseException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (JsonMappingException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (IOException e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
       }
       return null;
    }
@@ -186,7 +186,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          }
       }
       else{
-         Log.d(LogUtils.LOG_CONST, "Error retrieving data for method" + CANCEL_CURRENT_TIMESHIFT);
+         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + CANCEL_CURRENT_TIMESHIFT);
       }
       return false;
    }

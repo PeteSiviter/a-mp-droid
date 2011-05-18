@@ -29,7 +29,7 @@ import org.apache.http.protocol.HTTP;
 
 import android.util.Log;
 
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class JsonClient {
    public enum RequestMethod {
@@ -89,7 +89,7 @@ public class JsonClient {
       try {
          return DoExecute(methodName, methodType, _params);
       } catch (Exception e) {
-         Log.e(LogUtils.LOG_CONST, e.toString());
+         Log.e(Constants.LOG_CONST, e.toString());
          return null;
       }
    }

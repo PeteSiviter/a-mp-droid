@@ -28,6 +28,8 @@ import com.mediaportal.ampdroid.api.tv4home.Tv4HomeJsonApi;
 import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteMpController;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.utils.Constants;
+import com.mediaportal.ampdroid.utils.Util;
 
 public class ClientPreference extends DialogPreference {
    private Context mContext;
@@ -171,7 +173,11 @@ public class ClientPreference extends DialogPreference {
       mNameView = (EditText) parent.findViewById(R.id.pref_name);
       mHostView = (EditText) parent.findViewById(R.id.pref_host);
       mUserView = (EditText) parent.findViewById(R.id.pref_user);
+      mUserView.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_USERNAME);
       mPassView = (EditText) parent.findViewById(R.id.pref_pass);
+      mPassView.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_PASSWORD);
       mUseAuthView = (CheckBox) parent.findViewById(R.id.pref_use_auth);
       mUseAuthView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
@@ -183,10 +189,16 @@ public class ClientPreference extends DialogPreference {
       // advanced layout
       mEditTextGmaHost = (EditText) parent.findViewById(R.id.pref_host_gma_addr);
       mEditTextGmaPort = (EditText) parent.findViewById(R.id.pref_host_gma_port);
+      mEditTextGmaPort.setHint(mContext.getString(R.string.settings_clients_default)
+            + String.valueOf(Constants.DEFAULT_REMOTEACCESS_PORT));
       mUseGma = (CheckBox) parent.findViewById(R.id.pref_gma_use_service);
       mUseGmaAuth = (CheckBox) parent.findViewById(R.id.pref_gma_use_auth);
       mUserViewGma = (EditText) parent.findViewById(R.id.pref_gma_user);
+      mUserViewGma.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_USERNAME);
       mPassViewGma = (EditText) parent.findViewById(R.id.pref_gma_pass);
+      mPassViewGma.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_PASSWORD);
       mUseGmaAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -196,10 +208,16 @@ public class ClientPreference extends DialogPreference {
 
       mEditTextTv4HomeHost = (EditText) parent.findViewById(R.id.pref_host_tv4home_addr);
       mEditTextTv4HomePort = (EditText) parent.findViewById(R.id.pref_host_tv4home_port);
+      mEditTextTv4HomePort.setHint(mContext.getString(R.string.settings_clients_default)
+            + String.valueOf(Constants.DEFAULT_TV_PORT));
       mUseTv4Home = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_service);
       mUseTv4HomeAuth = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_auth);
       mUserViewTv4Home = (EditText) parent.findViewById(R.id.pref_tv4home_user);
+      mUserViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_USERNAME);
       mPassViewTv4Home = (EditText) parent.findViewById(R.id.pref_tv4home_pass);
+      mPassViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_PASSWORD);
       mUseTv4HomeAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -209,10 +227,16 @@ public class ClientPreference extends DialogPreference {
 
       mEditTextWifiRemoteHost = (EditText) parent.findViewById(R.id.pref_host_wifiremote_addr);
       mEditTextWifiRemotePort = (EditText) parent.findViewById(R.id.pref_host_wifiremote_port);
+      mEditTextWifiRemotePort.setHint(mContext.getString(R.string.settings_clients_default)
+            + String.valueOf(Constants.DEFAULT_WIFI_PORT));
       mUseWifiRemote = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_service);
       mUseWifiRemoteAuth = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_auth);
       mUserViewWifiRemote = (EditText) parent.findViewById(R.id.pref_wifiremote_user);
+      mUserViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_USERNAME);
       mPassViewWifiRemote = (EditText) parent.findViewById(R.id.pref_wifiremote_pass);
+      mPassViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
+            + Constants.DEFAULT_PASSWORD);
       mUseWifiRemoteAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -226,16 +250,19 @@ public class ClientPreference extends DialogPreference {
       mButtonSwitchSimpleAdvanced.setOnClickListener(new OnClickListener() {
          @Override
          public void onClick(View arg0) {
-            if (!mUseSimple && mClient != null && mClient.hasDifferentSettings()) {
-               //user wants to switch to simple mode AND has different settings for clients
-               //-> warn that those different values will be overwritten
+            if (!mUseSimple && hasDifferentSettings()) {
+               // user wants to switch to simple mode AND has different settings
+               // for clients
+               // -> warn that those different values will be overwritten
                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-               builder.setTitle(mContext.getString(R.string.settings_clients_switchsimple_warning_title));
-               builder.setMessage(mContext.getString(R.string.settings_clients_switchsimple_warning_text));
+               builder.setTitle(mContext
+                     .getString(R.string.settings_clients_switchsimple_warning_title));
+               builder.setMessage(mContext
+                     .getString(R.string.settings_clients_switchsimple_warning_text));
                builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
                      new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                           handleUseSimpleSetting(!mUseSimple);
+                           handleSwitchSimpleAdvancedMode(!mUseSimple);
                         }
                      });
                builder.setNegativeButton(mContext.getString(R.string.dialog_no),
@@ -246,7 +273,7 @@ public class ClientPreference extends DialogPreference {
                      });
                builder.create().show();
             } else {
-               handleUseSimpleSetting(!mUseSimple);
+               handleSwitchSimpleAdvancedMode(!mUseSimple);
             }
          }
       });
@@ -254,15 +281,95 @@ public class ClientPreference extends DialogPreference {
       return parent;
    }
 
-   private void handleUseSimpleSetting(boolean _state) {
+   protected boolean hasDifferentSettings() {
+      if (!Util.compare(mEditTextTv4HomeHost.getText().toString(), mEditTextGmaHost.getText()
+            .toString(), mEditTextWifiRemoteHost.getText().toString())) {
+         return true;
+      }
+
+      if (!Util.compare(mUserViewTv4Home.getText().toString(), mUserViewGma.getText().toString(),
+            mUserViewWifiRemote.getText().toString())) {
+         return true;
+      }
+      if (!Util.compare(mPassViewTv4Home.getText().toString(), mPassViewGma.getText().toString(),
+            mPassViewWifiRemote.getText().toString())) {
+         return true;
+      }
+      if (!Util.compare(mUseTv4HomeAuth.isChecked(), mUseGmaAuth.isChecked(),
+            mUseWifiRemoteAuth.isChecked())) {
+         return true;
+      }
+      return false;
+   }
+
+   private void handleSimpleAdvancedModeVisibility(boolean _state) {
       if (_state) {
          mLinearLayoutSimple.setVisibility(View.VISIBLE);
          mLinearLayoutAdvanced.setVisibility(View.GONE);
-         mButtonSwitchSimpleAdvanced.setText(mContext.getString(R.string.settings_clients_switchadvanced));
+         mButtonSwitchSimpleAdvanced.setText(mContext
+               .getString(R.string.settings_clients_switchadvanced));
       } else {
          mLinearLayoutSimple.setVisibility(View.GONE);
          mLinearLayoutAdvanced.setVisibility(View.VISIBLE);
-         mButtonSwitchSimpleAdvanced.setText(mContext.getString(R.string.settings_clients_switchsimple));
+         mButtonSwitchSimpleAdvanced.setText(mContext
+               .getString(R.string.settings_clients_switchsimple));
+      }
+   }
+
+   private void handleSwitchSimpleAdvancedMode(boolean _state) {
+      handleSimpleAdvancedModeVisibility(_state);
+      if (_state) {
+         if (Util.compare(mEditTextTv4HomeHost.getText().toString(), mEditTextGmaHost.getText()
+               .toString(), mEditTextWifiRemoteHost.getText().toString())) {
+            mHostView.setText(mEditTextTv4HomeHost.getText().toString());
+         } else {
+            mHostView.setText("");
+         }
+
+         if (Util.compare(mUserViewTv4Home.getText().toString(), mUserViewGma.getText().toString(),
+               mUserViewWifiRemote.getText().toString())) {
+            mUserView.setText(mUserViewTv4Home.getText().toString());
+         } else {
+            mUserView.setText("");
+         }
+
+         if (Util.compare(mPassViewTv4Home.getText().toString(), mPassViewGma.getText().toString(),
+               mPassViewWifiRemote.getText().toString())) {
+            mPassView.setText(mPassViewTv4Home.getText().toString());
+         } else {
+            mPassView.setText("");
+         }
+
+         if (Util.compare(mUseTv4HomeAuth.isChecked(), mUseGmaAuth.isChecked(),
+               mUseWifiRemoteAuth.isChecked())) {
+            mUseAuthView.setChecked(mUseTv4HomeAuth.isChecked());
+         } else {
+            mUseAuthView.setChecked(false);
+         }
+
+      } else {
+         String host = mHostView.getText().toString();
+         String user = mUserView.getText().toString();
+         String pass = mPassView.getText().toString();
+         boolean useAuth = mUseAuthView.isChecked();
+
+         mEditTextGmaHost.setText(host);
+         mEditTextGmaPort.setText(String.valueOf(Constants.DEFAULT_REMOTEACCESS_PORT));
+         mUserViewGma.setText(user);
+         mPassViewGma.setText(pass);
+         setUseAuth(useAuth, mUseGmaAuth, mUserViewGma, mPassViewGma);
+
+         mEditTextTv4HomeHost.setText(host);
+         mEditTextTv4HomePort.setText(String.valueOf(Constants.DEFAULT_TV_PORT));
+         mUserViewTv4Home.setText(user);
+         mPassViewTv4Home.setText(pass);
+         setUseAuth(useAuth, mUseTv4HomeAuth, mUserViewTv4Home, mPassViewTv4Home);
+
+         mEditTextWifiRemoteHost.setText(host);
+         mEditTextWifiRemotePort.setText(String.valueOf(Constants.DEFAULT_WIFI_PORT));
+         mUserViewWifiRemote.setText(user);
+         mPassViewWifiRemote.setText(pass);
+         setUseAuth(useAuth, mUseWifiRemoteAuth, mUserViewWifiRemote, mPassViewWifiRemote);
       }
       mUseSimple = _state;
    }
@@ -307,21 +414,16 @@ public class ClientPreference extends DialogPreference {
          setUseAuth(mClient.getClientControlApi().getUseAuth(), mUseWifiRemoteAuth,
                mUserViewWifiRemote, mPassViewWifiRemote);
 
-         if (!mClient.hasDifferentSettings()) {
-            handleUseSimpleSetting(true);
-         } else {
-            handleUseSimpleSetting(false);
-         }
-
+         boolean hasDiffSettings = mClient.hasDifferentSettings();
+         handleSimpleAdvancedModeVisibility(!hasDiffSettings);
+         mUseSimple = !hasDiffSettings;
+      } else {
+         handleSimpleAdvancedModeVisibility(true);
       }
    }
 
    private void setUseAuth(boolean useAuth, CheckBox _checkBox, EditText _userEdit,
          EditText _passEdit) {
-      // if (useAuth) {
-      // mUserView.setText(mClient == null ? "" : mClient.getUserName());
-      // mPassView.setText(mClient == null ? "" : mClient.getUserPassword());
-      // }
       _checkBox.setChecked(useAuth);
       _userEdit.setEnabled(useAuth);
       _passEdit.setEnabled(useAuth);
@@ -339,21 +441,21 @@ public class ClientPreference extends DialogPreference {
          }
          mClient.setClientName(mNameView.getText().toString());
 
-
-
          if (mUseSimple) {
             String addr = mHostView.getText().toString();
             String user = mUserView.getText().toString();
             String pass = mPassView.getText().toString();
             boolean auth = mUseAuthView.isChecked();
-            GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr, 44321, user, pass, auth);
+            GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr,
+                  Constants.DEFAULT_REMOTEACCESS_PORT, user, pass, auth);
             mClient.setRemoteAccessApi(api);
 
-            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, 4321, user, pass, auth);
+            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, Constants.DEFAULT_TV_PORT, user, pass,
+                  auth);
             mClient.setTvControlApi(tvApi);
 
-            WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, addr, 8017,
-                  user, pass, auth);
+            WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, addr,
+                  Constants.DEFAULT_WIFI_PORT, user, pass, auth);
             mClient.setClientControlApi(clientApi);
          } else {
             String gmaAddr = mEditTextGmaHost.getText().toString();
@@ -367,7 +469,7 @@ public class ClientPreference extends DialogPreference {
 
             String tv4homeAddr = mEditTextTv4HomeHost.getText().toString();
             String tv4homePort = mEditTextTv4HomePort.getText().toString();
-            
+
             String tvUser = mUserViewTv4Home.getText().toString();
             String tvPass = mPassViewTv4Home.getText().toString();
             boolean tvUseAuth = mUseTv4HomeAuth.isChecked();

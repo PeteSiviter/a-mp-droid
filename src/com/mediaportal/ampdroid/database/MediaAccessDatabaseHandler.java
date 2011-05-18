@@ -20,7 +20,7 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
-import com.mediaportal.ampdroid.utils.LogUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
    private final String CLIENT_ID = "ClientId";
@@ -49,7 +49,7 @@ public class MediaAccessDatabaseHandler implements IMediaAccessDatabase {
       try {
          mDatabase = mDbHelper.getWritableDatabase();
       } catch (Exception ex) {
-         Log.e(LogUtils.LOG_CONST, ex.toString());
+         Log.e(Constants.LOG_CONST, ex.toString());
       }
    }
 

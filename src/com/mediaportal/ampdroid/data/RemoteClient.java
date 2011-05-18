@@ -4,6 +4,7 @@ import com.mediaportal.ampdroid.api.IApiInterface;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;
 import com.mediaportal.ampdroid.api.ITvServiceApi;
+import com.mediaportal.ampdroid.utils.Util;
 
 public class RemoteClient {
    private int mClientId;
@@ -12,9 +13,6 @@ public class RemoteClient {
    private int mRemoteAccessApiId;
    private int mTvControlApiId;
    private int mClientControlApiId;
-   private String mUserName;
-   private String mUserPassword;
-   private boolean mUseAuth;
 
    private IMediaAccessApi mRemoteAccessApi;
    private ITvServiceApi mTvControlApi;
@@ -195,15 +193,15 @@ public class RemoteClient {
    }
 
    public boolean useAuth() {
-      if (!compareApiClients(3)) {// not all clients have same address
-         return false;
-      } else {
-         return true;
+      if (Util.compare(mClientControlApi.getUseAuth(), mRemoteAccessApi.getUseAuth(),
+            mTvControlApi.getUseAuth())) {
+         return mClientControlApi.getUseAuth();
       }
+      return false;
    }
 
    public String getUserPassword() {
-      if (!compareApiClients(2)) {// all clients have same address
+      if (!compareApiClients(2)) {// all clients have same password
          return "Different";
       } else {
          if (mRemoteAccessApi != null) {
@@ -237,33 +235,23 @@ public class RemoteClient {
    }
 
    public boolean hasDifferentSettings() {
-      if (!compare(mClientControlApi.getAddress(), mRemoteAccessApi.getAddress(),
+      if (!Util.compare(mClientControlApi.getAddress(), mRemoteAccessApi.getAddress(),
             mTvControlApi.getAddress())) {
          return true;
       }
       
-      if (!compare(mClientControlApi.getUserName(), mRemoteAccessApi.getUserName(),
+      if (!Util.compare(mClientControlApi.getUserName(), mRemoteAccessApi.getUserName(),
             mTvControlApi.getUserName())) {
          return true;
       }
-      if (!compare(mClientControlApi.getUserPass(), mRemoteAccessApi.getUserPass(),
+      if (!Util.compare(mClientControlApi.getUserPass(), mRemoteAccessApi.getUserPass(),
             mTvControlApi.getUserPass())) {
          return true;
       }
-      if (!compare(mClientControlApi.getUseAuth(), mRemoteAccessApi.getUseAuth(),
+      if (!Util.compare(mClientControlApi.getUseAuth(), mRemoteAccessApi.getUseAuth(),
             mTvControlApi.getUseAuth())) {
          return true;
       }
       return false;
    }
-
-   public boolean compare(Object... compare) {
-      for (Object o : compare) {
-         if (!compare[0].equals(o)) {
-            return false;
-         }
-      }
-      return true;
-   }
-
 }
