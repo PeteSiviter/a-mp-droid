@@ -46,37 +46,34 @@ public class LazyLoadingAdapter extends BaseAdapter {
       this(_activity);
       mCurrentViewData = _items;
    }
-   
-   public void addItem(ILoadingAdapterItem _item){
+
+   public void addItem(ILoadingAdapterItem _item) {
       mCurrentViewData.add(_item);
    }
 
    public boolean addItem(int _viewId, ILoadingAdapterItem _item) {
-      if(mViews.containsKey(_viewId)){
+      if (mViews.containsKey(_viewId)) {
          mViews.get(_viewId).add(_item);
          return true;
-      }
-      else{
+      } else {
          return false;
       }
    }
-   
-   public boolean setView(int _viewId){
-      if(mViews.containsKey(_viewId)){
+
+   public boolean setView(int _viewId) {
+      if (mViews.containsKey(_viewId)) {
          mCurrentViewData = mViews.get(_viewId);
          return true;
-      }
-      else{
+      } else {
          return false;
       }
    }
-   
-   public boolean addView(int _viewId){
-      if(!mViews.containsKey(_viewId)){
+
+   public boolean addView(int _viewId) {
+      if (!mViews.containsKey(_viewId)) {
          mViews.put(_viewId, new ArrayList<ILoadingAdapterItem>());
          return true;
-      }
-      else{
+      } else {
          return false;
       }
    }
@@ -157,8 +154,7 @@ public class LazyLoadingAdapter extends BaseAdapter {
                } else {
                   if (defaultImage == 0) {// show nothing as default image
                      holder.image.setImageBitmap(null);
-                  }
-                  else{
+                  } else {
                      holder.image.setImageResource(defaultImage);
                   }
                }
@@ -178,7 +174,12 @@ public class LazyLoadingAdapter extends BaseAdapter {
    }
 
    public void setLoadingText(String _text) {
+      setLoadingText(_text, true);
+   }
+
+   public void setLoadingText(String _text, boolean _loading) {
       ((LoadingAdapterItem) mIoadingIndicator).setLoadingText(_text);
+      ((LoadingAdapterItem) mIoadingIndicator).setLoadingVisible(_loading);
    }
 
    public void clear() {
@@ -188,6 +189,4 @@ public class LazyLoadingAdapter extends BaseAdapter {
    public void removeItem(ILoadingAdapterItem _item) {
       mCurrentViewData.remove(_item);
    }
-   
-
 }

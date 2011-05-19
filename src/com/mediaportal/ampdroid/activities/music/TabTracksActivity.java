@@ -34,6 +34,7 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicTrackTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicTrackThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
@@ -65,19 +66,24 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
          int albumsCount = mService.getMusicTracksCount();
          int loadItems = mItemsLoaded + _params[0];
 
-         while (mItemsLoaded < loadItems && mItemsLoaded <= albumsCount) {
-            int end = mItemsLoaded + 4;
-            if (end >= albumsCount) {
-               end = albumsCount - 1;
-            }
-            List<MusicTrack> series = mService.getMusicTracks(mItemsLoaded, end);
+         if (albumsCount == -99) {
+            publishProgress(null, null);
+            return false;
+         } else {
+            while (mItemsLoaded < loadItems && mItemsLoaded < albumsCount) {
+               int end = mItemsLoaded + 4;
+               if (end >= albumsCount) {
+                  end = albumsCount - 1;
+               }
+               List<MusicTrack> series = mService.getMusicTracks(mItemsLoaded, end);
 
-            publishProgress(series);
-            if (series == null) {
-               return false;
+               publishProgress(series);
+               if (series == null) {
+                  return false;
+               } else {
+                  mItemsLoaded += 5;
+               }
             }
-
-            mItemsLoaded += 5;
          }
 
          if (mItemsLoaded < albumsCount) {
@@ -99,8 +105,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                         new MusicTrackThumbViewAdapterItem(t, true));
                }
             } else {
-               mAdapter.showLoadingItem(false);
-               // mAdapter.setLoadingText("Loading failed, check your connection");
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -152,9 +157,13 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
          public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
             ILoadingAdapterItem selectedItem = (ILoadingAdapterItem) mListView
                   .getItemAtPosition(_position);
-            MusicTrack selectedTrack = (MusicTrack) selectedItem.getItem();
-            if (selectedTrack != null) {
-               // TODO: Open track detail view
+            if (selectedItem.getClass().equals(LoadingAdapterItem.class)) {
+               loadFurtherItems();
+            } else {
+               MusicTrack selectedTrack = (MusicTrack) selectedItem.getItem();
+               if (selectedTrack != null) {
+                  // TODO: Open track detail view
+               }
             }
          }
       });

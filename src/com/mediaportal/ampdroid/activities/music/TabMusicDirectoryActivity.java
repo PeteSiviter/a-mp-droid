@@ -79,8 +79,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                         new MusicFileInfoTextViewAdapterItem(f));
                }
             } else {
-               mAdapter.showLoadingItem(false);
-               // mAdapter.setLoadingText("Loading failed, check your connection");
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }

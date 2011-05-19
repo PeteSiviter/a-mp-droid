@@ -24,6 +24,7 @@ import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
+import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesBannerViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesPosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesTextViewAdapterItem;
@@ -42,29 +43,35 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
 
    private class LoadSeriesTask extends AsyncTask<Integer, List<Series>, Boolean> {
       private Context mContext;
-      private LoadSeriesTask(Context _context){
+
+      private LoadSeriesTask(Context _context) {
          mContext = _context;
       }
-      
+
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
          int seriesCount = mService.getSeriesCount();
          int loadItems = mSeriesLoaded + _params[0];
 
-         while (mSeriesLoaded < loadItems) {
-            int end = mSeriesLoaded + 4;
-            if(end >= seriesCount){
-               end = seriesCount - 1;
+         if (seriesCount == -99) {
+            publishProgress(null, null);
+            return false;
+         } else {
+            while (mSeriesLoaded < loadItems && mSeriesLoaded < seriesCount) {
+               int end = mSeriesLoaded + 4;
+               if (end >= seriesCount) {
+                  end = seriesCount - 1;
+               }
+               List<Series> series = mService.getSeries(mSeriesLoaded, end);
+
+               publishProgress(series);
+               if (series == null) {
+                  return false;
+               } else {
+                  mSeriesLoaded += 5;
+               }
             }
-            List<Series> series = mService.getSeries(mSeriesLoaded, end);
-            
-            publishProgress(series);
-            if (series == null) {
-               return false;
-            }
-            
-            mSeriesLoaded += 5;
          }
 
          if (mSeriesLoaded < seriesCount) {
@@ -89,8 +96,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
                         s));
                }
             } else {
-               mAdapter.showLoadingItem(false);
-               //mAdapter.setLoadingText("Loading failed, check your connection");
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -106,6 +112,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
             mAdapter.notifyDataSetChanged();
          }
          mStatusBarHandler.setLoading(false);
+
          mSeriesLoaderTask = null;
       }
 
@@ -144,31 +151,36 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
          public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
             ILoadingAdapterItem selectedItem = (ILoadingAdapterItem) mListView
                   .getItemAtPosition(_position);
-            Series selectedSeries = (Series) selectedItem.getItem();
-            if (selectedSeries != null) {
-               Intent myIntent = new Intent(_view.getContext(), TabSeriesDetailsActivity.class);
-               myIntent.putExtra("series_id", selectedSeries.getId());
-               myIntent.putExtra("series_name", selectedSeries.getPrettyName());
-               myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-               // Create the view using FirstGroup's LocalActivityManager
-               View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
-                     .startActivity("series_details", myIntent).getDecorView();
+            if (selectedItem.getClass().equals(LoadingAdapterItem.class)) {
+               loadFurtherSeriesItems();
+            } else {
+               Series selectedSeries = (Series) selectedItem.getItem();
+               if (selectedSeries != null) {
+                  Intent myIntent = new Intent(_view.getContext(), TabSeriesDetailsActivity.class);
+                  myIntent.putExtra("series_id", selectedSeries.getId());
+                  myIntent.putExtra("series_name", selectedSeries.getPrettyName());
+                  myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-               // Again, replace the view
-               TabSeriesActivityGroup.getGroup().replaceView(view);
+                  // Create the view using FirstGroup's LocalActivityManager
+                  View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
+                        .startActivity("series_details", myIntent).getDecorView();
+
+                  // Again, replace the view
+                  TabSeriesActivityGroup.getGroup().replaceView(view);
+               }
             }
          }
       });
-
-      mAdapter.setLoadingText(getString(R.string.media_series_loadseries));
-      mAdapter.showLoadingItem(true);
 
       loadFurtherSeriesItems();
    }
 
    private void loadFurtherSeriesItems() {
       if (mSeriesLoaderTask == null) {
+         mAdapter.setLoadingText(getString(R.string.media_series_loadseries));
+         mAdapter.showLoadingItem(true);
+
          mSeriesLoaderTask = new LoadSeriesTask(this);
          mStatusBarHandler.setLoading(true);
          mSeriesLoaderTask.execute(20);
@@ -179,13 +191,18 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
 
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views));
+      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views));
 
-      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views_text));
-      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE, getString(R.string.media_views_poster));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
-      MenuItem bannerSettingsItem = viewItem.add(0, Menu.FIRST + 4, Menu.NONE, getString(R.string.media_views_banner));
-      
+      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views_text));
+      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE,
+            getString(R.string.media_views_poster));
+      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
+            getString(R.string.media_views_thumbs));
+      MenuItem bannerSettingsItem = viewItem.add(0, Menu.FIRST + 4, Menu.NONE,
+            getString(R.string.media_views_banner));
+
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

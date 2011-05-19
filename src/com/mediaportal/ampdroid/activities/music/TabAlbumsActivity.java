@@ -35,6 +35,7 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
@@ -90,8 +91,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                   job.setAuth(cred.getUsername(), cred.getPassword());
                }
 
-               Intent download = ItemDownloaderHelper.createDownloadIntent(
-                     mContext, job);
+               Intent download = ItemDownloaderHelper.createDownloadIntent(mContext, job);
                publishProgress(download);
             }
          }
@@ -128,19 +128,24 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
             int albumsCount = mService.getAlbumsCount();
             int loadItems = mItemsLoaded + _params[0];
 
-            while (mItemsLoaded < loadItems) {
-               int end = mItemsLoaded + 4;
-               if (end >= albumsCount) {
-                  end = albumsCount - 1;
-               }
-               List<MusicAlbum> items = mService.getAlbums(mItemsLoaded, end);
+            if (albumsCount == -99) {
+               publishProgress(null, null);
+               return false;
+            } else {
+               while (mItemsLoaded < loadItems && mItemsLoaded < albumsCount) {
+                  int end = mItemsLoaded + 4;
+                  if (end >= albumsCount) {
+                     end = albumsCount - 1;
+                  }
+                  List<MusicAlbum> items = mService.getAlbums(mItemsLoaded, end);
 
-               publishProgress(items);
-               if (items == null) {
-                  return false;
+                  publishProgress(items);
+                  if (items == null) {
+                     return false;
+                  } else {
+                     mItemsLoaded += 5;
+                  }
                }
-
-               mItemsLoaded += 5;
             }
 
             if (mItemsLoaded < albumsCount) {
@@ -173,8 +178,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         new MusicAlbumThumbViewAdapterItem(s, showArtist));
                }
             } else {
-               mAdapter.showLoadingItem(false);
-               // mAdapter.setLoadingText("Loading failed, check your connection");
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -226,26 +230,30 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
             ILoadingAdapterItem selectedItem = (ILoadingAdapterItem) mListView
                   .getItemAtPosition(_position);
-            MusicAlbum selectedSeries = (MusicAlbum) selectedItem.getItem();
-            if (selectedSeries != null) {
-               Intent myIntent = new Intent(_view.getContext(), TabAlbumDetailsActivity.class);
-               myIntent.putExtra("album_artists_string", selectedSeries.getAlbumArtistString());
-               myIntent.putExtra("album_name", selectedSeries.getTitle());
-               myIntent.putExtra("album_artists", selectedSeries.getAlbumArtists());
-               myIntent.putExtra("album_cover", selectedSeries.getCoverPathLarge());
-               myIntent.putExtra("activity_group", mActivityGroup);
-               myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-               
-               if (mArtist != null) {
-                  View view = TabArtistsActivityGroup.getGroup().getLocalActivityManager()
-                        .startActivity("album_details", myIntent).getDecorView();
+            if (selectedItem.getClass().equals(LoadingAdapterItem.class)) {
+               loadFurtherItems();
+            } else {
+               MusicAlbum selectedSeries = (MusicAlbum) selectedItem.getItem();
+               if (selectedSeries != null) {
+                  Intent myIntent = new Intent(_view.getContext(), TabAlbumDetailsActivity.class);
+                  myIntent.putExtra("album_artists_string", selectedSeries.getAlbumArtistString());
+                  myIntent.putExtra("album_name", selectedSeries.getTitle());
+                  myIntent.putExtra("album_artists", selectedSeries.getAlbumArtists());
+                  myIntent.putExtra("album_cover", selectedSeries.getCoverPathLarge());
+                  myIntent.putExtra("activity_group", mActivityGroup);
+                  myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                  TabArtistsActivityGroup.getGroup().replaceView(view);
-               } else {
-                  View view = TabAlbumsActivityGroup.getGroup().getLocalActivityManager()
-                        .startActivity("album_details", myIntent).getDecorView();
+                  if (mArtist != null) {
+                     View view = TabArtistsActivityGroup.getGroup().getLocalActivityManager()
+                           .startActivity("album_details", myIntent).getDecorView();
 
-                  TabAlbumsActivityGroup.getGroup().replaceView(view);
+                     TabArtistsActivityGroup.getGroup().replaceView(view);
+                  } else {
+                     View view = TabAlbumsActivityGroup.getGroup().getLocalActivityManager()
+                           .startActivity("album_details", myIntent).getDecorView();
+
+                     TabAlbumsActivityGroup.getGroup().replaceView(view);
+                  }
                }
             }
          }
@@ -393,7 +401,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
    public void onBackPressed() {
       if (mActivityGroup.equals("artists")) {
          TabArtistsActivityGroup.getGroup().back();
-      } else if(mActivityGroup.equals("albums")){
+      } else if (mActivityGroup.equals("albums")) {
          TabAlbumsActivityGroup.getGroup().back();
       }
       return;
@@ -404,7 +412,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       if (_keyCode == KeyEvent.KEYCODE_BACK) {
          if (mActivityGroup.equals("artists")) {
             TabArtistsActivityGroup.getGroup().back();
-         } else if(mActivityGroup.equals("albums")){
+         } else if (mActivityGroup.equals("albums")) {
             TabAlbumsActivityGroup.getGroup().back();
          }
          return true;

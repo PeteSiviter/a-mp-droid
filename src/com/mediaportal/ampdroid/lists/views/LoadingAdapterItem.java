@@ -1,26 +1,29 @@
 package com.mediaportal.ampdroid.lists.views;
 
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
+import com.mediaportal.ampdroid.lists.LazyLoadingImage;
+import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class LoadingAdapterItem implements ILoadingAdapterItem {
 
    private String mLoadingText;
+   private SubtextViewHolder mHolder;
+   private boolean mLoading;
 
-   public LoadingAdapterItem(String _loadingText){
+   public LoadingAdapterItem(String _loadingText) {
       setLoadingText(_loadingText);
    }
-   
+
    @Override
    public LazyLoadingImage getImage() {
       return null;
    }
-
 
    @Override
    public int getType() {
@@ -39,24 +42,33 @@ public class LoadingAdapterItem implements ILoadingAdapterItem {
 
    @Override
    public ViewHolder createViewHolder(View _view) {
-      ViewHolder holder = new ViewHolder();
+      SubtextViewHolder holder = new SubtextViewHolder();
       holder.text = (TextView) _view.findViewById(R.id.TextViewLoadingText);
+      holder.progressBar = (ProgressBar) _view.findViewById(R.id.ProgressBarLoading);
       return holder;
    }
 
    @Override
    public void fillViewFromViewHolder(ViewHolder _holder) {
-      if(_holder.text != null){
-         _holder.text.setText(mLoadingText);
+      mHolder = (SubtextViewHolder) _holder;
+      handleLoadingText();
+      handleProgressVisibility();
+   }
+
+   private void handleProgressVisibility() {
+      if (mHolder != null) {
+         if (mLoading) {
+            mHolder.progressBar.setVisibility(View.VISIBLE);
+         } else {
+            mHolder.progressBar.setVisibility(View.INVISIBLE);
+         }
       }
    }
 
-   public void setLoadingText(String mLoadingText) {
-      this.mLoadingText = mLoadingText;
-   }
-
-   public String getLoadingText() {
-      return mLoadingText;
+   private void handleLoadingText() {
+      if (mHolder != null) {
+         mHolder.text.setText(mLoadingText);
+      }
    }
 
    @Override
@@ -71,4 +83,17 @@ public class LoadingAdapterItem implements ILoadingAdapterItem {
       return 0;
    }
 
+   public void setLoadingText(String mLoadingText) {
+      this.mLoadingText = mLoadingText;
+      handleLoadingText();
+   }
+
+   public String getLoadingText() {
+      return mLoadingText;
+   }
+
+   public void setLoadingVisible(boolean _loading) {
+      mLoading = _loading;
+      handleProgressVisibility();
+   }
 }

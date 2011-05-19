@@ -51,7 +51,7 @@ public class DataHandler {
          boolean _checkConnection) {
       dataHandler = new DataHandler(_client, _context);
       setFunctions(_client, false);
-
+   
       return true;
    }
 

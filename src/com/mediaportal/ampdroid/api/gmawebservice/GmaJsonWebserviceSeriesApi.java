@@ -115,7 +115,7 @@ public class GmaJsonWebserviceSeriesApi {
       } else {
          Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
-      return 0;
+      return -99;
    }
 
    public ArrayList<SeriesSeason> getAllSeasons(int _seriesId) {

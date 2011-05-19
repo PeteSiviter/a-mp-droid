@@ -70,7 +70,7 @@ public class SeriesThumbViewAdapterItem implements ILoadingAdapterItem {
       }
 
       if (holder.text != null) {
-         holder.text.setText("");
+         holder.text.setText(mSeries.getGenreString());
          holder.text.setTextColor(Color.WHITE);
       }
 

@@ -34,6 +34,7 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MoviePosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieThumbViewAdapterItem;
@@ -65,24 +66,29 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
          int loadItems = mVideosLoaded + _params[0];
          int videosCount = mService.getVideosCount();
 
-         while (mVideosLoaded < loadItems && mVideosLoaded < videosCount) {
-            int end = mVideosLoaded + 4;
-            if (end >= videosCount) {
-               end = videosCount - 1;
-            }
-            List<Movie> videos = mService.getVideos(mVideosLoaded, end);
-
-            publishProgress(videos);
-            if (videos == null) {
-               return false;
-            }
-            mVideosLoaded += 5;
-         }
-
-         if (mVideosLoaded < videosCount) {
-            return false;// not yet finished;
+         if (videosCount == -99) {
+            publishProgress(null, null);
+            return false;
          } else {
-            return true;// finished
+            while (mVideosLoaded < loadItems && mVideosLoaded < videosCount) {
+               int end = mVideosLoaded + 4;
+               if (end >= videosCount) {
+                  end = videosCount - 1;
+               }
+               List<Movie> videos = mService.getVideos(mVideosLoaded, end);
+
+               publishProgress(videos);
+               if (videos == null) {
+                  return false;
+               } else {
+                  mVideosLoaded += 5;
+               }
+            }
+            if (mVideosLoaded < videosCount) {
+               return false;// not yet finished;
+            } else {
+               return true;// finished
+            }
          }
       }
 
@@ -98,8 +104,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(), new MovieThumbViewAdapterItem(m));
                }
             } else {
-               mAdapter.showLoadingItem(false);
-               // mAdapter.setLoadingText("Loading failed, check your connection");
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -147,22 +152,25 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-            Movie selectedMovie = (Movie) ((ILoadingAdapterItem) mListView
-                  .getItemAtPosition(position)).getItem();
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(position);
 
-            Intent myIntent = new Intent(v.getContext(), TabVideoDetailsActivity.class);
-            myIntent.putExtra("video_id", selectedMovie.getId());
-            myIntent.putExtra("video_name", selectedMovie.getName());
+            if (item.getClass().equals(LoadingAdapterItem.class)) {
+               loadFurtherMovieItems();
+            } else {
+               Movie selectedMovie = (Movie) item.getItem();
+               Intent myIntent = new Intent(v.getContext(), TabVideoDetailsActivity.class);
+               myIntent.putExtra("video_id", selectedMovie.getId());
+               myIntent.putExtra("video_name", selectedMovie.getName());
 
-            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            // Create the view using FirstGroup's LocalActivityManager
-            View view = TabVideosActivityGroup.getGroup().getLocalActivityManager()
-                  .startActivity("video_details", myIntent).getDecorView();
+               // Create the view using FirstGroup's LocalActivityManager
+               View view = TabVideosActivityGroup.getGroup().getLocalActivityManager()
+                     .startActivity("video_details", myIntent).getDecorView();
 
-            // Again, replace the view
-            TabVideosActivityGroup.getGroup().replaceView(view);
-
+               // Again, replace the view
+               TabVideosActivityGroup.getGroup().replaceView(view);
+            }
          }
       });
 
@@ -267,8 +275,6 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
          }
       });
 
-      mAdapter.setLoadingText(getString(R.string.media_videos_loadvideos));
-      mAdapter.showLoadingItem(true);
       loadFurtherMovieItems();
    }
 
@@ -279,6 +285,9 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
 
    private void loadFurtherMovieItems() {
       if (mVideosLoaderTask == null) {
+         mAdapter.setLoadingText(getString(R.string.media_videos_loadvideos));
+         mAdapter.showLoadingItem(true);
+
          mVideosLoaderTask = new LoadVideosTask(this);
          mStatusBarHandler.setLoading(true);
          mVideosLoaderTask.execute(20);

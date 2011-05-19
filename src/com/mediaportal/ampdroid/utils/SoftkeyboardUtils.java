@@ -67,7 +67,7 @@ public class SoftkeyboardUtils {
       case KeyEvent.KEYCODE_T:
          return "t";
       case KeyEvent.KEYCODE_U:
-         return "ü";
+         return "u";
       case KeyEvent.KEYCODE_V:
          return "v";
       case KeyEvent.KEYCODE_W:

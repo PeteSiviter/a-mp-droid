@@ -34,6 +34,7 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MoviePosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieThumbViewAdapterItem;
@@ -54,28 +55,35 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
 
    private class LoadMoviesTask extends AsyncTask<Integer, List<Movie>, Boolean> {
       private Context mContext;
-      private LoadMoviesTask(Context _context){
+
+      private LoadMoviesTask(Context _context) {
          mContext = _context;
       }
+
       @SuppressWarnings("unchecked")
       @Override
       protected Boolean doInBackground(Integer... _params) {
          int loadItems = mMoviesLoaded + _params[0];
          int moviesCount = mService.getMovieCount();
-
-         while (mMoviesLoaded < loadItems) {
-            int end = mMoviesLoaded + 4;
-            if(end >= moviesCount){
-               end = moviesCount - 1;
+         if (moviesCount == -99) {
+            publishProgress(null, null);
+            return false;
+         } else {
+            while (mMoviesLoaded < loadItems && mMoviesLoaded < moviesCount) {
+               int end = mMoviesLoaded + 4;
+               if (end >= moviesCount) {
+                  end = moviesCount - 1;
+               }
+               List<Movie> series = mService.getMovies(mMoviesLoaded, end);
+               publishProgress(series);
+               if (series == null) {
+                  return false;
+               } else {
+                  mMoviesLoaded += 5;
+               }
             }
-            List<Movie> series = mService.getMovies(mMoviesLoaded, end);
-            publishProgress(series);
-            if (series == null){
-               return false;
-            }
-            mMoviesLoaded += 5;
          }
-         
+
          if (mMoviesLoaded < moviesCount) {
             return false;// not yet finished;
          } else {
@@ -89,16 +97,13 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
             List<Movie> movies = values[0];
             if (movies != null) {
                for (Movie m : movies) {
-                  mAdapter.addItem(ViewTypes.TextView.ordinal(),
-                        new MovieTextViewAdapterItem(m));
+                  mAdapter.addItem(ViewTypes.TextView.ordinal(), new MovieTextViewAdapterItem(m));
                   mAdapter.addItem(ViewTypes.PosterView.ordinal(),
                         new MoviePosterViewAdapterItem(m));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(), new MovieThumbViewAdapterItem(m));
                }
-            }
-            else{
-               mAdapter.showLoadingItem(false);
-               //mAdapter.setLoadingText("Loading failed, check your connection");
+            } else {
+               mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
                Util.showToast(mContext, getString(R.string.info_loading_failed));
             }
          }
@@ -143,22 +148,26 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-            Movie selectedMovie = (Movie) ((ILoadingAdapterItem) mListView
-                  .getItemAtPosition(position)).getItem();
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(position);
 
-            Intent myIntent = new Intent(v.getContext(), TabMovieDetailsActivity.class);
-            myIntent.putExtra("movie_id", selectedMovie.getId());
-            myIntent.putExtra("movie_name", selectedMovie.getName());
+            if (item.getClass().equals(LoadingAdapterItem.class)) {
+               loadFurtherMovieItems();
+            } else {
+               Movie selectedMovie = (Movie) item.getItem();
 
-            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               Intent myIntent = new Intent(v.getContext(), TabMovieDetailsActivity.class);
+               myIntent.putExtra("movie_id", selectedMovie.getId());
+               myIntent.putExtra("movie_name", selectedMovie.getName());
 
-            // Create the view using FirstGroup's LocalActivityManager
-            View view = TabMoviesActivityGroup.getGroup().getLocalActivityManager()
-                  .startActivity("movie_details", myIntent).getDecorView();
+               myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            // Again, replace the view
-            TabMoviesActivityGroup.getGroup().replaceView(view);
+               // Create the view using FirstGroup's LocalActivityManager
+               View view = TabMoviesActivityGroup.getGroup().getLocalActivityManager()
+                     .startActivity("movie_details", myIntent).getDecorView();
 
+               // Again, replace the view
+               TabMoviesActivityGroup.getGroup().replaceView(view);
+            }
          }
       });
 
@@ -243,7 +252,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            mService.playVideoFileOnClient(movieFile);
-                           
+
                            qa.dismiss();
                         }
                      });
@@ -263,8 +272,6 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
          }
       });
 
-      mAdapter.setLoadingText(getString(R.string.media_movies_loading));
-      mAdapter.showLoadingItem(true);
       loadFurtherMovieItems();
    }
 
@@ -275,6 +282,9 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
 
    private void loadFurtherMovieItems() {
       if (mMoviesLoaderTask == null) {
+         mAdapter.setLoadingText(getString(R.string.media_movies_loading));
+         mAdapter.showLoadingItem(true);
+
          mMoviesLoaderTask = new LoadMoviesTask(this);
          mStatusBarHandler.setLoading(true);
          mMoviesLoaderTask.execute(20);
@@ -284,11 +294,15 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views));
+      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views));
 
-      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE, getString(R.string.media_views_text));
-      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE, getString(R.string.media_views_poster));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE, getString(R.string.media_views_thumbs));
+      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views_text));
+      MenuItem posterSettingsItem = viewItem.add(0, Menu.FIRST + 2, Menu.NONE,
+            getString(R.string.media_views_poster));
+      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
+            getString(R.string.media_views_thumbs));
 
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
