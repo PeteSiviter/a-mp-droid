@@ -1,57 +1,50 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">Controla MP desde tu dispositivo Android</string>
-
 	<string name="actionbar_activity_not_found">Error al intentar abrir...</string>
 	<string name="welcome_choose_client">Cliente:</string>
 	<string name="welcome_auto_connect">Conectar al iniciar</string>
 	<string name="welcome_no_client">Por favor, seleccione un cliente...</string>
-	<string name="welcome_connect">Conectar</string>
-	<string name="welcome_no_clients">Sin clientes añadidos, use el menú de configuración para añadir clientes</string>
-
+	<string name="welcome_connect">Seleccionar</string>
+	<string name="welcome_no_clients">Sin clientes aÃ±adidos, use el menÃº de configuraciÃ³n para aÃ±adir clientes</string>
 	<string name="series_actors">Actores</string>
 	<string name="series_seasons">Temporadas</string>
-	<string name="series_release">Fecha de emisión</string>
-	<string name="series_runtime">Duración</string>
-	<string name="series_certification">Certificación</string>
+	<string name="series_release">Fecha de emisiÃ³n</string>
+	<string name="series_runtime">DuraciÃ³n</string>
+	<string name="series_certification">CertificaciÃ³n</string>
 	<string name="movie_actors">Actores</string>
 	<string name="movie_release">Lanzamiento</string>
-	<string name="movie_runtime">Duración</string>
-	<string name="movie_certification">certificación</string>
+	<string name="movie_runtime">DuraciÃ³n</string>
+	<string name="movie_certification">certificaciÃ³n</string>
 	<string name="episode_gueststars">Artistas invitados</string>
-	<string name="episode_firstaired">Primera Emisión</string>
-	<string name="episode_rating">Clasificación</string>
-	<string name="button_prev">Anter.</string>
-	<string name="button_next">Siguien.</string>
+	<string name="episode_firstaired">Primera EmisiÃ³n</string>
+	<string name="episode_rating">ClasificaciÃ³n</string>
+	<string name="button_prev">Ant.</string>
+	<string name="button_next">Sig.</string>
 	<string name="button_earlier">Antes</string>
-	<string name="button_later">Después</string>
-
+	<string name="button_later">DespuÃ©s</string>
 	<string name="title_home">MediaPortal en Android</string>
 	<string name="title_tvserver">TvServer</string>
 	<string name="title_tvserver_state">Control manual</string>
 	<string name="title_tvserver_channels">Canales</string>
 	<string name="title_tvserver_recordings">Grabaciones</string>
 	<string name="title_tvserver_schedules">Programaciones</string>
-	<string name="title_tvserver_epg">Guía TV</string>
-	<string name="title_media">Navegación</string>
-
+	<string name="title_tvserver_epg">GuÃ­a TV</string>
+	<string name="title_media">NavegaciÃ³n</string>
 	<string name="media_views">Vista</string>
 	<string name="media_views_text">Texto</string>
 	<string name="media_views_poster">Poster</string>
-	<string name="media_views_thumbs">Carátula</string>
+	<string name="media_views_thumbs">CarÃ¡tula</string>
 	<string name="media_views_banner">Banner</string>
-
 	<string name="media_tabs_shares">Carpetas</string>
 	<string name="media_tabs_videos">Videos</string>
-	<string name="media_tabs_movies">Películas</string>
+	<string name="media_tabs_movies">PelÃ­culas</string>
 	<string name="media_tabs_series">Series</string>
-
 	<string name="media_nofile">Archivo local no disponible para este elemento</string>
-
 	<string name="media_series_loadingerror">Error al cargar las series</string>
-	<string name="media_series_loadmultiplewarning_title">¡Muchos episodios a descargar!</string>
-	<string name="media_series_loadmultiplewarning_text_begin">¿Realmente desea descargar </string>
+	<string name="media_series_loadmultiplewarning_title">Â¡Muchos episodios a descargar!</string>
+	<string name="media_series_loadmultiplewarning_text_begin">Â¿Realmente desea descargar </string>
 	<string name="media_series_loadmultiplewarning_text_end"> episodios?</string>
 	<string name="media_series_season">Temporada</string>
 	<string name="media_series_loadseries">Cargando Series ...</string>
@@ -61,44 +54,39 @@
 	<string name="media_episodes">Episodios</string>
 	<string name="media_episodes_loading">Cargando Episodios ...</string>
 	<string name="media_episodes_minutes"> minutos</string>
-	<string name="media_shares_loadshares">Cargando Carpeta de Vídeos ...</string>
+	<string name="media_shares_loadshares">Cargando Carpeta de VÃ­deos ...</string>
 	<string name="media_shares_loadfiles">Cargando Archivos ...</string>
-	<string name="media_movie_loadingerror">Error al cargar las películas</string>
-	<string name="media_movie_loadmoviedetails">Cargando Detalles Películas</string>
-	<string name="media_movies_loading">Cargando Películas ...</string>
-	<string name="media_videos_loadingerror">Error al cargar los vídeos</string>
-	<string name="media_videos_loadvideodetails">Cargando Detalles Vídeos</string>
-	<string name="media_videos_loadvideos">Cargando Vídeos ...</string>
-
+	<string name="media_movie_loadingerror">Error al cargar las pelÃ­culas</string>
+	<string name="media_movie_loadmoviedetails">Cargando Detalles PelÃ­culas</string>
+	<string name="media_movies_loading">Cargando PelÃ­culas ...</string>
+	<string name="media_videos_loadingerror">Error al cargar los vÃ­deos</string>
+	<string name="media_videos_loadvideodetails">Cargando Detalles VÃ­deos</string>
+	<string name="media_videos_loadvideos">Cargando VÃ­deos ...</string>
 	<string name="music_tabs_shares">Carpetas</string>
-	<string name="music_tabs_albums">Álbumes</string>
+	<string name="music_tabs_albums">Ãlbumes</string>
 	<string name="music_tabs_artists">Artistas</string>
 	<string name="music_tabs_songs">Canciones</string>
-
 	<string name="music_album_details_tracks">Temas</string>
-	<string name="music_album_details_year">Año</string>
+	<string name="music_album_details_year">AÃ±o</string>
 	<string name="music_album_details_num_track">Temas</string>
-	<string name="music_album_details_length">Duración</string>
+	<string name="music_album_details_length">DuraciÃ³n</string>
 	<string name="music_album_details_year_seperator">\u0020-\u0020</string>
 	<string name="music_share_loadshares">Cargando Carpetas ...</string>
 	<string name="music_share_loaddirectory">Cargando Directorios ...</string>
-	<string name="music_albums_loadalbums">Cargando Álbumes ...</string>
+	<string name="music_albums_loadalbums">Cargando Ãlbumes ...</string>
 	<string name="music_artists_loadartists">Cargando Artistas ...</string>
 	<string name="music_tracks_loadtracks">Cargando Temas ...</string>
-
 	<string name="days_yesterday">Ayer</string>
 	<string name="days_today">Hoy</string>
-	<string name="days_tomorrow">Mañana</string>
+	<string name="days_tomorrow">MaÃ±ana</string>
 	<string name="state_recording">Grabando</string>
 	<string name="state_timeshifting">Timeshifting</string>
 	<string name="state_grabbingEpg">Descargando EPG</string>
-
-
 	<string name="tvserver_manual_title">Manual Control</string>
 	<string name="tvserver_manual_desc">Estado actual de tv service y de las tarjetas TV.
 	</string>
 	<string name="tvserver_epg_title">EPG</string>
-	<string name="tvserver_epg_desc">Guía Electrónica de Programación.</string>
+	<string name="tvserver_epg_desc">GuÃ­a ElectrÃ³nica de ProgramaciÃ³n.</string>
 	<string name="tvserver_channel_title">Canales</string>
 	<string name="tvserver_channel_desc">Todos los canales disponible en TVserver.</string>
 	<string name="tvserver_schedules_title">Programaciones</string>
@@ -106,63 +94,57 @@
 	<string name="tvserver_recordings_title">Grabaciones</string>
 	<string name="tvserver_recordings_desc">Todas las grabaciones en TVserver.</string>
 	<string name="tvserver_record_this">Grabar.</string>
-	<string name="tvserver_noconnection_tvserver_title">Sin conexión</string>
+	<string name="tvserver_noconnection_tvserver_title">Sin conexiÃ³n</string>
 	<string name="tvserver_noconnection_tvserver_desc">Error al conectar con Tv Server</string>
 	<string name="tvserver_starttimeshift_failed">Error al comenzar timeshift</string>
 	<string name="tvserver_stoptimeshift_failed">Error al parar timeshift</string>
 	<string name="tvserver_starttimeshift">Iniciar timeshift</string>
-	<string name="tvserver_startrecording">Iniciar Grabación</string>
+	<string name="tvserver_startrecording">Iniciar GrabaciÃ³n</string>
 	<string name="tvserver_stoptimeshift">Detener timeshift</string>
 	<string name="tvserver_loadgroups">Cargando Grupos</string>
 	<string name="tvserver_loadchannels">Cargando Canales</string>
-	<string name="tvserver_schedulecanceled">Programación Cancelada</string>
-	<string name="tvserver_schedulecancel_failed">Error al cancelar la grabación</string>
-	<string name="tvserver_cancel_schedule">Cancelar Programación</string>
-	<string name="tvserver_cancel_recording">Cancelar Grabación</string>
+	<string name="tvserver_schedulecanceled">ProgramaciÃ³n Cancelada</string>
+	<string name="tvserver_schedulecancel_failed">Error al cancelar la grabaciÃ³n</string>
+	<string name="tvserver_cancel_schedule">Cancelar ProgramaciÃ³n</string>
+	<string name="tvserver_cancel_recording">Cancelar GrabaciÃ³n</string>
 	<string name="tvserver_loadschedules">Cargando Programaciones ...</string>
 	<string name="tvserver_loadrecordings">Cargando Grabaciones ...</string>
 	<string name="tvserver_loadprogramdetails_failed">Error al cargar detalles programa</string>
 	<string name="tvserver_loadprogramdetails">Cargando Detalles Programa</string>
 	<string name="tvserver_loadepg_finished">EPG Cargada</string>
-	<string name="tvserver_loadepg">Cargando Guía de Programación</string>
+	<string name="tvserver_loadepg">Cargando GuÃ­a de ProgramaciÃ³n</string>
 	<string name="tvserver_errorplaying">Error al reproducir </string>
-	<string name="tvserver_errorplaying_resultcode">, Código: </string>
+	<string name="tvserver_errorplaying_resultcode">, CÃ³digo: </string>
 	<string name="tvserver_finishedplaying">Finished playing  </string>
 	<string name="tvserver_channel">Canales</string>
 	<string name="tvserver_activecards">Tarjetas TV Activas</string>
-	<string name="tvserver_title_starttimeshiftrecording">Iniciar Timeshift/Grabación</string>
-
+	<string name="tvserver_title_starttimeshiftrecording">Iniciar Timeshift/GrabaciÃ³n</string>
 	<string name="tvserver_program_start">Inicio</string>
-	<string name="tvserver_program_end">Finalización</string>
-	<string name="tvserver_program_duration">Duración</string>
-	<string name="tvserver_program_desc">Descripción</string>
-
-	<string name="remote_menu_morecommands">Más Comandos</string>
+	<string name="tvserver_program_end">FinalizaciÃ³n</string>
+	<string name="tvserver_program_duration">DuraciÃ³n</string>
+	<string name="tvserver_program_desc">DescripciÃ³n</string>
+	<string name="remote_menu_morecommands">MÃ¡s Comandos</string>
 	<string name="remote_menu_plugins">Plugins</string>
-	<string name="remote_menu_powermodes">Menú Apagado</string>
-
-	<string name="remote_logoff">Descripción</string>
+	<string name="remote_menu_powermodes">MenÃº Apagado</string>
+	<string name="remote_logoff">DescripciÃ³n</string>
 	<string name="remote_suspend">Suspender</string>
 	<string name="remote_hibernate">Hibernar</string>
 	<string name="remote_reboot">Reiniciar</string>
 	<string name="remote_shutdown">Apagar</string>
 	<string name="remote_exit">Salir</string>
-
 	<string name="slider_remote_controls">Control Remoto</string>
-	<string name="slider_position_label">Posición</string>
-
+	<string name="slider_position_label">PosiciÃ³n</string>
 	<string name="settings_categories_clients">Clientes</string>
 	<string name="settings_category_general">General</string>
 	<string name="settings_category_tvserver">Tv Server</string>
-	<string name="settings_category_media">Navegación</string>
-
+	<string name="settings_category_media">NavegaciÃ³n</string>
 	<string name="settings_general_fullscreen">Pantalla Completa</string>
-	<string name="settings_general_fullscreen_desc">Ocultar Barra de notificaciones. (Reinicie la aplicación para que los cambios
+	<string name="settings_general_fullscreen_desc">Ocultar Barra de notificaciones. (Reinicie la aplicaciÃ³n para que los cambios
 		surtan efecto)</string>
 	<string name="settings_preference_vibrate_title">Vibrar al tocar</string>
-	<string name="settings_preference_vibrate_desc">La pantalla vibrará al tocarla</string>
-	<string name="settings_tvserver_showall_title">Mostrar Grupo "All Channel"</string>
-	<string name="settings_tvserver_showall_desc">Muestra el grupo "All Channel", donde están todos los
+	<string name="settings_preference_vibrate_desc">La pantalla vibrarÃ¡ al tocarla</string>
+	<string name="settings_tvserver_showall_title">Mostrar Grupo \"All Channel\"</string>
+	<string name="settings_tvserver_showall_desc">Muestra el grupo \"All Channel\", donde estÃ¡n todos los
 		canales de tv server</string>
 	<string name="settings_tvserver_clientname_title">Nombre Cliente</string>
 	<string name="settings_tvserver_clientname_desc">Nombre del cliente al interactuar con
@@ -170,76 +152,73 @@
 	<string name="settings_media_cachemedia_title">Cache information locally</string>
 	<string name="settings_media_cachemedia_desc">Cache media information ()</string>
 	<string name="settings_media_loaddetails_title">Cargar detalles automaticamente</string>
-	<string name="settings_media_loaddetails_desc">Cargar detalles automáticamente o sólo cuando los
+	<string name="settings_media_loaddetails_desc">Cargar detalles automÃ¡ticamente o sÃ³lo cuando los
 		elementos sean seleccionados</string>
-	<string name="settings_media_cachevalid_title">Tiempo en caché</string>
-	<string name="settings_media_cachevalid_desc">Borrar de caché si los elementos son más antiguos que
+	<string name="settings_media_cachevalid_title">Tiempo en cachÃ©</string>
+	<string name="settings_media_cachevalid_desc">Borrar de cachÃ© si los elementos son mÃ¡s antiguos que
 	</string>
-
 	<string name="settings_categories_clients_desc">Editar Clientes</string>
 	<string name="settings_clients_newclient_title">Clientes</string>
-	<string name="settings_clients_usesimple">Modo Básico</string>
-	<string name="settings_clients_switchsimple">Cambiar a Modo Básico</string>
-	<string name="settings_clients_newclient_desc">Añadir, editar, borrar clientes</string>
+	<string name="settings_clients_switchadvanced">Cambiar a Modo Avanzado</string>
+	<string name="settings_clients_switchsimple">Cambiar a Modo BÃ¡sico</string>
+	<string name="settings_clients_switchsimple_warning_title">Â¿Eliminar configuraciÃ³n?</string>
+	<string name="settings_clients_switchsimple_warning_text">Actualmente tiene configuraciones diferente para 
+		cada cliente. Si cambia al modo bÃ¡sico se eliminarÃ¡n.</string>
+	<string name="settings_clients_newclient_desc">AÃ±adir, editar, borrar clientes</string>
 	<string name="settings_general_preloaditems_title">Elementos precargados</string>
-	<string name="settings_general_preloaditems_desc">Número de elementos a cargar cuando se llegue al final de
+	<string name="settings_general_preloaditems_desc">NÃºmero de elementos a cargar cuando se llegue al final de
 		la lista</string>
 	<string name="settings_general_autoconnect_title">Auto-Conectar</string>
-	<string name="settings_general_autoconnect_desc">Conecta automáticamente con el cliente mediaportal al
+	<string name="settings_general_autoconnect_desc">Conecta automÃ¡ticamente con el cliente mediaportal al
 		iniciar</string>
 	<string name="settings_general_autowol_title">WOL al conectar</string>
-	<string name="settings_general_autowol_desc">Despierta automáticamente el PC al iniciar</string>
+	<string name="settings_general_autowol_desc">Despierta automÃ¡ticamente el PC al iniciar</string>
 	<string name="settings_general_statusbar_hide_title">Ocultar la barra</string>
 	<string name="settings_general_statusbar_hide_desc">Auto-oculta la barra de estado</string>
-	<string name="settings_general_statusbar_hide_dialog_title">Modo de auto-ocultación</string>
-
-	<string name="settings_clients_noclients">Use el botón menú para añadir un host</string>
+	<string name="settings_general_statusbar_hide_dialog_title">Modo de auto-ocultaciÃ³n</string>
+	<string name="settings_clients_noclients">Use el botÃ³n menÃº para aÃ±adir un host</string>
 	<string name="settings_clients_clientname">Nombre:</string>
-	<string name="settings_clients_clienthost">Host o dirección IP:</string>
+	<string name="settings_clients_clienthost">Host o direcciÃ³n IP:</string>
 	<string name="settings_clients_clientport">Puerto:</string>
 	<string name="settings_clients_clientusername">Usuario:</string>
-	<string name="settings_clients_clientpassword">Contraseña:</string>
-	<string name="settings_clients_clientuseauth">Usar Autentificación:</string>
+	<string name="settings_clients_default">Por Defecto:\u0020</string>
+	<string name="settings_clients_clientpassword">ContraseÃ±a:</string>
+	<string name="settings_clients_clientuseauth">Usar AutentificaciÃ³n:</string>
 	<string name="settings_clients_enableservice">Habilitar Servicio</string>
 	<string name="settings_clients_gma">GmaWebservice</string>
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
-	<string name="settings_delete_client_title">¿Eliminar Cliente?</string>
-	<string name="settings_delete_client_start">¿Está seguro de que desea eliminar el cliente \"</string>
-	<string name="settings_delete_client_end">\"?</string>
-
+	<string name="settings_delete_client_title">Â¿Eliminar Cliente?</string>
+	<string name="settings_delete_client_start">Â¿EstÃ¡ seguro de que desea eliminar el cliente \\"</string>
+	<string name="settings_delete_client_end">\\"?</string>
 	<string name="settings_media_defaultview_series_title">Vista en Series</string>
 	<string name="settings_media_defaultview_series_desc">Vista por defecto al ver sus series</string>
-	<string name="settings_media_defaultview_movies_title">Vista en Películas</string>
-	<string name="settings_media_defaultview_movies_desc">Vista por defecto al ver sus películas</string>
-	<string name="settings_media_defaultview_videos_title">Vista en Vídeos</string>
+	<string name="settings_media_defaultview_movies_title">Vista en PelÃ­culas</string>
+	<string name="settings_media_defaultview_movies_desc">Vista por defecto al ver sus pelÃ­culas</string>
+	<string name="settings_media_defaultview_videos_title">Vista en VÃ­deos</string>
 	<string name="settings_media_defaultview_videos_desc">Vista por defecto al ver sus videos</string>
 	<string name="settings_media_defaultview_shares_title">Vista en Carpetas</string>
 	<string name="settings_media_defaultview_shares_desc">Vista por defecto al ver sus carpetas</string>
-
-	<string name="info_not_implemented">Sin implementar aún</string>
-	<string name="info_no_connection">Sin conexión con TVserver</string>
-	<string name="info_remote_notconnected">Sin Conexión</string>
+	<string name="info_not_implemented">Sin implementar aÃºn</string>
+	<string name="info_no_connection">Sin conexiÃ³n con TVserver</string>
+	<string name="info_remote_notconnected">Sin ConexiÃ³n</string>
 	<string name="info_loading_title">Cargando. Por favor, espere ...</string>
-	<string name="info_loading_failed">Error al cargar, compruebe su conexión</string>
+	<string name="info_loading_failed">Error al cargar, compruebe su conexiÃ³n</string>
 	<string name="info_file_not_found">El archivo debe descargarse primero</string>
 	<string name="info_file_already_downloaded">Archivo ya descargado</string>
-
 	<string name="menu_clients">Clientes</string>
-	<string name="menu_settings">Configuración</string>
+	<string name="menu_settings">ConfiguraciÃ³n</string>
 	<string name="menu_refresh">Recargar</string>
-	<string name="menu_addhost">Añadir host</string>
+	<string name="menu_addhost">AÃ±adir host</string>
 	<string name="menu_addhost_scan">Escaneo QR</string>
 	<string name="menu_connect">Conectar</string>
 	<string name="menu_disconnect">Desconectar</string>
 	<string name="remote_menu_keyboard">Teclado</string>
-
 	<string name="dialog_ok">Ok</string>
-	<string name="dialog_yes">Sí</string>
+	<string name="dialog_yes">SÃ­</string>
 	<string name="dialog_no">No</string>
 	<string name="dialog_cancel">Cancelar</string>
-	<string name="dialog_title_addhost">Añadir nuevo host</string>
-
+	<string name="dialog_title_addhost">AÃ±adir nuevo host</string>
 	<string name="quickactions_playclient">Reproducir en PC</string>
 	<string name="quickactions_playdevice">Reproducir localmente</string>
 	<string name="quickactions_downloadsd">Descargar</string>
@@ -247,70 +226,14 @@
 	<string name="quickactions_stoptimeshift">Cancelar</string>
 	<string name="quickactions_record">Grabar</string>
 	<string name="quickactions_cancelrecord">Cancelar Grab.</string>
-
-	<string name="connection_successful">Conexión establecida satisfactoriamente</string>
-	<string name="connection_failed">Conexión no establecida</string>
-	<string name="connection_closed">Conexión perdida</string>
-	
-	<string name="settings_host_useauth">Usar Autentificación</string>
+	<string name="connection_successful">ConexiÃ³n establecida satisfactoriamente</string>
+	<string name="connection_failed">ConexiÃ³n no establecida</string>
+	<string name="connection_closed">ConexiÃ³n perdida</string>
+	<string name="settings_host_useauth">Usar AutentificaciÃ³n</string>
 	<string name="remote_button_info">Info</string>
-	<string name="remote_button_subtitle">Subtítulos</string>
-	<string name="remote_button_menu">Menú</string>
-	
+	<string name="remote_button_subtitle">SubtÃ­tulos</string>
+	<string name="remote_button_menu">MenÃº</string>
 	<string name="notification_download_failed">Descarga fallida</string>
 	<string name="notification_download_succeeded">Descarga completa</string>
 	<string name="notification_title">aMPdroid</string>
-
-	<string-array name="settings_general_statusbar_autohide_text">
-		<item>Siempre Visible</item>
-		<item>Siempre Oculta</item>
-		<item>Mostrar al Conectar</item>
-		<item>Mostrar/Ocultar manualmente</item>
-	</string-array>
-	<string-array name="settings_general_statusbar_autohide_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_series_text">
-		<item>Texto</item>
-		<item>Poster</item>
-		<item>Banner</item>
-		<item>Carátula</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_series_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_movies_text">
-		<item>Texto</item>
-		<item>Poster</item>
-		<item>Carátula</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_movies_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_videos_text">
-		<item>Texto</item>
-		<item>Poster</item>
-		<item>Carátula</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_videos_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_shares_text">
-		<item>Texto</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_shares_values">
-		<item>0</item>
-	</string-array>
-
 </resources>

@@ -223,6 +223,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
+      mListView.setFastScrollEnabled(true);
       mListView.setAdapter(mAdapter);
 
       mListView.setOnItemClickListener(new OnItemClickListener() {

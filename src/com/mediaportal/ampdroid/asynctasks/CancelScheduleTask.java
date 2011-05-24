@@ -3,6 +3,7 @@ package com.mediaportal.ampdroid.asynctasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.TvProgramBase;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -32,11 +33,11 @@ import com.mediaportal.ampdroid.utils.Util;
       @Override
       protected void onPostExecute(Boolean _result) {
          if (_result) {
-            Util.showToast(mContext, "Schedule cancelled");
+            Util.showToast(mContext, mContext.getString(R.string.tvserver_schedulecanceled));
 
-            mEpgAdapter.notifyDataSetInvalidated();
+            mEpgAdapter.notifyDataSetChanged();
          } else {
-            Util.showToast(mContext, "Couldn't cancel schedule");
+            Util.showToast(mContext,  mContext.getString(R.string.tvserver_schedulecancel_failed));
          }
       }
    }

@@ -17,11 +17,11 @@ class GmaJsonWebserviceVideoApi {
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
 
-   private static final String GET_ALL_MOVIES = "MP_GetAllVideos";
-   private static final String GET_MOVIES_COUNT = "MP_GetVideosCount";
-   private static final String GET_MOVIES = "MP_GetVideos";
-   private static final String GET_MOVIE_DETAILS = "MP_GetFullVideo";
-   private static final String SEARCH_FOR_MOVIE = "MP_SearchForVideo";
+   private static final String GET_ALL_MOVIES = "GetAllVideos";
+   private static final String GET_MOVIES_COUNT = "GetVideosCount";
+   private static final String GET_MOVIES = "GetVideos";
+   private static final String GET_MOVIE_DETAILS = "GetFullVideo";
+   private static final String SEARCH_FOR_MOVIE = "SearchForVideo";
 
    public GmaJsonWebserviceVideoApi(JsonClient _jsonClient, ObjectMapper _mapper) {
       mJsonClient = _jsonClient;
@@ -35,7 +35,8 @@ class GmaJsonWebserviceVideoApi {
 
    ArrayList<Movie> getAllMovies() {
       String methodName = GET_ALL_MOVIES;
-      String response = mJsonClient.Execute(methodName);
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          Movie[] returnObject = (Movie[]) getObjectsFromJson(response, Movie[].class);
@@ -90,7 +91,8 @@ class GmaJsonWebserviceVideoApi {
    ArrayList<Movie> getMovies(int _start, int _end) {
       String methodName = GET_MOVIES;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          Movie[] returnObject = (Movie[]) getObjectsFromJson(response, Movie[].class);

@@ -21,19 +21,19 @@ public class GmaJsonWebserviceSeriesApi {
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
 
-   private static final String GET_ALL_SERIES = "MP_GetAllSeries";
-   private static final String GET_SERIES = "MP_GetSeries";
-   private static final String GET_SERIES_COUNT = "MP_GetSeriesCount";
-   private static final String GET_FULL_SERIES = "MP_GetFullSeries";
-   private static final String GET_ALL_SEASONS = "MP_GetAllSeasons";
-   private static final String GET_SEASON = "MP_GetSeason";
-   private static final String GET_ALL_EPISODES = "MP_GetAllEpisodes";
-   private static final String GET_EPISODES = "MP_GetEpisodes";
-   private static final String GET_EPISODES_COUNT = "MP_GetEpisodesCount";
-   private static final String GET_EPISODES_COUNT_FOR_SEASON = "MP_GetEpisodesCountForSeason";
-   private static final String GET_ALL_EPISODES_FOR_SEASON = "MP_GetAllEpisodesForSeason";
-   private static final String GET_EPISODES_FOR_SEASON = "MP_GetEpisodesForSeason";
-   private static final String GET_FULL_EPISODE = "MP_GetFullEpisode";
+   private static final String GET_ALL_SERIES = "GetAllSeries";
+   private static final String GET_SERIES = "GetSeries";
+   private static final String GET_SERIES_COUNT = "GetSeriesCount";
+   private static final String GET_FULL_SERIES = "GetFullSeries";
+   private static final String GET_ALL_SEASONS = "GetAllSeasons";
+   private static final String GET_SEASON = "GetSeason";
+   private static final String GET_ALL_EPISODES = "GetAllEpisodes";
+   private static final String GET_EPISODES = "GetEpisodes";
+   private static final String GET_EPISODES_COUNT = "GetEpisodesCount";
+   private static final String GET_EPISODES_COUNT_FOR_SEASON = "GetEpisodesCountForSeason";
+   private static final String GET_ALL_EPISODES_FOR_SEASON = "GetAllEpisodesForSeason";
+   private static final String GET_EPISODES_FOR_SEASON = "GetEpisodesForSeason";
+   private static final String GET_FULL_EPISODE = "GetFullEpisode";
 
    public GmaJsonWebserviceSeriesApi(JsonClient _wcfService, ObjectMapper _mapper) {
       mJsonClient = _wcfService;
@@ -47,7 +47,8 @@ public class GmaJsonWebserviceSeriesApi {
 
    public ArrayList<Series> getAllSeries() {
       String methodName = GET_ALL_SERIES;
-      String response = mJsonClient.Execute(methodName);
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          Series[] returnObject = (Series[]) getObjectsFromJson(response, Series[].class);
@@ -66,7 +67,8 @@ public class GmaJsonWebserviceSeriesApi {
    public ArrayList<Series> getSeries(int _start, int _end) {
       String methodName = GET_SERIES;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          Series[] returnObject = (Series[]) getObjectsFromJson(response, Series[].class);
@@ -120,7 +122,8 @@ public class GmaJsonWebserviceSeriesApi {
 
    public ArrayList<SeriesSeason> getAllSeasons(int _seriesId) {
       String methodName = GET_ALL_SEASONS;
-      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId));
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
+            JsonUtils.newPair("sort", 0), JsonUtils.newPair("order", 0));
 
       if (response != null) {
          SeriesSeason[] returnObject = (SeriesSeason[]) getObjectsFromJson(response,
@@ -158,7 +161,8 @@ public class GmaJsonWebserviceSeriesApi {
 
    public ArrayList<SeriesEpisode> getAllEpisodes(int _seriesId) {
       String methodName = GET_ALL_EPISODES;
-      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId));
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
+            JsonUtils.newPair("sort", GmaSortOptions.EpisodeNumber), JsonUtils.newPair("order", 0));
 
       if (response != null) {
          SeriesEpisode[] returnObject = (SeriesEpisode[]) getObjectsFromJson(response,
@@ -178,7 +182,8 @@ public class GmaJsonWebserviceSeriesApi {
    public ArrayList<SeriesEpisode> getEpisodes(int _seriesId, int _start, int _end) {
       String methodName = GET_EPISODES;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
-            JsonUtils.newPair("startIndex", _start), JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("startIndex", _start), JsonUtils.newPair("endIndex", _end),
+            JsonUtils.newPair("sort", GmaSortOptions.EpisodeNumber), JsonUtils.newPair("order", 0));
 
       if (response != null) {
          SeriesEpisode[] returnObject = (SeriesEpisode[]) getObjectsFromJson(response,
@@ -216,7 +221,8 @@ public class GmaJsonWebserviceSeriesApi {
    public ArrayList<SeriesEpisode> getAllEpisodesForSeason(int _seriesId, int _seasonNumber) {
       String methodName = GET_ALL_EPISODES_FOR_SEASON;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
-            JsonUtils.newPair("seasonNumber", _seasonNumber));
+            JsonUtils.newPair("seasonNumber", _seasonNumber),
+            JsonUtils.newPair("sort", GmaSortOptions.EpisodeNumber), JsonUtils.newPair("order", 0));
 
       if (response != null) {
          SeriesEpisode[] returnObject = (SeriesEpisode[]) getObjectsFromJson(response,
@@ -257,7 +263,8 @@ public class GmaJsonWebserviceSeriesApi {
       String methodName = GET_EPISODES_FOR_SEASON;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("seriesId", _seriesId),
             JsonUtils.newPair("seasonId", _seasonId), JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", GmaSortOptions.EpisodeNumber),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          SeriesEpisode[] returnObject = (SeriesEpisode[]) getObjectsFromJson(response,

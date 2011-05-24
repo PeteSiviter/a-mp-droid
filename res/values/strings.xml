@@ -118,6 +118,8 @@
 	<string name="tvserver_loadchannels">Loading Channels</string>
 	<string name="tvserver_schedulecanceled">Schedule canceled</string>
 	<string name="tvserver_schedulecancel_failed">Couldn\'t cancel schedule</string>
+	<string name="tvserver_scheduleadded">Schedule added</string>
+	<string name="tvserver_scheduleadd_failed">Couldn\'t add schedule</string>
 	<string name="tvserver_cancel_schedule">Cancel Schedule</string>
 	<string name="tvserver_cancel_recording">Cancel Recording</string>
 	<string name="tvserver_loadschedules">Loading Schedules ...</string>

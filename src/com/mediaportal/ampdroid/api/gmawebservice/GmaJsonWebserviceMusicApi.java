@@ -20,21 +20,21 @@ class GmaJsonWebserviceMusicApi {
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
 
-   private static final String GET_MUSIC_TRACK = "MP_GetMusicTrack";
-   private static final String GET_ALL_ALBUMS = "MP_GetAllAlbums";
-   private static final String GET_ALBUMS = "MP_GetAlbums";
-   private static final String GET_ALBUMS_COUNT = "MP_GetAlbumsCount";
-   private static final String GET_ALL_ARTISTS = "MP_GetAllArtists";
-   private static final String GET_ARTISTS = "MP_GetArtists";
-   private static final String GET_ALBUM = "MP_GetAlbum";
-   private static final String GET_ARTISTS_COUNT = "MP_GetArtistsCount";
-   private static final String GET_ALBUMS_BY_ARTIST = "MP_GetAlbumsByArtist";
-   private static final String GET_SONGS_OF_ALBUM = "MP_GetSongsOfAlbum";
-   private static final String FIND_MUSIC_TRACKS = "MP_FindMusicTracks";
-   private static final String GET_MUSIC_TRACKS_COUNT = "MP_GetMusicTracksCount";
-   private static final String GET_ALL_MUSIC_TRACKS = "MP_GetAllMusicTracks";
-   private static final String GET_MUSIC_TRACKS = "MP_GetMusicTracks";
-   private static final String GET_MUSIC_SHARES = "MP_GetAllMusicShares";
+   private static final String GET_MUSIC_TRACK = "GetMusicTrack";
+   private static final String GET_ALL_ALBUMS = "GetAllAlbums";
+   private static final String GET_ALBUMS = "GetAlbums";
+   private static final String GET_ALBUMS_COUNT = "GetAlbumsCount";
+   private static final String GET_ALL_ARTISTS = "GetAllArtists";
+   private static final String GET_ARTISTS = "GetArtists";
+   private static final String GET_ALBUM = "GetAlbum";
+   private static final String GET_ARTISTS_COUNT = "GetArtistsCount";
+   private static final String GET_ALBUMS_BY_ARTIST = "GetAlbumsByArtist";
+   private static final String GET_SONGS_OF_ALBUM = "GetSongsOfAlbum";
+   private static final String FIND_MUSIC_TRACKS = "FindMusicTracks";
+   private static final String GET_MUSIC_TRACKS_COUNT = "GetMusicTracksCount";
+   private static final String GET_ALL_MUSIC_TRACKS = "GetAllMusicTracks";
+   private static final String GET_MUSIC_TRACKS = "GetMusicTracks";
+   private static final String GET_MUSIC_SHARES = "GetAllMusicShares";
 
    public GmaJsonWebserviceMusicApi(JsonClient _jsonClient, ObjectMapper _mapper) {
       mJsonClient = _jsonClient;
@@ -85,7 +85,8 @@ class GmaJsonWebserviceMusicApi {
    public List<MusicTrack> getMusicTracks(int _start, int _end) {
       String methodName = GET_MUSIC_TRACKS;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);
@@ -103,7 +104,8 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicTrack> getAllMusicTracks() {
       String methodName = GET_ALL_MUSIC_TRACKS;
-      String response = mJsonClient.Execute(methodName);
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);
@@ -159,7 +161,8 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicAlbum> getAllAlbums() {
       String methodName = GET_ALL_ALBUMS;
-      String response = mJsonClient.Execute(methodName);
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicAlbum[] returnObject = (MusicAlbum[]) getObjectsFromJson(response, MusicAlbum[].class);
@@ -178,7 +181,8 @@ class GmaJsonWebserviceMusicApi {
    public List<MusicAlbum> getAlbums(int _start, int _end) {
       String methodName = GET_ALBUMS;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicAlbum[] returnObject = (MusicAlbum[]) getObjectsFromJson(response, MusicAlbum[].class);
@@ -214,7 +218,8 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicArtist> getAllArtists() {
       String methodName = GET_ALL_ARTISTS;
-      String response = mJsonClient.Execute(methodName);
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicArtist[] returnObject = (MusicArtist[]) getObjectsFromJson(response,
@@ -234,7 +239,8 @@ class GmaJsonWebserviceMusicApi {
    public List<MusicArtist> getArtists(int _start, int _end) {
       String methodName = GET_ARTISTS;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("startIndex", _start),
-            JsonUtils.newPair("endIndex", _end));
+            JsonUtils.newPair("endIndex", _end), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicArtist[] returnObject = (MusicArtist[]) getObjectsFromJson(response,
@@ -271,8 +277,9 @@ class GmaJsonWebserviceMusicApi {
 
    public List<MusicAlbum> getAlbumsByArtist(String artistName) {
       String methodName = GET_ALBUMS_BY_ARTIST;
-      String response = mJsonClient
-            .Execute(methodName, JsonUtils.newPair("artistName", artistName));
+      String response = mJsonClient.Execute(methodName,
+            JsonUtils.newPair("artistName", artistName), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicAlbum[] returnObject = (MusicAlbum[]) getObjectsFromJson(response, MusicAlbum[].class);
@@ -303,7 +310,8 @@ class GmaJsonWebserviceMusicApi {
       }
 
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("albumName", albumName),
-            JsonUtils.newPair("albumArtistName", albumArtistName));
+            JsonUtils.newPair("albumArtistName", albumArtistName), JsonUtils.newPair("sort", 0),
+            JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);
@@ -322,7 +330,8 @@ class GmaJsonWebserviceMusicApi {
    public List<MusicTrack> findMusicTracks(String album, String artist, String title) {
       String methodName = FIND_MUSIC_TRACKS;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("album", album),
-            JsonUtils.newPair("artist", artist), JsonUtils.newPair("title", title));
+            JsonUtils.newPair("artist", artist), JsonUtils.newPair("title", title),
+            JsonUtils.newPair("sort", 0), JsonUtils.newPair("order", 0));
 
       if (response != null) {
          MusicTrack[] returnObject = (MusicTrack[]) getObjectsFromJson(response, MusicTrack[].class);

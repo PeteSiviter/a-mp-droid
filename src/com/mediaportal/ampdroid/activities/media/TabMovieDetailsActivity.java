@@ -65,7 +65,7 @@ public class TabMovieDetailsActivity extends Activity {
       @Override
       protected MovieFull doInBackground(Integer... _params) {
          mMovie = mService.getMovieDetails(mMovieId);
-         
+
          return mMovie;
       }
 
@@ -94,8 +94,14 @@ public class TabMovieDetailsActivity extends Activity {
                mTextViewMovieRuntime.setText("-");
             }
 
-            String actorsString = _result.getActorsString();
-            if (actorsString != null) {
+            String[] actors = _result.getActorsString().split("\\|");
+            if (actors != null) {
+               String actorsString = "";
+               for (String a : actors) {
+                  if (a != null && !a.equals("")) {
+                     actorsString += " - " + a + "\n";
+                  }
+               }
                mTextViewMovieActors.setText(actorsString);
             } else {
                mTextViewMovieActors.setText("-");
@@ -103,9 +109,9 @@ public class TabMovieDetailsActivity extends Activity {
 
             int rating = (int) _result.getScore();
             mRatingBarMovieRating.setRating(rating);
-            
+
             mTextViewMovieOverview.setText(_result.getSummary());
-            
+
             String movieFile = mMovie.getFilename();
             if (movieFile != null) {
                String dirName = DownloaderUtils.getMoviePath(mMovie);
@@ -123,7 +129,7 @@ public class TabMovieDetailsActivity extends Activity {
                   mButtonPlayMobile.setEnabled(false);
                }
             }
-            
+
             mLoadingDialog.cancel();
          } else {
             mLoadingDialog.cancel();

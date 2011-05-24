@@ -119,6 +119,7 @@ public class TabSharesActivity extends Activity {
       setContentView(R.layout.tabsharesactivity);
 
       mListView = (ListView) findViewById(R.id.ListViewShares);
+      mListView.setFastScrollEnabled(true);
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {

@@ -57,11 +57,18 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    private String mPass;
    private boolean mUseAuth;
 
-   private final String GET_SUPPORTED_FUNCTIONS = "MP_GetSupportedFunctions";
+   private static final String GET_SUPPORTED_FUNCTIONS = "GetSupportedFunctions";
+   private static final String GET_VIDEO_SHARES = "GetVideoShares";
+   private static final String GET_IMAGE = "GetImage";
+   private static final String GET_MEDIA_ITEM = "GetMediaItem";
+   private static final String GET_IMAGE_RESIZED = "GetImageResized";
+   private static final String GET_DIRECTORY_LIST_BY_PATH = "GetDirectoryListByPath";
+   private static final String GET_FILE_INFO = "GetFileInfo";
+   private static final String GET_FILES_FROM_DIRECTORY = "GetFilesFromDirectory";
 
-   private final String JSON_PREFIX = "http://";
-   private final String JSON_SUFFIX = "/GmaWebService/MediaAccessService/json";
-   private final String STREAM_SUFFIX = "/GmaWebService/MediaAccessService/stream";
+   private static final String JSON_PREFIX = "http://";
+   private static final String JSON_SUFFIX = "/GmaWebService/MediaAccessService/json";
+   private static final String STREAM_SUFFIX = "/GmaWebService/MediaAccessService/stream";
 
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
@@ -163,7 +170,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    @Override
    public List<VideoShare> getVideoShares() {
-      String methodName = "MP_GetVideoShares";
+      String methodName = GET_VIDEO_SHARES;
       String response = mJsonClient.Execute(methodName);
 
       if (response != null) {
@@ -182,7 +189,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    @Override
    public List<FileInfo> getFilesForFolder(String _path) {
-      String methodName = "FS_GetFilesFromDirectory";
+      String methodName = GET_FILES_FROM_DIRECTORY;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("filepath", _path));
 
       if (response != null) {
@@ -201,7 +208,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    @Override
    public FileInfo getFileInfo(String _path) {
-      String methodName = "FS_GetFileInfo";
+      String methodName = GET_FILE_INFO;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("filepath", _path));
 
       if (response != null) {
@@ -220,7 +227,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    @Override
    public List<FileInfo> getFoldersForFolder(String _path) {
-      String methodName = "FS_GetDirectoryListByPath";
+      String methodName = GET_DIRECTORY_LIST_BY_PATH;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("path", _path));
 
       if (response != null) {
@@ -339,8 +346,8 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
-               + "/FS_GetImage?path=" + URLEncoder.encode(_url, "UTF-8"));
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
+               + GET_IMAGE + "?path=" + URLEncoder.encode(_url, "UTF-8"));
 
          if (mUseAuth) {
             Authenticator.setDefault(new Authenticator() {
@@ -372,8 +379,8 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX
-               + "/FS_GetImageResized?path=" + URLEncoder.encode(_url, "UTF-8") + "&maxWidth="
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
+               + GET_IMAGE_RESIZED + "?path=" + URLEncoder.encode(_url, "UTF-8") + "&maxWidth="
                + _maxWidth + "&maxHeight=" + _maxHeight);
 
          if (mUseAuth) {
@@ -405,7 +412,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public String getDownloadUri(String _filePath) {
       String fileUrl = null;
       try {
-         fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/FS_GetMediaItem?path="
+         fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/" + GET_MEDIA_ITEM + "?path="
                + URLEncoder.encode(_filePath, "UTF-8");
       } catch (UnsupportedEncodingException e) {
          e.printStackTrace();

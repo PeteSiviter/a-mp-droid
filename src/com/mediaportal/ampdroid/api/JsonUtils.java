@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -11,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.util.Log;
 
+import com.mediaportal.ampdroid.api.gmawebservice.GmaSortOptions;
 import com.mediaportal.ampdroid.utils.IsoDate;
 import com.mediaportal.ampdroid.utils.Constants;
 
@@ -38,6 +40,10 @@ public class JsonUtils {
    public static BasicNameValuePair newPair(String _name, int _value) {
       return new BasicNameValuePair(_name, String.valueOf(_value));
    }
+   
+   public static NameValuePair newPair(String _name, GmaSortOptions _sort) {
+      return new BasicNameValuePair(_name, String.valueOf(_sort.ordinal()));
+   }
 
    public static BasicNameValuePair newPair(String _name, Date _value) {
       Calendar cal = Calendar.getInstance();
@@ -49,4 +55,6 @@ public class JsonUtils {
 
       return new BasicNameValuePair(_name, dateString);
    }
+
+
 }

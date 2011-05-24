@@ -7,10 +7,10 @@
 </string>
 	<string name="welcome_auto_connect">Bei Start verbinden</string>
 	<string name="welcome_no_client">Bitte Client auswählen...</string>
-	<string name="welcome_connect">Verbinden</string>
+	<string name="welcome_connect">Auswählen</string>
 	<string name="welcome_no_clients">Kleine Clients definiert, verwenden Sie das Menü zum Anlegen neuer Clients </string>
 	<string name="series_actors">Schauspieler</string>
-	<string name="series_seasons">Seasons</string>
+	<string name="series_seasons">Staffeln</string>
 	<string name="series_release">Veröffentlichung</string>
 	<string name="series_runtime">Laufzeit</string>
 	<string name="series_certification">Altersfreigabe</string>
@@ -21,8 +21,8 @@
 	<string name="episode_gueststars">Gastschauspieler</string>
 	<string name="episode_firstaired">Erstausstrahlung</string>
 	<string name="episode_rating">Wertung</string>
-	<string name="button_prev">Zurück</string>
-	<string name="button_next">Vor</string>
+	<string name="button_prev">&lt;&lt;</string>
+	<string name="button_next">>></string>
 	<string name="button_earlier">Früher</string>
 	<string name="button_later">Später</string>
 	<string name="title_home">MediaPortal für Android</string>
@@ -47,7 +47,7 @@
 	<string name="media_series_loadmultiplewarning_title">Lade mehrere Episoden</string>
 	<string name="media_series_loadmultiplewarning_text_begin">Wollen Sie wirklich \u0020</string>
 	<string name="media_series_loadmultiplewarning_text_end">\u0020 Episoden laden?</string>
-	<string name="media_series_season">Season</string>
+	<string name="media_series_season">Staffel</string>
 	<string name="media_series_loadseries">Lade Serien...</string>
 	<string name="media_series_loadseriesdetails">Lade Seriendetails...</string>
 	<string name="media_series_loadepisodedetails">Lade Episodendetails...</string>
@@ -213,7 +213,7 @@
 	<string name="dialog_title_addhost">Client hinzufügen</string>
 	<string name="quickactions_playclient">Abspielen (PC)</string>
 	<string name="quickactions_playdevice">Abspielen (lokal)</string>
-	<string name="quickactions_downloadsd">Laden</string>
+	<string name="quickactions_downloadsd">Abspeichern (lokal)</string>
 	<string name="quickactions_starttimeshift">Abbrechen</string>
 	<string name="quickactions_stoptimeshift">Abbrechen</string>
 	<string name="quickactions_record">Aufnehmen</string>

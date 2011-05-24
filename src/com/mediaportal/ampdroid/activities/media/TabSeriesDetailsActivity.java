@@ -178,9 +178,9 @@ public class TabSeriesDetailsActivity extends Activity {
 
             String[] actors = _result.getActors();
             if (actors != null) {
-               String actorsString = "| ";
+               String actorsString = "";
                for (String a : actors) {
-                  actorsString += a + " | ";
+                  actorsString += " - " + a + "\n";
                }
                mSeriesActors.setText(actorsString);
             } else {

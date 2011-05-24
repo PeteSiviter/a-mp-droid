@@ -29,7 +29,6 @@ import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -52,6 +51,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
    private int mMoviesLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
+   private boolean mLoadAllMovies = false;
 
    private class LoadMoviesTask extends AsyncTask<Integer, List<Movie>, Boolean> {
       private Context mContext;
@@ -70,17 +70,27 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
             return false;
          } else {
             while (mMoviesLoaded < loadItems && mMoviesLoaded < moviesCount) {
-               int end = mMoviesLoaded + 4;
-               if (end >= moviesCount) {
-                  end = moviesCount - 1;
+               if(mLoadAllMovies){
+                  List<Movie> series = mService.getMovies(mMoviesLoaded, moviesCount - 1);
+                  publishProgress(series);
+                  return true;
                }
-               List<Movie> series = mService.getMovies(mMoviesLoaded, end);
-               publishProgress(series);
-               if (series == null) {
-                  return false;
-               } else {
-                  mMoviesLoaded += 5;
+               else{
+                  int end = mMoviesLoaded + 4;
+                  if (end >= moviesCount) {
+                     end = moviesCount - 1;
+                  }
+                  
+                  List<Movie> series = mService.getMovies(mMoviesLoaded, end);
+                  publishProgress(series);
+                  
+                  if (series == null) {
+                     return false;
+                  } else {
+                     mMoviesLoaded += 5;
+                  }
                }
+
             }
          }
 
@@ -143,6 +153,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
+      mListView.setFastScrollEnabled(true);
       mListView.setAdapter(mAdapter);
 
       mListView.setOnItemClickListener(new OnItemClickListener() {

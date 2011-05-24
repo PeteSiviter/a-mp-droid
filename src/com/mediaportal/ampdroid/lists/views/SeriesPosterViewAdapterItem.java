@@ -61,7 +61,7 @@ public class SeriesPosterViewAdapterItem implements ILoadingAdapterItem {
    public void fillViewFromViewHolder(ViewHolder _holder) {
       SubtextViewHolder holder = (SubtextViewHolder)_holder;
       if (holder.title != null) {
-         holder.title.setText(mSeries.getPrettyName());// + " (" + "2010" + ")");
+         holder.title.setText(String.valueOf(mSeries.getPrettyName()));// + " (" + "2010" + ")");
       }
 
       if (holder.text != null) {

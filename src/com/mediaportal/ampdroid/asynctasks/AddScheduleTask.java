@@ -3,6 +3,7 @@ package com.mediaportal.ampdroid.asynctasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.TvProgramBase;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -33,11 +34,11 @@ public class AddScheduleTask extends AsyncTask<TvProgramBase, Boolean, Boolean> 
    @Override
    protected void onPostExecute(Boolean _result) {
       if (_result) {
-         Util.showToast(mContext, "Schedule added");
+         Util.showToast(mContext, mContext.getString(R.string.tvserver_scheduleadded));
 
-         mEpgAdapter.notifyDataSetInvalidated();
+         mEpgAdapter.notifyDataSetChanged();
       } else {
-         Util.showToast(mContext, "Couldn't add schedule");
+         Util.showToast(mContext, mContext.getString(R.string.tvserver_scheduleadd_failed));
       }
    }
 }
