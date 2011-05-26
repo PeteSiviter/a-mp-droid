@@ -13,9 +13,16 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class MusicArtistTextViewAdapterItem implements ILoadingAdapterItem {
    private MusicArtist mArtist;
+   private String mSection;
    public MusicArtistTextViewAdapterItem(MusicArtist _artist) {
       super();
       this.mArtist = _artist;
+      
+      String prettyName = mArtist.getTitle();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
    @Override
    public LazyLoadingImage getImage() {
@@ -62,6 +69,11 @@ public class MusicArtistTextViewAdapterItem implements ILoadingAdapterItem {
          holder.text.setText(mArtist.getTitle());
          holder.text.setTextColor(Color.WHITE);
       }
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 
 }

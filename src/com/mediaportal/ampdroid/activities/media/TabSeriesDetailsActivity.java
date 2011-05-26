@@ -13,9 +13,14 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -38,7 +43,6 @@ import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingGalleryAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
@@ -107,8 +111,7 @@ public class TabSeriesDetailsActivity extends Activity {
                   job.setAuth(cred.getUsername(), cred.getPassword());
                }
 
-               Intent download = ItemDownloaderHelper.createDownloadIntent(
-                     mContext, job);
+               Intent download = ItemDownloaderHelper.createDownloadIntent(mContext, job);
                publishProgress(download);
             }
          }
@@ -231,151 +234,156 @@ public class TabSeriesDetailsActivity extends Activity {
       protected void onPostExecute(List<SeriesSeason> _result) {
          if (_result != null) {
             for (int i = 0; i < _result.size(); i++) {
-               View view = Button.inflate(mContext, R.layout.listitem_poster, null);
-               TextView text = (TextView) view.findViewById(R.id.TextViewTitle);
-               ImageView image = (ImageView) view.findViewById(R.id.ImageViewEventImage);
-               TextView subtext = (TextView) view.findViewById(R.id.TextViewText);
-
                SeriesSeason s = _result.get(i);
-               String seasonBanner = s.getSeasonBanner();
-               if (seasonBanner != null && !seasonBanner.equals("")) {
-                  String fileName = Utils.getFileNameWithExtension(seasonBanner, "\\");
-                  String cacheName = "Series" + File.separator + mSeriesId + File.separator
-                        + "LargePoster" + File.separator + fileName;
+               if (s.getEpisodesCount() > 0) {
+                  View view = Button.inflate(mContext, R.layout.listitem_poster, null);
+                  TextView text = (TextView) view.findViewById(R.id.TextViewTitle);
+                  ImageView image = (ImageView) view.findViewById(R.id.ImageViewEventImage);
+                  TextView subtext = (TextView) view.findViewById(R.id.TextViewText);
 
-                  LazyLoadingImage bannerImage = new LazyLoadingImage(seasonBanner, cacheName, 75,
-                        100);
-                  image.setTag(seasonBanner);
-                  mImageHandler.DisplayImage(bannerImage, R.drawable.listview_imageloading_poster,
-                        mContext, image);
-               }
+                  String seasonBanner = s.getSeasonBanner();
+                  if (seasonBanner != null && !seasonBanner.equals("")) {
+                     String fileName = Utils.getFileNameWithExtension(seasonBanner, "\\");
+                     String cacheName = "Series" + File.separator + mSeriesId + File.separator
+                           + "LargePoster" + File.separator + fileName;
 
-               view.setOnTouchListener(new OnTouchListener() {
+                     LazyLoadingImage bannerImage = new LazyLoadingImage(seasonBanner, cacheName,
+                           75, 100);
+                     image.setTag(seasonBanner);
+                     mImageHandler.DisplayImage(bannerImage,
+                           R.drawable.listview_imageloading_poster, mContext, image);
+                  }
 
-                  @Override
-                  public boolean onTouch(View v, MotionEvent event) {
-                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        v.setBackgroundResource(android.R.drawable.list_selector_background);
-                     } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-                        v.setBackgroundColor(Color.TRANSPARENT);
-                     } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                  view.setOnTouchListener(new OnTouchListener() {
 
-                     } else {
-                        v.setBackgroundColor(Color.TRANSPARENT);
+                     @Override
+                     public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                           v.setBackgroundResource(android.R.drawable.list_selector_background);
+                        } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                           v.setBackgroundColor(Color.TRANSPARENT);
+                        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
+                        } else {
+                           v.setBackgroundColor(Color.TRANSPARENT);
+                        }
+
+                        return false;
                      }
+                  });
 
-                     return false;
-                  }
-               });
+                  view.setOnClickListener(new OnClickListener() {
 
-               view.setOnClickListener(new OnClickListener() {
+                     @Override
+                     public void onClick(View _view) {
+                        Intent myIntent = new Intent(_view.getContext(), TabEpisodesActivity.class);
+                        SeriesSeason s = (SeriesSeason) _view.getTag();
+                        myIntent.putExtra("series_id", s.getSeriesId());
+                        myIntent.putExtra("season_number", s.getSeasonNumber());
+                        myIntent.putExtra("series_name", mSeries.getPrettyName());
 
-                  @Override
-                  public void onClick(View _view) {
-                     Intent myIntent = new Intent(_view.getContext(), TabEpisodesActivity.class);
-                     SeriesSeason s = (SeriesSeason) _view.getTag();
-                     myIntent.putExtra("series_id", s.getSeriesId());
-                     myIntent.putExtra("season_number", s.getSeasonNumber());
-                     myIntent.putExtra("series_name", mSeries.getPrettyName());
+                        myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                     myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        // Create the view using FirstGroup's
+                        // LocalActivityManager
+                        View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
+                              .startActivity("season_episodes", myIntent).getDecorView();
 
-                     // Create the view using FirstGroup's LocalActivityManager
-                     View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
-                           .startActivity("season_episodes", myIntent).getDecorView();
+                        // Again, replace the view
+                        TabSeriesActivityGroup.getGroup().replaceView(view);
+                     }
+                  });
 
-                     // Again, replace the view
-                     TabSeriesActivityGroup.getGroup().replaceView(view);
-                  }
-               });
+                  view.setOnLongClickListener(new OnLongClickListener() {
+                     @Override
+                     public boolean onLongClick(View _view) {
+                        try {
+                           final SeriesSeason s = (SeriesSeason) _view.getTag();
 
-               view.setOnLongClickListener(new OnLongClickListener() {
-                  @Override
-                  public boolean onLongClick(View _view) {
-                     try {
-                        final SeriesSeason s = (SeriesSeason) _view.getTag();
+                           if (s != null) {
+                              final QuickAction qa = new QuickAction(_view);
 
-                        if (s != null) {
-                           final QuickAction qa = new QuickAction(_view);
-
-                           ActionItem sdCardAction = new ActionItem();
-                           sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                           sdCardAction.setIcon(getResources().getDrawable(
-                                 R.drawable.quickaction_sdcard));
-                           sdCardAction.setOnClickListener(new OnClickListener() {
-                              @Override
-                              public void onClick(final View _view) {
-                                 AlertDialog.Builder builder = new AlertDialog.Builder(
-                                       mBaseActivity);
-                                 builder
-                                       .setTitle(getString(R.string.media_series_loadmultiplewarning_title));
-                                 builder
-                                       .setMessage(getString(R.string.media_series_loadmultiplewarning_text_begin)
-                                             + s.getEpisodesCount()
-                                             + getString(R.string.media_series_loadmultiplewarning_text_end));
-                                 builder.setCancelable(false);
-                                 builder.setPositiveButton(getString(R.string.dialog_yes),
-                                       new DialogInterface.OnClickListener() {
-                                          public void onClick(DialogInterface dialog, int id) {
-                                             mSeasonDownloaderTask = new DownloadSeasonTask(_view
-                                                   .getContext());
-                                             mSeasonDownloaderTask.execute(s);
-                                          }
-                                       });
-
-                                 builder.setNegativeButton(getString(R.string.dialog_no),
-                                       new DialogInterface.OnClickListener() {
-                                          public void onClick(DialogInterface dialog, int id) {
-                                             dialog.dismiss();
-                                          }
-                                       });
-                                 AlertDialog alert = builder.create();
-                                 alert.show();
-
-                                 qa.dismiss();
-                              }
-                           });
-                           qa.addActionItem(sdCardAction);
-
-                           if (mService.isClientControlConnected()) {
-                              ActionItem playOnClientAction = new ActionItem();
-
-                              playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                              playOnClientAction.setIcon(getResources().getDrawable(
-                                    R.drawable.quickaction_play_device));
-                              playOnClientAction.setOnClickListener(new OnClickListener() {
+                              ActionItem sdCardAction = new ActionItem();
+                              sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
+                              sdCardAction.setIcon(getResources().getDrawable(
+                                    R.drawable.quickaction_sdcard));
+                              sdCardAction.setOnClickListener(new OnClickListener() {
                                  @Override
-                                 public void onClick(View _view) {
-                                    // TODO: Add all files to playlist and start
-                                    // playback
-                                    Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
-                                    // mService.playFileOnClient(epFile);
+                                 public void onClick(final View _view) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(
+                                          mBaseActivity);
+                                    builder
+                                          .setTitle(getString(R.string.media_series_loadmultiplewarning_title));
+                                    builder
+                                          .setMessage(getString(R.string.media_series_loadmultiplewarning_text_begin)
+                                                + s.getEpisodesCount()
+                                                + getString(R.string.media_series_loadmultiplewarning_text_end));
+                                    builder.setCancelable(false);
+                                    builder.setPositiveButton(getString(R.string.dialog_yes),
+                                          new DialogInterface.OnClickListener() {
+                                             public void onClick(DialogInterface dialog, int id) {
+                                                mSeasonDownloaderTask = new DownloadSeasonTask(
+                                                      _view.getContext());
+                                                mSeasonDownloaderTask.execute(s);
+                                             }
+                                          });
+
+                                    builder.setNegativeButton(getString(R.string.dialog_no),
+                                          new DialogInterface.OnClickListener() {
+                                             public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                             }
+                                          });
+                                    AlertDialog alert = builder.create();
+                                    alert.show();
 
                                     qa.dismiss();
                                  }
                               });
-                              qa.addActionItem(playOnClientAction);
+                              qa.addActionItem(sdCardAction);
+
+                              if (mService.isClientControlConnected()) {
+                                 ActionItem playOnClientAction = new ActionItem();
+
+                                 playOnClientAction
+                                       .setTitle(getString(R.string.quickactions_playclient));
+                                 playOnClientAction.setIcon(getResources().getDrawable(
+                                       R.drawable.quickaction_play_device));
+                                 playOnClientAction.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View _view) {
+                                       // TODO: Add all files to playlist and
+                                       // start
+                                       // playback
+                                       Util.showToast(_view.getContext(),
+                                             getString(R.string.info_not_implemented));
+                                       // mService.playFileOnClient(epFile);
+
+                                       qa.dismiss();
+                                    }
+                                 });
+                                 qa.addActionItem(playOnClientAction);
+                              }
+
+                              qa.setAnimStyle(QuickAction.ANIM_AUTO);
+
+                              qa.show();
+                           } else {
+                              Util.showToast(_view.getContext(), getString(R.string.media_nofile));
                            }
-
-                           qa.setAnimStyle(QuickAction.ANIM_AUTO);
-
-                           qa.show();
-                        } else {
-                           Util.showToast(_view.getContext(),
-                                 getString(R.string.media_nofile));
+                           return true;
+                        } catch (Exception ex) {
+                           return false;
                         }
-                        return true;
-                     } catch (Exception ex) {
-                        return false;
                      }
-                  }
-               });
+                  });
 
-               text.setText(getString(R.string.media_series_season) + " " + s.getSeasonNumber());
-               subtext.setText(s.getEpisodesCount() + " " + getString(R.string.media_episodes));
-               view.setTag(s);
+                  text.setText(getString(R.string.media_series_season) + " " + s.getSeasonNumber());
+                  subtext.setText(s.getEpisodesCount() + " " + getString(R.string.media_episodes));
+                  view.setTag(s);
 
-               mSeasonLayout.addView(view);
+                  mSeasonLayout.addView(view);
+               }
             }
          }
       }
@@ -414,12 +422,57 @@ public class TabSeriesDetailsActivity extends Activity {
          // mPosterGallery.setSpacing(-10);
          // mPosterGallery.setAdapter(mAdapter);
 
-         mLoadingDialog = ProgressDialog.show(getParent(), getString(R.string.media_series_loadseriesdetails),
+         mLoadingDialog = ProgressDialog.show(getParent(),
+               getString(R.string.media_series_loadseriesdetails),
                getString(R.string.info_loading_title), true);
          mLoadingDialog.setCancelable(true);
       } else {// activity called without movie id (shouldn't happen ;))
 
       }
+   }
+   
+   
+   @Override
+   public boolean onCreateOptionsMenu(Menu _menu) {
+      super.onCreateOptionsMenu(_menu);
+      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.media_views));
+      
+      if(mSeries != null){
+         String[] actors = mSeries.getActors();
+         if (actors != null) {
+            for (String a : actors) {
+               MenuItem imdbActorsLookupMenu = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
+                     getString(R.string.media_views_thumbs));
+
+               imdbActorsLookupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                  @Override
+                  public boolean onMenuItemClick(MenuItem item) {
+
+                     
+                     return true;
+                  }
+               });
+            }
+         }
+      }
+      
+      MenuItem imdbLookupMenu = _menu.add(0, Menu.FIRST + 1, Menu.NONE, "imdb");
+            //getString(R.string.menu_set_default_view));
+      imdbLookupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            String imdb = mSeries.getImdbId();
+            Intent i = new Intent();
+            i.setData(Uri.parse("imdb:///title/" + imdb + "/"));
+            i.setAction("android.intent.action.VIEW");
+            startActivity(i);
+
+            return true;
+         }
+      });
+
+      return true;
    }
 
    @Override

@@ -12,8 +12,15 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class MovieTextViewAdapterItem implements ILoadingAdapterItem {
    private Movie mMovie;
+   private String mSection;
    public MovieTextViewAdapterItem(Movie _movie){
       mMovie = _movie;
+      
+      String prettyName = mMovie.getName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
    
    @Override
@@ -60,6 +67,11 @@ public class MovieTextViewAdapterItem implements ILoadingAdapterItem {
       if (holder.text != null) {
          holder.text.setText(mMovie.getName());
       }
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 
 }

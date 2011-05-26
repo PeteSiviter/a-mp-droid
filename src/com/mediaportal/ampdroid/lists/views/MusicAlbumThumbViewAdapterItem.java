@@ -20,6 +20,7 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
    private MusicAlbum mAlbum;
    private LazyLoadingImage mImage;
    private boolean mShowArtist;
+   private String mSection;
 
    public MusicAlbumThumbViewAdapterItem(MusicAlbum _album, boolean _showArtist) {
       super();
@@ -31,6 +32,12 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
             + "Thumbs" + File.separator + fileName;
 
       mImage = new LazyLoadingImage(mAlbum.getCoverPathLarge(), cacheName, 200, 100);
+      
+      String prettyName = mAlbum.getTitle();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -91,5 +98,10 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_poster_2;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

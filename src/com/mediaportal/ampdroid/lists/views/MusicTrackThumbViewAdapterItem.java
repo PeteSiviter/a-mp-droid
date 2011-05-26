@@ -17,6 +17,7 @@ public class MusicTrackThumbViewAdapterItem implements ILoadingAdapterItem {
    private MusicTrack mTrack;
    private LazyLoadingImage mImage;
    private boolean mShowArtist;
+   private String mSection;
    
    public MusicTrackThumbViewAdapterItem(MusicTrack _track, boolean _showArtist) {
       super();
@@ -26,6 +27,12 @@ public class MusicTrackThumbViewAdapterItem implements ILoadingAdapterItem {
       //String cacheName =   "Series" + File.separator + mAlbum.getId() + File.separator + "Thumbs" + File.separator + fileName;
 
       //mImage = new LazyLoadingImage(mAlbum.getCurrentFanartUrl(), cacheName, 200, 100);
+      
+      String prettyName = mTrack.getTitle();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -86,5 +93,10 @@ public class MusicTrackThumbViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_thumb;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

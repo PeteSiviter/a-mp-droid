@@ -13,10 +13,19 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class SeriesTextViewAdapterItem implements ILoadingAdapterItem {
    private Series mSeries;
+   private String mSection;
    public SeriesTextViewAdapterItem(Series _series) {
       super();
       this.mSeries = _series;
+      
+      String prettyName = mSeries.getPrettyName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
+   
+   
    @Override
    public LazyLoadingImage getImage() {
       return null;
@@ -63,5 +72,8 @@ public class SeriesTextViewAdapterItem implements ILoadingAdapterItem {
          holder.text.setTextColor(Color.WHITE);
       }
    }
-
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }

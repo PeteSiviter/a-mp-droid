@@ -122,4 +122,9 @@ public class TvServerProgramsBaseViewItem implements ILoadingAdapterItem {
       // TODO Auto-generated method stub
       return 0;
    }
+   
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

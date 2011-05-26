@@ -105,18 +105,17 @@ public class TabEpisodeDetailsActivity extends Activity {
                mTextViewFirstAiredDate.setText(date);
             }
 
-            /*
-             * String[] actors = _result.getGuestStars(); if (actors != null) {
-             * String actorsString = "| "; for (String a : actors) {
-             * actorsString += a + " | "; }
-             * mTextViewEpisodeActors.setText(actorsString); } else {
-             * mTextViewEpisodeActors.setText("-"); }
-             */
-
-            String guestStars = _result.getGuestStarsString();
-
-            if (guestStars != null) {
-               mTextViewEpisodeActors.setText(guestStars);
+            String[] actors = _result.getGuestStarsString().split("\\|");
+            if (actors != null) {
+               String actorsString = "";
+               for (String a : actors) {
+                  if (a != null && !a.equals("")) {
+                     actorsString += " - " + a + "\n";
+                  }
+               }
+               mTextViewEpisodeActors.setText(actorsString);
+            } else {
+               mTextViewEpisodeActors.setText("-");
             }
 
             int rating = (int) _result.getRating();

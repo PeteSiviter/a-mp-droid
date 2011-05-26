@@ -96,4 +96,9 @@ public class LoadingAdapterItem implements ILoadingAdapterItem {
       mLoading = _loading;
       handleProgressVisibility();
    }
+   
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

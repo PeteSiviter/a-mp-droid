@@ -61,5 +61,8 @@ public class PosterGalleryViewAdapterItem implements ILoadingAdapterItem {
       return R.drawable.listview_imageloading_poster;
    }
 
-
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

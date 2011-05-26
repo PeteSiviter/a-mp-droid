@@ -25,8 +25,10 @@ import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.ShareTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 
 public class TabMusicSharesActivity extends Activity implements ILoadingListener {
    private ListView mListView;
@@ -85,8 +87,7 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
 
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
-      mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.TextView.ordinal());
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.MusicShares));
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -148,7 +149,7 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }

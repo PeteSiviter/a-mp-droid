@@ -278,8 +278,6 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
 
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
-      mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.TextView.ordinal());
       mAdapter.setLoadingListener(this);
 
       mTracksListView = (LinearLayout) findViewById(R.id.LinearLayoutTracks);
@@ -325,32 +323,6 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
-
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
-            getString(R.string.media_views));
-
-      MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
-            getString(R.string.media_views_text));
-      MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
-            getString(R.string.media_views_thumbs));
-
-      textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
-            mAdapter.notifyDataSetInvalidated();
-            return true;
-         }
-      });
-
-      thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-         @Override
-         public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
-            mAdapter.notifyDataSetInvalidated();
-            return true;
-         }
-      });
 
       return true;
    }

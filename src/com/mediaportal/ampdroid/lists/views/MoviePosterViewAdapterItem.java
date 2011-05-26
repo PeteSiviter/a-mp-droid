@@ -19,6 +19,7 @@ import com.mediaportal.ampdroid.R;
 public class MoviePosterViewAdapterItem implements ILoadingAdapterItem {
    private LazyLoadingImage mImage;
    private Movie mMovie;
+   private String mSection;
 
    public MoviePosterViewAdapterItem(Movie _movie) {
       mMovie = _movie;
@@ -31,6 +32,12 @@ public class MoviePosterViewAdapterItem implements ILoadingAdapterItem {
                + File.separator + fileName;
 
          mImage = new LazyLoadingImage(coverPath, cacheName, 300, 100);
+      }
+      
+      String prettyName = mMovie.getName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
       }
    }
 
@@ -92,5 +99,10 @@ public class MoviePosterViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_poster_2;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

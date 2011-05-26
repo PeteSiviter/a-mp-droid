@@ -112,4 +112,9 @@ public class TvServerSchedulesDetailsViewItem implements ILoadingAdapterItem {
    public int getDefaultImageResource() {
       return R.drawable.mp_logo_2;
    }
+   
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

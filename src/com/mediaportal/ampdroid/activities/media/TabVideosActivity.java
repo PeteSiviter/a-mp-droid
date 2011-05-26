@@ -35,12 +35,14 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MoviePosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -52,6 +54,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
    private int mVideosLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
+   private int mPreloadItems;
 
    private class LoadVideosTask extends AsyncTask<Integer, List<Movie>, Boolean> {
       private Context mContext;
@@ -65,13 +68,16 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       protected Boolean doInBackground(Integer... _params) {
          int loadItems = mVideosLoaded + _params[0];
          int videosCount = mService.getVideosCount();
+         if(_params[0] == 0){
+            loadItems = videosCount;
+         }
 
          if (videosCount == -99) {
             publishProgress(null, null);
             return false;
          } else {
             while (mVideosLoaded < loadItems && mVideosLoaded < videosCount) {
-               int end = mVideosLoaded + 4;
+               int end = mVideosLoaded + 19;
                if (end >= videosCount) {
                   end = videosCount - 1;
                }
@@ -81,7 +87,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                if (videos == null) {
                   return false;
                } else {
-                  mVideosLoaded += 5;
+                  mVideosLoaded += 20;
                }
             }
             if (mVideosLoaded < videosCount) {
@@ -102,6 +108,10 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                   mAdapter.addItem(ViewTypes.PosterView.ordinal(),
                         new MoviePosterViewAdapterItem(m));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(), new MovieThumbViewAdapterItem(m));
+               }
+               
+               if (mAdapter.fastScrollingInitialised()) {
+                  mAdapter.resetFastScrolling(mListView);
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -142,9 +152,12 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       mAdapter.addView(ViewTypes.TextView.ordinal());
       mAdapter.addView(ViewTypes.PosterView.ordinal());
       mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.PosterView.ordinal());
+
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Videos));
 
       mAdapter.setLoadingListener(this);
+      
+      mPreloadItems = PreferencesManager.getNumItemsToLoad();
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
       mListView.setFastScrollEnabled(true);
@@ -291,7 +304,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
 
          mVideosLoaderTask = new LoadVideosTask(this);
          mStatusBarHandler.setLoading(true);
-         mVideosLoaderTask.execute(20);
+         mVideosLoaderTask.execute(mPreloadItems);
       }
    }
 
@@ -311,7 +324,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -320,7 +333,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       posterSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.PosterView.ordinal());
+            mAdapter.setView(ViewTypes.PosterView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -329,8 +342,19 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+            mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
+            return true;
+         }
+      });
+      
+      MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            ViewTypes currentView = mAdapter.getCurrentView();
+            PreferencesManager.setDefaultView(MediaListType.Videos, currentView);
             return true;
          }
       });

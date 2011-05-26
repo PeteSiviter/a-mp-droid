@@ -14,11 +14,33 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 public class MusicTrackTextViewAdapterItem implements ILoadingAdapterItem {
    private MusicTrack mTracks;
    private boolean mShowArtist;
+   private String mText;
+   private String mSection;
+
    public MusicTrackTextViewAdapterItem(MusicTrack _track, boolean _showArtist) {
       super();
       mTracks = _track;
       mShowArtist = _showArtist;
+
+      String artistString = "";
+      if (mShowArtist && mTracks.getArtists() != null) {
+         if (mTracks.getArtists().length == 0) {
+            artistString = " - ...";
+         } else if (mTracks.getArtists().length == 1) {
+            artistString = " - " + mTracks.getArtists()[0];
+         } else {
+            artistString = " - " + mTracks.getArtists()[0] + ", ...";
+         }
+      }
+
+      mText = mTracks.getTitle() + artistString;
+
+      if (mText != null && mText.length() > 0) {
+         String firstLetter = mText.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
+
    @Override
    public LazyLoadingImage getImage() {
       return null;
@@ -58,25 +80,16 @@ public class MusicTrackTextViewAdapterItem implements ILoadingAdapterItem {
 
    @Override
    public void fillViewFromViewHolder(ViewHolder _holder) {
-      SubtextViewHolder holder = (SubtextViewHolder)_holder;
+      SubtextViewHolder holder = (SubtextViewHolder) _holder;
 
       if (holder.text != null) {
-         String artistString = "";
-         if(mShowArtist && mTracks.getArtists() != null){
-            if(mTracks.getArtists().length == 0){
-               artistString = " - ...";
-            }
-            else if(mTracks.getArtists().length == 1)
-            {
-               artistString = " - " + mTracks.getArtists()[0];
-            }
-            else{
-               artistString = " - " + mTracks.getArtists()[0] + ", ...";
-            }
-         }
-         holder.text.setText(mTracks.getTitle() + artistString);
+         holder.text.setText(mText);
          holder.text.setTextColor(Color.WHITE);
       }
    }
 
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }

@@ -14,10 +14,33 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 public class MusicAlbumTextViewAdapterItem implements ILoadingAdapterItem {
    private MusicAlbum mAlbum;
    private boolean mShowArtist;
+   private String mText;
+   private String mSection;
    public MusicAlbumTextViewAdapterItem(MusicAlbum _album, boolean _showArtist) {
       super();
       mAlbum = _album;
       mShowArtist = _showArtist;
+      
+      String artistString = "";
+      if(mShowArtist && mAlbum.getAlbumArtists() != null){
+         if(mAlbum.getAlbumArtists().length == 0){
+            artistString = " - ...";
+         }
+         else if(mAlbum.getAlbumArtists().length == 1)
+         {
+            artistString = " - " + mAlbum.getAlbumArtists()[0];
+         }
+         else{
+            artistString = " - " + mAlbum.getAlbumArtists()[0] + ", ...";
+         }
+      }
+      
+      mText = mAlbum.getTitle() + artistString;
+      
+      if(mText != null && mText.length() > 0){
+         String firstLetter = mText.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
    @Override
    public LazyLoadingImage getImage() {
@@ -61,22 +84,13 @@ public class MusicAlbumTextViewAdapterItem implements ILoadingAdapterItem {
       SubtextViewHolder holder = (SubtextViewHolder)_holder;
 
       if (holder.text != null) {
-         String artistString = "";
-         if(mShowArtist && mAlbum.getAlbumArtists() != null){
-            if(mAlbum.getAlbumArtists().length == 0){
-               artistString = " - ...";
-            }
-            else if(mAlbum.getAlbumArtists().length == 1)
-            {
-               artistString = " - " + mAlbum.getAlbumArtists()[0];
-            }
-            else{
-               artistString = " - " + mAlbum.getAlbumArtists()[0] + ", ...";
-            }
-         }
-         holder.text.setText(mAlbum.getTitle() + artistString);
+         holder.text.setText(mText);
          holder.text.setTextColor(Color.WHITE);
       }
    }
 
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }

@@ -58,4 +58,11 @@ public interface ILoadingAdapterItem {
 	 * @param _holder The ViewHolder that holds the references to the controls of the view
 	 */
 	void fillViewFromViewHolder(ViewHolder _holder);
+	
+	/**
+	 * Returns the section String of this item (used to show a "first-letter" item when
+	 * fast-scrolling
+	 * @return section representation of this item
+	 */
+	String getSection();
 }

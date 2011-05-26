@@ -34,12 +34,14 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MoviePosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MovieThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -51,7 +53,8 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
    private int mMoviesLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
-   private boolean mLoadAllMovies = false;
+   private boolean mLoadAllMovies = true;
+   private int mPreloadItems;
 
    private class LoadMoviesTask extends AsyncTask<Integer, List<Movie>, Boolean> {
       private Context mContext;
@@ -65,6 +68,10 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       protected Boolean doInBackground(Integer... _params) {
          int loadItems = mMoviesLoaded + _params[0];
          int moviesCount = mService.getMovieCount();
+         if(_params[0] == 0){
+            loadItems = moviesCount;
+         }
+         
          if (moviesCount == -99) {
             publishProgress(null, null);
             return false;
@@ -76,7 +83,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                   return true;
                }
                else{
-                  int end = mMoviesLoaded + 4;
+                  int end = mMoviesLoaded + 19;
                   if (end >= moviesCount) {
                      end = moviesCount - 1;
                   }
@@ -87,7 +94,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                   if (series == null) {
                      return false;
                   } else {
-                     mMoviesLoaded += 5;
+                     mMoviesLoaded += 20;
                   }
                }
 
@@ -111,6 +118,10 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
                   mAdapter.addItem(ViewTypes.PosterView.ordinal(),
                         new MoviePosterViewAdapterItem(m));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(), new MovieThumbViewAdapterItem(m));
+               }
+               
+               if (mAdapter.fastScrollingInitialised()) {
+                  mAdapter.resetFastScrolling(mListView);
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -148,9 +159,11 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       mAdapter.addView(ViewTypes.TextView.ordinal());
       mAdapter.addView(ViewTypes.PosterView.ordinal());
       mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.PosterView.ordinal());
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Movies));
 
       mAdapter.setLoadingListener(this);
+      
+      mPreloadItems = PreferencesManager.getNumItemsToLoad();
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
       mListView.setFastScrollEnabled(true);
@@ -298,7 +311,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
 
          mMoviesLoaderTask = new LoadMoviesTask(this);
          mStatusBarHandler.setLoading(true);
-         mMoviesLoaderTask.execute(20);
+         mMoviesLoaderTask.execute(mPreloadItems);
       }
    }
 
@@ -318,7 +331,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -327,7 +340,7 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       posterSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.PosterView.ordinal());
+            mAdapter.setView(ViewTypes.PosterView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -336,8 +349,19 @@ public class TabMoviesActivity extends Activity implements ILoadingListener {
       thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+            mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
+            return true;
+         }
+      });
+      
+      MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            ViewTypes currentView = mAdapter.getCurrentView();
+            PreferencesManager.setDefaultView(MediaListType.Movies, currentView);
             return true;
          }
       });

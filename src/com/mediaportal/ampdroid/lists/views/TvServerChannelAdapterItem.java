@@ -62,5 +62,9 @@ public class TvServerChannelAdapterItem implements ILoadingAdapterItem {
          _holder.text.setText(mChannel.getDisplayName());
       }
    }
-
+   
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

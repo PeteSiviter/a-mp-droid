@@ -18,6 +18,7 @@ import com.mediaportal.ampdroid.lists.Utils;
 public class SeriesBannerViewAdapterItem implements ILoadingAdapterItem {
    private Series mSeries;
    private LazyLoadingImage mImage;
+   private String mSection;
 
    public SeriesBannerViewAdapterItem(Series _series) {
       super();
@@ -26,6 +27,12 @@ public class SeriesBannerViewAdapterItem implements ILoadingAdapterItem {
       String cacheName = "Series" + File.separator + mSeries.getId() + File.separator + "Banner" + File.separator + fileName;
  
       mImage = new LazyLoadingImage(mSeries.getCurrentBannerUrl(), cacheName, 300, 100);
+      
+      String prettyName = mSeries.getPrettyName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -79,4 +86,8 @@ public class SeriesBannerViewAdapterItem implements ILoadingAdapterItem {
       return 0;
    }
 
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }

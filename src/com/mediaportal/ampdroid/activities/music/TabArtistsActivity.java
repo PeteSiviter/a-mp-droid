@@ -26,9 +26,11 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicArtistTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicArtistThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabArtistsActivity extends Activity implements ILoadingListener {
@@ -40,6 +42,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
    private String mActivityGroup;
+   private int mPreloadItems;
 
    private class LoadMusicTask extends AsyncTask<Integer, List<MusicArtist>, Boolean> {
       private Context mContext;
@@ -53,13 +56,16 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
       protected Boolean doInBackground(Integer... _params) {
          int albumsCount = mService.getArtistsCount();
          int loadItems = mItemsLoaded + _params[0];
+         if (_params[0] == 0) {
+            loadItems = albumsCount;
+         }
 
          if (albumsCount == -99) {
             publishProgress(null, null);
             return false;
          } else {
             while (mItemsLoaded < loadItems && mItemsLoaded < albumsCount) {
-               int end = mItemsLoaded + 4;
+               int end = mItemsLoaded + 19;
                if (end >= albumsCount) {
                   end = albumsCount - 1;
                }
@@ -69,7 +75,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
                if (series == null) {
                   return false;
                } else {
-                  mItemsLoaded += 5;
+                  mItemsLoaded += 20;
                }
             }
          }
@@ -87,10 +93,16 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
             List<MusicArtist> series = values[0];
             if (series != null) {
                for (MusicArtist s : series) {
-                  mAdapter.addItem(ViewTypes.TextView.ordinal(),
-                        new MusicArtistTextViewAdapterItem(s));
-                  mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
-                        new MusicArtistThumbViewAdapterItem(s));
+                  if (s != null && s.getTitle() != null && s.getTitle().length() > 0) {
+                     mAdapter.addItem(ViewTypes.TextView.ordinal(),
+                           new MusicArtistTextViewAdapterItem(s));
+                     mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
+                           new MusicArtistThumbViewAdapterItem(s));
+                  }
+               }
+
+               if (mAdapter.fastScrollingInitialised()) {
+                  mAdapter.resetFastScrolling(mListView);
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -134,7 +146,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
       // mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.TextView.ordinal());
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Artists));
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -171,6 +183,8 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
       mAdapter.setLoadingText(getString(R.string.music_artists_loadartists));
       mAdapter.showLoadingItem(true);
 
+      mPreloadItems = PreferencesManager.getNumItemsToLoad();
+
       loadFurtherItems();
 
       Bundle extras = getIntent().getExtras();
@@ -183,7 +197,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
       if (mMusicLoaderTask == null) {
          mMusicLoaderTask = new LoadMusicTask(this);
          mStatusBarHandler.setLoading(true);
-         mMusicLoaderTask.execute(20);
+         mMusicLoaderTask.execute(mPreloadItems);
       }
    }
 
@@ -202,7 +216,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }

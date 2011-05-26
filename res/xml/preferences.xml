@@ -4,7 +4,9 @@
 		android:key="cat_clients" android:summary="@string/settings_categories_clients_desc">
 		<PreferenceScreen android:summary="@string/settings_clients_newclient_desc"
 			android:title="@string/settings_clients_newclient_title">
-			<intent android:action="android.intent.action.MAIN" android:targetClass="com.mediaportal.ampdroid.activities.settings.ClientSettingsActivity" android:targetPackage="com.mediaportal.ampdroid"/>
+			<intent android:action="android.intent.action.MAIN"
+				android:targetClass="com.mediaportal.ampdroid.activities.settings.ClientSettingsActivity"
+				android:targetPackage="com.mediaportal.ampdroid" />
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_general"
@@ -14,10 +16,20 @@
 			android:key="general_vibrate"></CheckBoxPreference>
 		<CheckBoxPreference android:key="general_fullscreen"
 			android:summary="@string/settings_general_fullscreen_desc"
-			android:title="@string/settings_general_fullscreen" android:enabled="true" android:defaultValue="true"></CheckBoxPreference>
-		<CheckBoxPreference android:key="auto_connect" android:title="@string/settings_general_autoconnect_title" android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
-		<CheckBoxPreference android:key="auto_wol" android:title="@string/settings_general_autowol_title" android:summary="@string/settings_general_autowol_desc" android:enabled="false"></CheckBoxPreference>
-		<ListPreference android:summary="@string/settings_general_statusbar_hide_desc" android:key="statusbar_autohide" android:title="@string/settings_general_statusbar_hide_title" android:entries="@array/settings_general_statusbar_autohide_text" android:entryValues="@array/settings_general_statusbar_autohide_values" android:dialogTitle="@string/settings_general_statusbar_hide_dialog_title"></ListPreference>
+			android:title="@string/settings_general_fullscreen" android:enabled="true"
+			android:defaultValue="true"></CheckBoxPreference>
+		<CheckBoxPreference android:key="auto_connect"
+			android:title="@string/settings_general_autoconnect_title"
+			android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
+		<CheckBoxPreference android:key="auto_wol"
+			android:title="@string/settings_general_autowol_title"
+			android:summary="@string/settings_general_autowol_desc"
+			android:enabled="false"></CheckBoxPreference>
+		<ListPreference android:summary="@string/settings_general_statusbar_hide_desc"
+			android:key="statusbar_autohide" android:title="@string/settings_general_statusbar_hide_title"
+			android:entries="@array/settings_general_statusbar_autohide_text"
+			android:entryValues="@array/settings_general_statusbar_autohide_values"
+			android:dialogTitle="@string/settings_general_statusbar_hide_dialog_title"></ListPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_tvserver"
 		android:key="cat_tvserver">
@@ -29,12 +41,14 @@
 			android:defaultValue="aMPdroid"></EditTextPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_media"
-		android:key="cat_media" android:enabled="false">
+		android:key="cat_media" android:enabled="true">
 		<EditTextPreference android:title="@string/settings_media_cachevalid_title"
-			android:key="media_cache_valid" android:summary="@string/settings_media_cachevalid_desc"></EditTextPreference>
+			android:key="media_cache_valid" android:summary="@string/settings_media_cachevalid_desc"
+			android:enabled="false"></EditTextPreference>
 		<CheckBoxPreference android:key="media_load_details"
 			android:summary="@string/settings_media_loaddetails_desc"
-			android:title="@string/settings_media_loaddetails_title"></CheckBoxPreference>
+			android:title="@string/settings_media_loaddetails_title"
+			android:enabled="false"></CheckBoxPreference>
 		<ListPreference android:key="media_default_view_series"
 			android:entries="@array/settings_media_defaultview_series_text"
 			android:entryValues="@array/settings_media_defaultview_series_values"
@@ -53,11 +67,36 @@
 			android:title="@string/settings_media_defaultview_videos_title"
 			android:summary="@string/settings_media_defaultview_videos_desc">
 		</ListPreference>
-		<ListPreference android:key="media_default_view_shares"
-			android:entries="@array/settings_media_defaultview_shares_text"
-			android:entryValues="@array/settings_media_defaultview_shares_values"
-			android:title="@string/settings_media_defaultview_shares_title"
-			android:summary="@string/settings_media_defaultview_shares_desc">
+		<ListPreference android:entries="@array/settings_media_defaultview_videoshares_text"
+			android:entryValues="@array/settings_media_defaultview_videoshares_values"
+			android:key="media_default_view_videoshares" android:title="@string/settings_media_defaultview_videoshares_title"
+			android:summary="@string/settings_media_defaultview_videoshares_desc">
 		</ListPreference>
+		<ListPreference android:entries="@array/settings_media_defaultview_musicshares_text"
+			android:entryValues="@array/settings_media_defaultview_musicshares_values"
+			android:key="media_default_view_musicshares" android:title="@string/settings_media_defaultview_musicshares_title"
+			android:summary="@string/settings_media_defaultview_musicshares_desc">
+		</ListPreference>
+		<ListPreference android:entries="@array/settings_media_defaultview_musicalbums_text"
+			android:entryValues="@array/settings_media_defaultview_musicalbums_values"
+			android:key="media_default_view_musicalbums" android:title="@string/settings_media_defaultview_musicalbums_title"
+			android:summary="@string/settings_media_defaultview_musicalbums_desc">
+		</ListPreference>
+		<ListPreference android:entries="@array/settings_media_defaultview_musicartists_text"
+			android:entryValues="@array/settings_media_defaultview_musicartists_values"
+			android:key="media_default_view_musicartists" android:title="@string/settings_media_defaultview_musicartists_title"
+			android:summary="@string/settings_media_defaultview_musicartists_desc">
+		</ListPreference>
+		<ListPreference android:entries="@array/settings_media_defaultview_musictracks_text"
+			android:entryValues="@array/settings_media_defaultview_musictracks_values"
+			android:key="media_default_view_musictracks" android:title="@string/settings_media_defaultview_musictracks_title"
+			android:summary="@string/settings_media_defaultview_musictracks_desc">
+		</ListPreference>
+		<ListPreference android:entries="@array/settings_media_preloaditems_text"
+			android:entryValues="@array/settings_media_preloaditems_values"
+			android:key="media_preload_items" android:dialogTitle="@string/settings_media_preload_items_title"
+			android:title="@string/settings_media_preload_items_title"
+			android:summary="@string/settings_media_preload_items_desc"
+			android:enabled="true"></ListPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

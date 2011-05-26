@@ -19,6 +19,7 @@ import com.mediaportal.ampdroid.lists.Utils;
 public class SeriesThumbViewAdapterItem implements ILoadingAdapterItem {
    private Series mSeries;
    private LazyLoadingImage mImage;
+   private String mSection;
    public SeriesThumbViewAdapterItem(Series _series) {
       super();
       this.mSeries = _series;
@@ -27,6 +28,12 @@ public class SeriesThumbViewAdapterItem implements ILoadingAdapterItem {
       String cacheName =   "Series" + File.separator + mSeries.getId() + File.separator + "Thumbs" + File.separator + fileName;
 
       mImage = new LazyLoadingImage(mSeries.getCurrentFanartUrl(), cacheName, 200, 100);
+      
+      String prettyName = mSeries.getPrettyName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -87,5 +94,10 @@ public class SeriesThumbViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_thumb;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

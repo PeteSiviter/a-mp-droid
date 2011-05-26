@@ -98,4 +98,9 @@ public class EpisodePosterViewAdapterItem implements ILoadingAdapterItem {
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_thumb;
    }
+
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

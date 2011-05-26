@@ -31,10 +31,12 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicFileInfoTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -94,6 +96,11 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
             mAdapter.showLoadingItem(false);
             mAdapter.notifyDataSetChanged();
          }
+         
+         if (mAdapter.fastScrollingInitialised()) {
+            mAdapter.resetFastScrolling(mListView);
+         }
+         
          mStatusBarHandler.setLoading(false);
          mDirLoaderTask = null;
       }
@@ -119,7 +126,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
 
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
-      mAdapter.setView(ViewTypes.TextView.ordinal());
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.MusicShares));
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -278,7 +285,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -287,7 +294,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
       thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+            mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }

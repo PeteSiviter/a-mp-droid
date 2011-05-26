@@ -217,14 +217,27 @@
 	</string>
 	<string name="settings_delete_client_end">\"?</string>
 
+	<string name="settings_media_preload_items_title">Preload Items</string>
+	<string name="settings_media_preload_items_desc">How many items should be loaded when the end of a
+		list is reached.</string>
 	<string name="settings_media_defaultview_series_title">Default View Series</string>
 	<string name="settings_media_defaultview_series_desc">Default View for browsing your tv shows</string>
 	<string name="settings_media_defaultview_movies_title">Default View Movies</string>
 	<string name="settings_media_defaultview_movies_desc">Default View for browsing your movies</string>
 	<string name="settings_media_defaultview_videos_title">Default View Videos</string>
 	<string name="settings_media_defaultview_videos_desc">Default View for browsing your videos</string>
-	<string name="settings_media_defaultview_shares_title">Default View Shares</string>
-	<string name="settings_media_defaultview_shares_desc">Default View browsing your video shares</string>
+	<string name="settings_media_defaultview_videoshares_title">Default View Video Shares</string>
+	<string name="settings_media_defaultview_videoshares_desc">Default View browsing your video shares</string>
+	<string name="settings_media_defaultview_musicshares_title">Default View Music Shares</string>
+	<string name="settings_media_defaultview_musicshares_desc">Default View browsing your music shares</string>
+	<string name="settings_media_defaultview_musicalbums_title">Default View Music Albums</string>
+	<string name="settings_media_defaultview_musicalbums_desc">Default View browsing your music albums</string>
+	<string name="settings_media_defaultview_musicartists_title">Default View Music Artists</string>
+	<string name="settings_media_defaultview_musicartists_desc">Default View browsing your music artists</string>
+	<string name="settings_media_defaultview_musictracks_title">Default View Music Tracks</string>
+	<string name="settings_media_defaultview_musictracks_desc">Default View browsing your music tracks</string>
+
+
 
 	<string name="info_not_implemented">Not implemented yet</string>
 	<string name="info_no_connection">No connection to service</string>
@@ -241,6 +254,7 @@
 	<string name="menu_addhost_scan">QR Scan</string>
 	<string name="menu_connect">Connect</string>
 	<string name="menu_disconnect">Disconnect</string>
+	<string name="menu_set_default_view">Set as Default</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
 
 	<string name="dialog_ok">Ok</string>
@@ -271,17 +285,21 @@
 	<string name="notification_download_succeeded">Download finished</string>
 	<string name="notification_title">aMPdroid</string>
 
+	<string-array name="settings_media_preloaditems_text">
+		<item>Load all</item>
+		<item>20</item>
+		<item>50</item>
+		<item>100</item>
+		<item>200</item>
+		<item>500</item>
+	</string-array>
+
+
 	<string-array name="settings_general_statusbar_autohide_text">
 		<item>Always Show</item>
 		<item>Always Hide</item>
 		<item>Show when connected</item>
 		<item>Manually show/hide</item>
-	</string-array>
-	<string-array name="settings_general_statusbar_autohide_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
 	</string-array>
 
 	<string-array name="settings_media_defaultview_series_text">
@@ -290,37 +308,37 @@
 		<item>Banner</item>
 		<item>Thumb</item>
 	</string-array>
-	<string-array name="settings_media_defaultview_series_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-	</string-array>
+
 	<string-array name="settings_media_defaultview_movies_text">
 		<item>Text</item>
 		<item>Poster</item>
 		<item>Thumb</item>
 	</string-array>
-	<string-array name="settings_media_defaultview_movies_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
+	
 	<string-array name="settings_media_defaultview_videos_text">
 		<item>Text</item>
 		<item>Poster</item>
 		<item>Thumb</item>
 	</string-array>
-	<string-array name="settings_media_defaultview_videos_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_shares_text">
+
+	<string-array name="settings_media_defaultview_videoshares_text">
 		<item>Text</item>
 	</string-array>
-	<string-array name="settings_media_defaultview_shares_values">
-		<item>0</item>
+
+	<string-array name="settings_media_defaultview_musicshares_text">
+		<item>Text</item>
 	</string-array>
 
+	<string-array name="settings_media_defaultview_musicartists_text">
+		<item>Text</item>
+	</string-array>
+	
+	<string-array name="settings_media_defaultview_musicalbums_text">
+		<item>Text</item>
+		<item>Thumb</item>
+	</string-array>
+	
+	<string-array name="settings_media_defaultview_musictracks_text">
+		<item>Text</item>
+	</string-array>
 </resources>

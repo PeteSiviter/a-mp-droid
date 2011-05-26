@@ -36,11 +36,13 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -54,6 +56,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
    private StatusBarActivityHandler mStatusBarHandler;
    private String mArtist;
    private String mActivityGroup;
+   private int mPreloadItems;
 
    private class DownloadAlbumTask extends AsyncTask<MusicAlbum, Intent, Boolean> {
       private Context mContext;
@@ -127,13 +130,16 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          if (mArtist == null) {
             int albumsCount = mService.getAlbumsCount();
             int loadItems = mItemsLoaded + _params[0];
+            if(_params[0] == 0){
+               loadItems = albumsCount;
+            }
 
             if (albumsCount == -99) {
                publishProgress(null, null);
                return false;
             } else {
                while (mItemsLoaded < loadItems && mItemsLoaded < albumsCount) {
-                  int end = mItemsLoaded + 4;
+                  int end = mItemsLoaded + 19;
                   if (end >= albumsCount) {
                      end = albumsCount - 1;
                   }
@@ -143,7 +149,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                   if (items == null) {
                      return false;
                   } else {
-                     mItemsLoaded += 5;
+                     mItemsLoaded += 20;
                   }
                }
             }
@@ -176,6 +182,10 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         s, showArtist));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
                         new MusicAlbumThumbViewAdapterItem(s, showArtist));
+                  
+                  if (mAdapter.fastScrollingInitialised()) {
+                     mAdapter.resetFastScrolling(mListView);
+                  }
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -219,7 +229,9 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       mAdapter = new LazyLoadingAdapter(this);
       mAdapter.addView(ViewTypes.TextView.ordinal());
       mAdapter.addView(ViewTypes.ThumbView.ordinal());
-      mAdapter.setView(ViewTypes.ThumbView.ordinal());
+
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Albums));
+      
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -340,6 +352,8 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
       mAdapter.setLoadingText(getString(R.string.music_albums_loadalbums));
       mAdapter.showLoadingItem(true);
+      
+      mPreloadItems = PreferencesManager.getNumItemsToLoad();
 
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
@@ -354,7 +368,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       if (mMusicLoaderTask == null) {
          mMusicLoaderTask = new LoadMusicTask(this);
          mStatusBarHandler.setLoading(true);
-         mMusicLoaderTask.execute(20);
+         mMusicLoaderTask.execute(mPreloadItems);
       }
    }
 
@@ -373,7 +387,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -382,7 +396,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+            mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }

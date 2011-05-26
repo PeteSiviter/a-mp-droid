@@ -17,6 +17,7 @@ import com.mediaportal.ampdroid.lists.Utils;
 public class SeriesPosterViewAdapterItem implements ILoadingAdapterItem {
    private Series mSeries;
    private LazyLoadingImage mImage;
+   private String mSection;
    public SeriesPosterViewAdapterItem(Series _series) {
       super();
       this.mSeries = _series;
@@ -25,6 +26,12 @@ public class SeriesPosterViewAdapterItem implements ILoadingAdapterItem {
       String cacheName =   "Series" + File.separator + mSeries.getId() + File.separator + "Poster" + File.separator + fileName;
 
       mImage = new LazyLoadingImage(mSeries.getCurrentPosterUrl(), cacheName, 75, 100);
+      
+      String prettyName = mSeries.getPrettyName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -83,6 +90,9 @@ public class SeriesPosterViewAdapterItem implements ILoadingAdapterItem {
       return R.drawable.listview_imageloading_poster_2;
    }
 
-
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 
 }

@@ -16,6 +16,7 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 public class MusicArtistThumbViewAdapterItem implements ILoadingAdapterItem {
    private MusicArtist mArtist;
    private LazyLoadingImage mImage;
+   private String mSection;
    public MusicArtistThumbViewAdapterItem(MusicArtist _artist) {
       super();
       this.mArtist = _artist;
@@ -24,6 +25,12 @@ public class MusicArtistThumbViewAdapterItem implements ILoadingAdapterItem {
       //String cacheName =   "Series" + File.separator + mAlbum.getId() + File.separator + "Thumbs" + File.separator + fileName;
 
       //mImage = new LazyLoadingImage(mAlbum.getCurrentFanartUrl(), cacheName, 200, 100);
+      
+      String prettyName = mArtist.getTitle();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
 
    @Override
@@ -84,5 +91,10 @@ public class MusicArtistThumbViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_thumb;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

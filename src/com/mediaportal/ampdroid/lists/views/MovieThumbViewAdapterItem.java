@@ -19,6 +19,7 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 public class MovieThumbViewAdapterItem implements ILoadingAdapterItem {
    private LazyLoadingImage mImage;
    private Movie mMovie;
+   private String mSection;
 
    public MovieThumbViewAdapterItem(Movie _movie) {
       mMovie = _movie;
@@ -32,6 +33,12 @@ public class MovieThumbViewAdapterItem implements ILoadingAdapterItem {
                + File.separator + fileName;
 
          mImage = new LazyLoadingImage(backdrop, cacheName, 300, 100);
+      }
+      
+      String prettyName = mMovie.getName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
       }
    }
 
@@ -93,5 +100,10 @@ public class MovieThumbViewAdapterItem implements ILoadingAdapterItem {
    @Override
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_poster_2;
+   }
+   
+   @Override
+   public String getSection() {
+      return mSection;
    }
 }

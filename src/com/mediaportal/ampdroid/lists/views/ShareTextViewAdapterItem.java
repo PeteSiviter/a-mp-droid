@@ -13,9 +13,16 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class ShareTextViewAdapterItem implements ILoadingAdapterItem {
    private VideoShare mShare;
+   private String mSection;
    public ShareTextViewAdapterItem(VideoShare _share) {
       super();
       this.mShare = _share;
+      
+      String prettyName = mShare.getName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
    @Override
    public LazyLoadingImage getImage() {
@@ -64,4 +71,8 @@ public class ShareTextViewAdapterItem implements ILoadingAdapterItem {
       }
    }
 
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }

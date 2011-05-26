@@ -92,4 +92,8 @@ public class VirtualCardStateAdapterItem implements ILoadingAdapterItem {
       return 0;
    }
 
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

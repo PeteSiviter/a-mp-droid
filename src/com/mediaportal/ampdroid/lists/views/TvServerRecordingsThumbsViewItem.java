@@ -110,4 +110,9 @@ public class TvServerRecordingsThumbsViewItem implements ILoadingAdapterItem {
    public int getDefaultImageResource() {
       return R.drawable.mplogo;
    }
+   
+   @Override
+   public String getSection() {
+      return null;
+   }
 }

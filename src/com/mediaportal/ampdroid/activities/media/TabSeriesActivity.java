@@ -25,11 +25,13 @@ import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.SeriesBannerViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesPosterViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.SeriesThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabSeriesActivity extends Activity implements ILoadingListener {
@@ -40,6 +42,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
    private int mSeriesLoaded = 0;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
+   private int mPreloadItems;
 
    private class LoadSeriesTask extends AsyncTask<Integer, List<Series>, Boolean> {
       private Context mContext;
@@ -53,13 +56,16 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       protected Boolean doInBackground(Integer... _params) {
          int seriesCount = mService.getSeriesCount();
          int loadItems = mSeriesLoaded + _params[0];
+         if(_params[0] == 0){
+            loadItems = seriesCount;
+         }
 
          if (seriesCount == -99) {
             publishProgress(null, null);
             return false;
          } else {
             while (mSeriesLoaded < loadItems && mSeriesLoaded < seriesCount) {
-               int end = mSeriesLoaded + 4;
+               int end = mSeriesLoaded + 19;
                if (end >= seriesCount) {
                   end = seriesCount - 1;
                }
@@ -69,7 +75,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
                if (series == null) {
                   return false;
                } else {
-                  mSeriesLoaded += 5;
+                  mSeriesLoaded += 20;
                }
             }
          }
@@ -94,6 +100,10 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
                         .addItem(ViewTypes.ThumbView.ordinal(), new SeriesThumbViewAdapterItem(s));
                   mAdapter.addItem(ViewTypes.BannerView.ordinal(), new SeriesBannerViewAdapterItem(
                         s));
+               }
+               
+               if (mAdapter.fastScrollingInitialised()) {
+                  mAdapter.resetFastScrolling(mListView);
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -140,7 +150,10 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       mAdapter.addView(ViewTypes.PosterView.ordinal());
       mAdapter.addView(ViewTypes.ThumbView.ordinal());
       mAdapter.addView(ViewTypes.BannerView.ordinal());
-      mAdapter.setView(ViewTypes.PosterView.ordinal());
+      
+      mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Series));
+      mPreloadItems = PreferencesManager.getNumItemsToLoad();
+      
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -184,7 +197,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
 
          mSeriesLoaderTask = new LoadSeriesTask(this);
          mStatusBarHandler.setLoading(true);
-         mSeriesLoaderTask.execute(20);
+         mSeriesLoaderTask.execute(mPreloadItems);
       }
    }
 
@@ -207,7 +220,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       textSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.TextView.ordinal());
+            mAdapter.setView(ViewTypes.TextView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -216,7 +229,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       posterSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.PosterView.ordinal());
+            mAdapter.setView(ViewTypes.PosterView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -225,7 +238,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       thumbsSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.ThumbView.ordinal());
+            mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
             return true;
          }
@@ -234,8 +247,19 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       bannerSettingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
-            mAdapter.setView(ViewTypes.BannerView.ordinal());
+            mAdapter.setView(ViewTypes.BannerView);
             mAdapter.notifyDataSetInvalidated();
+            return true;
+         }
+      });
+      
+      MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            ViewTypes currentView = mAdapter.getCurrentView();
+            PreferencesManager.setDefaultView(MediaListType.Series, currentView);
             return true;
          }
       });

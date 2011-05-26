@@ -14,9 +14,16 @@ import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 
 public class MusicFileInfoTextViewAdapterItem implements ILoadingAdapterItem {
    private FileInfo mTracks;
+   private String mSection;
    public MusicFileInfoTextViewAdapterItem(FileInfo _track) {
       super();
       mTracks = _track;
+      
+      String prettyName = mTracks.getName();
+      if(prettyName != null && prettyName.length() > 0){
+         String firstLetter = prettyName.substring(0, 1);
+         mSection = firstLetter.toUpperCase();
+      }
    }
    @Override
    public LazyLoadingImage getImage() {
@@ -71,4 +78,8 @@ public class MusicFileInfoTextViewAdapterItem implements ILoadingAdapterItem {
       }
    }
 
+   @Override
+   public String getSection() {
+      return mSection;
+   }
 }
