@@ -105,6 +105,8 @@
 	<string name="tvserver_loadchannels">Cargando Canales</string>
 	<string name="tvserver_schedulecanceled">Programación Cancelada</string>
 	<string name="tvserver_schedulecancel_failed">Error al cancelar la grabación</string>
+	<string name="tvserver_scheduleadded">Programación añadida</string>
+	<string name="tvserver_scheduleadd_failed">No se pudo añadir la programación</string>
 	<string name="tvserver_cancel_schedule">Cancelar Programación</string>
 	<string name="tvserver_cancel_recording">Cancelar Grabación</string>
 	<string name="tvserver_loadschedules">Cargando Programaciones ...</string>
@@ -191,14 +193,25 @@
 	<string name="settings_delete_client_title">¿Eliminar Cliente?</string>
 	<string name="settings_delete_client_start">¿Está seguro de que desea eliminar el cliente \\"</string>
 	<string name="settings_delete_client_end">\\"?</string>
+	<string name="settings_media_preload_items_title">Elementos a precargar</string>
+	<string name="settings_media_preload_items_desc">Indique el nº de elementos que se deben cargar al llegar al final
+de la lista.</string>
 	<string name="settings_media_defaultview_series_title">Vista en Series</string>
 	<string name="settings_media_defaultview_series_desc">Vista por defecto al ver sus series</string>
 	<string name="settings_media_defaultview_movies_title">Vista en Películas</string>
 	<string name="settings_media_defaultview_movies_desc">Vista por defecto al ver sus películas</string>
 	<string name="settings_media_defaultview_videos_title">Vista en Vídeos</string>
 	<string name="settings_media_defaultview_videos_desc">Vista por defecto al ver sus videos</string>
-	<string name="settings_media_defaultview_shares_title">Vista en Carpetas</string>
-	<string name="settings_media_defaultview_shares_desc">Vista por defecto al ver sus carpetas</string>
+	<string name="settings_media_defaultview_videoshares_title">Vista en Carpeta Vídeos</string>
+	<string name="settings_media_defaultview_videoshares_desc">Vista por defecto al ver su carpeta de vídeos</string>
+	<string name="settings_media_defaultview_musicshares_title">Vista en Carpeta Música</string>
+	<string name="settings_media_defaultview_musicshares_desc">Vista por defecto al ver su carpeta de música</string>
+	<string name="settings_media_defaultview_musicalbums_title">Vista en Álbumes</string>
+	<string name="settings_media_defaultview_musicalbums_desc">Vista por defecto al ver sus álbumes</string>
+	<string name="settings_media_defaultview_musicartists_title">Vista en Artistas</string>
+	<string name="settings_media_defaultview_musicartists_desc">Vista por defecto al ver sus artistas</string>
+	<string name="settings_media_defaultview_musictracks_title">Vista en Canciones</string>
+	<string name="settings_media_defaultview_musictracks_desc">Vista por defecto al ver sus canciones</string>
 	<string name="info_not_implemented">Sin implementar aún</string>
 	<string name="info_no_connection">Sin conexión con TVserver</string>
 	<string name="info_remote_notconnected">Sin Conexión</string>
@@ -213,6 +226,7 @@
 	<string name="menu_addhost_scan">Escaneo QR</string>
 	<string name="menu_connect">Conectar</string>
 	<string name="menu_disconnect">Desconectar</string>
+	<string name="menu_set_default_view">Marcar por defecto</string>
 	<string name="remote_menu_keyboard">Teclado</string>
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Sí</string>
@@ -236,4 +250,6 @@
 	<string name="notification_download_failed">Descarga fallida</string>
 	<string name="notification_download_succeeded">Descarga completa</string>
 	<string name="notification_title">aMPdroid</string>
+	<string name="settings_media_defaultview_shares_title">Vista en Carpetas</string>
+	<string name="settings_media_defaultview_shares_desc">Vista por defecto al ver sus carpetas</string>
 </resources>

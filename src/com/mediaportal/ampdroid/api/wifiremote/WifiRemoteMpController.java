@@ -53,7 +53,8 @@ public class WifiRemoteMpController implements IClientControlApi {
    private TcpListenerTask mTcpReader;
    private List<IClientControlListener> mListeners;
    private ObjectMapper mJsonObjectMapper;
-   private BufferedReader input;;
+   private BufferedReader input;
+   private Context mContext;;
 
    private class TcpListenerTask extends AsyncTask<DataInputStream, Object, ConnectionState> {
       private List<IClientControlListener> listeners;
@@ -201,6 +202,7 @@ public class WifiRemoteMpController implements IClientControlApi {
 
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mContext = _context;
    }
 
    public WifiRemoteMpController(Context _context, String _server, int _port) {
@@ -256,7 +258,7 @@ public class WifiRemoteMpController implements IClientControlApi {
       try {
          mSocket = new Socket();
          SocketAddress socketAddress = new InetSocketAddress(mServer, mPort);
-
+         
          mSocket.connect(socketAddress, 2000);
 
          // outgoing stream redirect to socket

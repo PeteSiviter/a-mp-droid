@@ -22,7 +22,7 @@
 	<string name="episode_firstaired">Erstausstrahlung</string>
 	<string name="episode_rating">Wertung</string>
 	<string name="button_prev">&lt;&lt;</string>
-	<string name="button_next">>></string>
+	<string name="button_next">&gt;&gt;</string>
 	<string name="button_earlier">Früher</string>
 	<string name="button_later">Später</string>
 	<string name="title_home">MediaPortal für Android</string>
@@ -105,6 +105,8 @@
 	<string name="tvserver_loadchannels">Lade Sender</string>
 	<string name="tvserver_schedulecanceled">Geplante Aufnahme gelöscht</string>
 	<string name="tvserver_schedulecancel_failed">Konnte Programmierung nicht löschen</string>
+	<string name="tvserver_scheduleadded">Aufnahme hinzugefügt</string>
+	<string name="tvserver_scheduleadd_failed">Konnte Aufnahme nicht hinzufügen</string>
 	<string name="tvserver_cancel_schedule">Programmierung löschen</string>
 	<string name="tvserver_cancel_recording">Aufnahme abbrechen</string>
 	<string name="tvserver_loadschedules">Lade geplante Aufnahmen ...</string>
@@ -132,7 +134,7 @@
 	<string name="remote_reboot">Neu starten</string>
 	<string name="remote_shutdown">Herunterfahren</string>
 	<string name="remote_exit">Exit</string>
-	<string name="slider_remote_controls"></string>
+	<string name="slider_remote_controls">Bedienelemente</string>
 	<string name="slider_position_label">Position</string>
 	<string name="settings_categories_clients">Clients</string>
 	<string name="settings_category_general">Generell</string>
@@ -183,14 +185,24 @@
 	<string name="settings_delete_client_title">Client löschen?</string>
 	<string name="settings_delete_client_start">Sind Sie sicher dass sie den Client \"</string>
 	<string name="settings_delete_client_end">\" löschen wollen?</string>
+	<string name="settings_media_preload_items_title">Items laden</string>
+	<string name="settings_media_preload_items_desc">Wieviele Elemente einer Liste werden bei Bedarf geladen.</string>
 	<string name="settings_media_defaultview_series_title">Standardansicht Serien</string>
 	<string name="settings_media_defaultview_series_desc">Standardansicht der Serienliste</string>
 	<string name="settings_media_defaultview_movies_title">Standardansicht Filme</string>
 	<string name="settings_media_defaultview_movies_desc">Standardansicht der Filmliste</string>
 	<string name="settings_media_defaultview_videos_title">Standardansicht Videos</string>
 	<string name="settings_media_defaultview_videos_desc">Standardansicht der Videoliste</string>
-	<string name="settings_media_defaultview_shares_title">Standardansicht Shares</string>
-	<string name="settings_media_defaultview_shares_desc">Standardanischt der Shares Liste</string>
+	<string name="settings_media_defaultview_videoshares_title">Standardansicht Video Dateien</string>
+	<string name="settings_media_defaultview_videoshares_desc">Standardansicht der Video Datei Liste</string>
+	<string name="settings_media_defaultview_musicshares_title">Standardansicht Musikdateien</string>
+	<string name="settings_media_defaultview_musicshares_desc">Standardansicht für die Liste der Musikdateien</string>
+	<string name="settings_media_defaultview_musicalbums_title">Ansicht Musikalbem</string>
+	<string name="settings_media_defaultview_musicalbums_desc">Standardansicht für die Liste der Musikalben</string>
+	<string name="settings_media_defaultview_musicartists_title">Ansicht Musiker</string>
+	<string name="settings_media_defaultview_musicartists_desc">Standardansicht für die Liste der Musiker</string>
+	<string name="settings_media_defaultview_musictracks_title">Ansicht Lieder</string>
+	<string name="settings_media_defaultview_musictracks_desc">Standardansicht für die Liste der Tracks</string>
 	<string name="info_not_implemented">Noch nicht implementiert</string>
 	<string name="info_no_connection">Keine Verbindung zum Service</string>
 	<string name="info_remote_notconnected">Remote nicht verbunden</string>
@@ -200,11 +212,12 @@
 	<string name="info_file_already_downloaded">Datei wurde bereits geladen</string>
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Einstellungen</string>
-	<string name="menu_refresh">Neu laden</string>
+	<string name="menu_refresh">Aktualisieren</string>
 	<string name="menu_addhost">Client hinzufügen</string>
 	<string name="menu_addhost_scan">QR Scan</string>
 	<string name="menu_connect">Verbinden</string>
 	<string name="menu_disconnect">Trennen</string>
+	<string name="menu_set_default_view">Als Standard</string>
 	<string name="remote_menu_keyboard">Tastatur</string>
 	<string name="dialog_ok">OK</string>
 	<string name="dialog_yes">Ja</string>
@@ -228,4 +241,6 @@
 	<string name="notification_download_failed">Download fehlgeschlagen</string>
 	<string name="notification_download_succeeded">Download fertig</string>
 	<string name="notification_title">aMPdroid</string>
+	<string name="settings_media_defaultview_shares_title">Standardansicht Video Dateien</string>
+	<string name="settings_media_defaultview_shares_desc">Standardanischt der Video Datei Liste</string>
 </resources>

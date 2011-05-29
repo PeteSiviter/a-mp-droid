@@ -2,15 +2,13 @@
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">Control MP from your Android phone</string>
-
-	<string name="actionbar_activity_not_found">Failed to open intent...</string>
+	<string name="actionbar_activity_not_found">Fout bij openen</string>
 	<string name="welcome_choose_client">Kies client:</string>
 	<string name="welcome_auto_connect">Verbinden tijdens startup</string>
 	<string name="welcome_no_client">Kies client a.u.b. ...</string>
 	<string name="welcome_connect">Verbinden</string>
 	<string name="welcome_no_clients">Nog geen clients gedefinieerd, voeg clients toe in
 		settings scherm</string>
-
 	<string name="series_actors">Acteurs</string>
 	<string name="series_seasons">Seizoen</string>
 	<string name="series_release">Release datum</string>
@@ -27,7 +25,6 @@
 	<string name="button_next">Volgende</string>
 	<string name="button_earlier">Eerder</string>
 	<string name="button_later">Later</string>
-
 	<string name="title_home">MediaPortal voor Android</string>
 	<string name="title_tvserver">TvServer</string>
 	<string name="title_tvserver_state">Handbediening</string>
@@ -36,20 +33,16 @@
 	<string name="title_tvserver_schedules">Geplande taken</string>
 	<string name="title_tvserver_epg">Programmagids</string>
 	<string name="title_media">Media verkennen</string>
-
 	<string name="media_views">Bekeken</string>
 	<string name="media_views_text">Tekst</string>
 	<string name="media_views_poster">Poster</string>
 	<string name="media_views_thumbs">Thumbs</string>
 	<string name="media_views_banner">Banner</string>
-
 	<string name="media_tabs_shares">Shares</string>
 	<string name="media_tabs_videos">Videos</string>
 	<string name="media_tabs_movies">Films</string>
 	<string name="media_tabs_series">Series</string>
-
 	<string name="media_nofile">Bestand niet beschikbaar voor dit item</string>
-
 	<string name="media_series_loadingerror">Kan series niet laden</string>
 	<string name="media_series_loadmultiplewarning_title">Laden van meerdere episodes!</string>
 	<string name="media_series_loadmultiplewarning_text_begin">Wilt u downloaden </string>
@@ -70,12 +63,10 @@
 	<string name="media_videos_loadingerror">Kan video niet laden</string>
 	<string name="media_videos_loadvideodetails">Video Details laden</string>
 	<string name="media_videos_loadvideos">Videos laden ...</string>
-
 	<string name="music_tabs_shares">Mappen</string>
 	<string name="music_tabs_albums">Albums</string>
 	<string name="music_tabs_artists">Artiesten</string>
 	<string name="music_tabs_songs">Nummers</string>
-
 	<string name="music_album_details_tracks">Nummer</string>
 	<string name="music_album_details_year">Jaar</string>
 	<string name="music_album_details_num_track">Nummers</string>
@@ -86,15 +77,12 @@
 	<string name="music_albums_loadalbums">Albums laden ...</string>
 	<string name="music_artists_loadartists">Artiesten laden ...</string>
 	<string name="music_tracks_loadtracks">Nummers laden ...</string>
-
 	<string name="days_yesterday">Gisteren</string>
 	<string name="days_today">Vandaag</string>
 	<string name="days_tomorrow">Morgen</string>
 	<string name="state_recording">Opname</string>
 	<string name="state_timeshifting">Timeshifting</string>
 	<string name="state_grabbingEpg">Ophalen EPG</string>
-
-
 	<string name="tvserver_manual_title">Handbediening</string>
 	<string name="tvserver_manual_desc">Huidige status van de tv service en de tv kaarten.
 	</string>
@@ -118,6 +106,8 @@
 	<string name="tvserver_loadchannels">Channels laden</string>
 	<string name="tvserver_schedulecanceled">Geplande taak geannuleerd</string>
 	<string name="tvserver_schedulecancel_failed">Kan geplande taak niet annuleren</string>
+	<string name="tvserver_scheduleadded"></string>
+	<string name="tvserver_scheduleadd_failed"></string>
 	<string name="tvserver_cancel_schedule">Annuleer geplande taak</string>
 	<string name="tvserver_cancel_recording">Annuleer opname</string>
 	<string name="tvserver_loadschedules">Geplande taak laden ...</string>
@@ -132,39 +122,33 @@
 	<string name="tvserver_channel">Kanaal</string>
 	<string name="tvserver_activecards">Actieve kaarten</string>
 	<string name="tvserver_title_starttimeshiftrecording">Start Timeshift/opname</string>
-
 	<string name="tvserver_program_start">Begintijd</string>
 	<string name="tvserver_program_end">Eindtijd</string>
 	<string name="tvserver_program_duration">Tijdsduur</string>
 	<string name="tvserver_program_desc">Beschrijving</string>
-
 	<string name="remote_menu_morecommands">Meer instructies</string>
 	<string name="remote_menu_plugins">Plugins</string>
 	<string name="remote_menu_powermodes">Powermodes</string>
-
 	<string name="remote_logoff">Beschrijving</string>
 	<string name="remote_suspend">Standby</string>
 	<string name="remote_hibernate">Slaapstand</string>
 	<string name="remote_reboot">Herstarten</string>
 	<string name="remote_shutdown">Uitschakelen</string>
 	<string name="remote_exit">Einde</string>
-
 	<string name="slider_remote_controls">Remote Controls</string>
 	<string name="slider_position_label">Positie</string>
-
 	<string name="settings_categories_clients">Clients</string>
 	<string name="settings_category_general">Algemeen</string>
 	<string name="settings_category_tvserver">Tv Server</string>
 	<string name="settings_category_media">Media verkennen</string>
-
 	<string name="settings_general_fullscreen">Volledig scherm</string>
 	<string name="settings_general_fullscreen_desc">Verberg titelbalk. Herstart programma om
 		wijzigingen toe te
 		passen)</string>
 	<string name="settings_preference_vibrate_title">Trillen bij aanraken</string>
 	<string name="settings_preference_vibrate_desc">Scherm trilt bij gebruikers bediening</string>
-	<string name="settings_tvserver_showall_title">Toon "Alle kanalen" groep</string>
-	<string name="settings_tvserver_showall_desc">Toon de "Alle kanalen"-groep die alle kanalen van
+	<string name="settings_tvserver_showall_title">Toon \"Alle kanalen\" groep</string>
+	<string name="settings_tvserver_showall_desc">Toon de \"Alle kanalen\"-groep die alle kanalen van
 		de tv server bevatten</string>
 	<string name="settings_tvserver_clientname_title">Clientnaam</string>
 	<string name="settings_tvserver_clientname_desc">De naam van deze client als deze met de MediaPortal
@@ -177,14 +161,12 @@
 	<string name="settings_media_cachevalid_title">Cache valid</string>
 	<string name="settings_media_cachevalid_desc">Bewaarde items vernieuwen als ouder dan
 	</string>
-
 	<string name="settings_categories_clients_desc">Bewerk Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
 	<string name="settings_clients_switchadvanced">Schakel naar Geavanceerde Modus</string>
 	<string name="settings_clients_switchsimple">Schakel naar Eenvoudige Modus</string>
 	<string name="settings_clients_switchsimple_warning_title">Instellingen vervangen?</string>
 	<string name="settings_clients_switchsimple_warning_text">U heeft nu verschillende instellingen voor uw clients. Als u overschakelt naar Eenvoudige Modus worden deze overschreven</string>
-	
 	<string name="settings_clients_newclient_desc">Toevoegen, bewerk, verwijder clients</string>
 	<string name="settings_general_preloaditems_title">Items vooraf laden</string>
 	<string name="settings_general_preloaditems_desc">Aantal items die geladen zijn als het eind van de
@@ -198,14 +180,12 @@
 	<string name="settings_general_statusbar_hide_title">Verberg statusbalk</string>
 	<string name="settings_general_statusbar_hide_desc">Auto-verbergen statusbalk</string>
 	<string name="settings_general_statusbar_hide_dialog_title">Verberg de statusbalk stand</string>
-	<string name="settings_clients_default">Standaard:\u0020</string>
-
-
 	<string name="settings_clients_noclients">Gebruik menu voor toevoegen host</string>
 	<string name="settings_clients_clientname">Naam van deze client:</string>
 	<string name="settings_clients_clienthost">Host of IP-adres:</string>
 	<string name="settings_clients_clientport">Poort:</string>
 	<string name="settings_clients_clientusername">Gebruikersnaam:</string>
+	<string name="settings_clients_default">Standaard:\u0020</string>
 	<string name="settings_clients_clientpassword">Wachtwoord:</string>
 	<string name="settings_clients_clientuseauth">Gebruik verificatie:</string>
 	<string name="settings_clients_enableservice">Enable Service</string>
@@ -213,10 +193,11 @@
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Verwijder Client?</string>
-	<string name="settings_delete_client_start">Weet u zeker dat u de client wilt verwijderen \"
+	<string name="settings_delete_client_start">Weet u zeker dat u de client wilt verwijderen \\"
 	</string>
-	<string name="settings_delete_client_end">\"?</string>
-
+	<string name="settings_delete_client_end">\\"?</string>
+	<string name="settings_media_preload_items_title"></string>
+	<string name="settings_media_preload_items_desc"></string>
 	<string name="settings_media_defaultview_series_title">Standaard View Series</string>
 	<string name="settings_media_defaultview_series_desc">Standaard View voor het verkennen van uw tv shows
 	</string>
@@ -226,10 +207,16 @@
 	<string name="settings_media_defaultview_videos_title">Standaard View Videos</string>
 	<string name="settings_media_defaultview_videos_desc">Standaard View voor het verkennen van uw videos
 	</string>
-	<string name="settings_media_defaultview_shares_title">Standaard View Shares</string>
-	<string name="settings_media_defaultview_shares_desc">Standaard View voor het verkennen van uw video
-		shares</string>
-
+	<string name="settings_media_defaultview_videoshares_title">Standaard View gedeelde videos</string>
+	<string name="settings_media_defaultview_videoshares_desc">Standaard View voor verkennen gedeelde videos</string>
+	<string name="settings_media_defaultview_musicshares_title"></string>
+	<string name="settings_media_defaultview_musicshares_desc"></string>
+	<string name="settings_media_defaultview_musicalbums_title"></string>
+	<string name="settings_media_defaultview_musicalbums_desc"></string>
+	<string name="settings_media_defaultview_musicartists_title"></string>
+	<string name="settings_media_defaultview_musicartists_desc"></string>
+	<string name="settings_media_defaultview_musictracks_title"></string>
+	<string name="settings_media_defaultview_musictracks_desc"></string>
 	<string name="info_not_implemented">werkt nog niet</string>
 	<string name="info_no_connection">Geen verbinding met service</string>
 	<string name="info_remote_notconnected">Remote niet verbonden</string>
@@ -237,7 +224,6 @@
 	<string name="info_loading_failed">Laadfout, check uw verbinding</string>
 	<string name="info_file_not_found">Bestand moet eerst gedownload worden</string>
 	<string name="info_file_already_downloaded">Bestand is al gedownload</string>
-
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Instellingen</string>
 	<string name="menu_refresh">Vernieuw</string>
@@ -245,85 +231,31 @@
 	<string name="menu_addhost_scan">QR Scan</string>
 	<string name="menu_connect">Verbinden</string>
 	<string name="menu_disconnect">Verbreken</string>
+	<string name="menu_set_default_view">Stel in als standaard</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
-
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Ja</string>
 	<string name="dialog_no">Nee</string>
 	<string name="dialog_cancel">Annuleer</string>
 	<string name="dialog_title_addhost">Voeg nieuwe host toe</string>
-
 	<string name="quickactions_playclient">Afspelen op PC</string>
 	<string name="quickactions_playdevice">Lokaal afspelen</string>
 	<string name="quickactions_downloadsd">Download</string>
 	<string name="quickactions_starttimeshift">Annuleer</string>
 	<string name="quickactions_stoptimeshift">Annuleer</string>
 	<string name="quickactions_record">Opnemen</string>
-	<string name="quickactions_cancelrecord">Annuleer opn.</string>
-
+	<string name="quickactions_cancelrecord">Annuleer opname</string>
 	<string name="connection_successful">Verbinden met Remote gelukt!</string>
 	<string name="connection_failed">Kan geen verbinding met de remote maken</string>
 	<string name="connection_closed">Verbinding met remote afgesloten</string>
-
 	<string name="settings_host_useauth">Gebruik Authentificatie</string>
 	<string name="remote_button_info">Info</string>
 	<string name="remote_button_subtitle">Ondertitels</string>
 	<string name="remote_button_menu">Menu</string>
-
 	<string name="notification_download_failed">Download mislukt</string>
 	<string name="notification_download_succeeded">Download klaar</string>
 	<string name="notification_title">aMPdroid</string>
-
-	<string-array name="settings_general_statusbar_autohide_text">
-		<item>Toon altijd</item>
-		<item>Verberg altijd</item>
-		<item>Toon als verbonden</item>
-		<item>Handmatig tonen/verbergen</item>
-	</string-array>
-	<string-array name="settings_general_statusbar_autohide_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_series_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Banner</item>
-		<item>Thumb</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_series_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_movies_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Thumb</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_movies_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_videos_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Thumb</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_videos_values">
-		<item>0</item>
-		<item>1</item>
-		<item>3</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_shares_text">
-		<item>Text</item>
-	</string-array>
-	<string-array name="settings_media_defaultview_shares_values">
-		<item>0</item>
-	</string-array>
-
+	<string name="settings_media_defaultview_shares_title">Standaard View Shares</string>
+	<string name="settings_media_defaultview_shares_desc">Standaard View voor het verkennen van uw video
+		shares</string>
 </resources>

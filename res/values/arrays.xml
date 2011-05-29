@@ -55,4 +55,61 @@
 	<string-array name="settings_media_defaultview_musictracks_values">
 		<item>0</item>
 	</string-array>
+	
+		<string-array name="settings_media_preloaditems_text">
+		<item>Load all</item>
+		<item>20</item>
+		<item>50</item>
+		<item>100</item>
+		<item>200</item>
+		<item>500</item>
+	</string-array>
+
+
+	<string-array name="settings_general_statusbar_autohide_text">
+		<item>Always Show</item>
+		<item>Always Hide</item>
+		<item>Show when connected</item>
+		<item>Manually show/hide</item>
+	</string-array>
+
+	<string-array name="settings_media_defaultview_series_text">
+		<item>Text</item>
+		<item>Poster</item>
+		<item>Banner</item>
+		<item>Thumb</item>
+	</string-array>
+
+	<string-array name="settings_media_defaultview_movies_text">
+		<item>Text</item>
+		<item>Poster</item>
+		<item>Thumb</item>
+	</string-array>
+	
+	<string-array name="settings_media_defaultview_videos_text">
+		<item>Text</item>
+		<item>Poster</item>
+		<item>Thumb</item>
+	</string-array>
+
+	<string-array name="settings_media_defaultview_videoshares_text">
+		<item>Text</item>
+	</string-array>
+
+	<string-array name="settings_media_defaultview_musicshares_text">
+		<item>Text</item>
+	</string-array>
+
+	<string-array name="settings_media_defaultview_musicartists_text">
+		<item>Text</item>
+	</string-array>
+	
+	<string-array name="settings_media_defaultview_musicalbums_text">
+		<item>Text</item>
+		<item>Thumb</item>
+	</string-array>
+	
+	<string-array name="settings_media_defaultview_musictracks_text">
+		<item>Text</item>
+	</string-array>
 </resources>

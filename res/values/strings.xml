@@ -2,7 +2,6 @@
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">Control MP from your Android phone</string>
-
 	<string name="actionbar_activity_not_found">Failed to open intent...</string>
 	<string name="welcome_choose_client">Choose client:</string>
 	<string name="welcome_auto_connect">Connect on startup</string>
@@ -10,7 +9,6 @@
 	<string name="welcome_connect">Connect</string>
 	<string name="welcome_no_clients">No clients defined yet, use the settings screen to
 		add clients</string>
-
 	<string name="series_actors">Actors</string>
 	<string name="series_seasons">Seasons</string>
 	<string name="series_release">Release Date</string>
@@ -27,7 +25,6 @@
 	<string name="button_next">Next</string>
 	<string name="button_earlier">Earlier</string>
 	<string name="button_later">Later</string>
-
 	<string name="title_home">MediaPortal for Android</string>
 	<string name="title_tvserver">TvServer</string>
 	<string name="title_tvserver_state">Manual Control</string>
@@ -36,20 +33,16 @@
 	<string name="title_tvserver_schedules">Schedules</string>
 	<string name="title_tvserver_epg">Program Guide</string>
 	<string name="title_media">Media Browsing</string>
-
 	<string name="media_views">Views</string>
 	<string name="media_views_text">Text</string>
 	<string name="media_views_poster">Poster</string>
 	<string name="media_views_thumbs">Thumbs</string>
 	<string name="media_views_banner">Banner</string>
-
 	<string name="media_tabs_shares">Shares</string>
 	<string name="media_tabs_videos">Videos</string>
 	<string name="media_tabs_movies">Movies</string>
 	<string name="media_tabs_series">Series</string>
-
 	<string name="media_nofile">No local file available for this item</string>
-
 	<string name="media_series_loadingerror">Couldn\'t load series</string>
 	<string name="media_series_loadmultiplewarning_title">Downloading multiple episodes!</string>
 	<string name="media_series_loadmultiplewarning_text_begin">Do you really want to download\u0020</string>
@@ -70,12 +63,10 @@
 	<string name="media_videos_loadingerror">Couldn\'t load video</string>
 	<string name="media_videos_loadvideodetails">Loading Video Details</string>
 	<string name="media_videos_loadvideos">Loading Videos ...</string>
-
 	<string name="music_tabs_shares">Folders</string>
 	<string name="music_tabs_albums">Albums</string>
 	<string name="music_tabs_artists">Artists</string>
 	<string name="music_tabs_songs">Songs</string>
-
 	<string name="music_album_details_tracks">Tracks</string>
 	<string name="music_album_details_year">Year</string>
 	<string name="music_album_details_num_track">Tracks</string>
@@ -86,15 +77,12 @@
 	<string name="music_albums_loadalbums">Loading Albums ...</string>
 	<string name="music_artists_loadartists">Loading Artists ...</string>
 	<string name="music_tracks_loadtracks">Loading Tracks ...</string>
-
 	<string name="days_yesterday">Yesterday</string>
 	<string name="days_today">Today</string>
 	<string name="days_tomorrow">Tomorrow</string>
 	<string name="state_recording">Recording</string>
 	<string name="state_timeshifting">Timeshifting</string>
 	<string name="state_grabbingEpg">Grabbing EPG</string>
-
-
 	<string name="tvserver_manual_title">Manual Control</string>
 	<string name="tvserver_manual_desc">Current state of the tv service and the tv cards.
 	</string>
@@ -134,38 +122,32 @@
 	<string name="tvserver_channel">Channel</string>
 	<string name="tvserver_activecards">Active Cards</string>
 	<string name="tvserver_title_starttimeshiftrecording">Start Timeshift/Recording</string>
-
 	<string name="tvserver_program_start">Start Time</string>
 	<string name="tvserver_program_end">End Time</string>
 	<string name="tvserver_program_duration">Duration</string>
 	<string name="tvserver_program_desc">Description</string>
-
 	<string name="remote_menu_morecommands">More Commands</string>
 	<string name="remote_menu_plugins">Plugins</string>
 	<string name="remote_menu_powermodes">Powermodes</string>
-
 	<string name="remote_logoff">Description</string>
 	<string name="remote_suspend">Suspend</string>
 	<string name="remote_hibernate">Hibernate</string>
 	<string name="remote_reboot">Reboot</string>
 	<string name="remote_shutdown">Shutdown</string>
 	<string name="remote_exit">Exit</string>
-
 	<string name="slider_remote_controls">Remote Controls</string>
 	<string name="slider_position_label">Position</string>
-
 	<string name="settings_categories_clients">Clients</string>
 	<string name="settings_category_general">General</string>
 	<string name="settings_category_tvserver">Tv Server</string>
 	<string name="settings_category_media">Media Browsing</string>
-
 	<string name="settings_general_fullscreen">Fullscreen</string>
 	<string name="settings_general_fullscreen_desc">Hide titlebar. Restart app for changes to take
 		affect)</string>
 	<string name="settings_preference_vibrate_title">Vibrate on Touch</string>
 	<string name="settings_preference_vibrate_desc">Screen vibrates on user interaction</string>
-	<string name="settings_tvserver_showall_title">Show "All Channel" Group</string>
-	<string name="settings_tvserver_showall_desc">Show the "All Channel" Group which contains all
+	<string name="settings_tvserver_showall_title">Show \"All Channel\" Group</string>
+	<string name="settings_tvserver_showall_desc">Show the \"All Channel\" Group which contains all
 		channels of the tv server</string>
 	<string name="settings_tvserver_clientname_title">Client Name</string>
 	<string name="settings_tvserver_clientname_desc">The Name of this client when interacting with the
@@ -178,7 +160,6 @@
 	<string name="settings_media_cachevalid_title">Cache valid</string>
 	<string name="settings_media_cachevalid_desc">Cached items should be refreshed if older then
 	</string>
-
 	<string name="settings_categories_clients_desc">Edit Clients</string>
 	<string name="settings_clients_newclient_title">Clients</string>
 	<string name="settings_clients_switchadvanced">Switch to Advanced Mode</string>
@@ -199,7 +180,6 @@
 	<string name="settings_general_statusbar_hide_title">Hide Statusbar</string>
 	<string name="settings_general_statusbar_hide_desc">Auto-hide the statusbar</string>
 	<string name="settings_general_statusbar_hide_dialog_title">Hide Statusbar Mode</string>
-
 	<string name="settings_clients_noclients">Use menu to add host</string>
 	<string name="settings_clients_clientname">Name of this Instance:</string>
 	<string name="settings_clients_clienthost">Host or IP Address:</string>
@@ -213,10 +193,9 @@
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Delete Client?</string>
-	<string name="settings_delete_client_start">Are you sure you want to delete the client \"
+	<string name="settings_delete_client_start">Are you sure you want to delete the client \\"
 	</string>
-	<string name="settings_delete_client_end">\"?</string>
-
+	<string name="settings_delete_client_end">\\"?</string>
 	<string name="settings_media_preload_items_title">Preload Items</string>
 	<string name="settings_media_preload_items_desc">How many items should be loaded when the end of a
 		list is reached.</string>
@@ -236,9 +215,6 @@
 	<string name="settings_media_defaultview_musicartists_desc">Default View browsing your music artists</string>
 	<string name="settings_media_defaultview_musictracks_title">Default View Music Tracks</string>
 	<string name="settings_media_defaultview_musictracks_desc">Default View browsing your music tracks</string>
-
-
-
 	<string name="info_not_implemented">Not implemented yet</string>
 	<string name="info_no_connection">No connection to service</string>
 	<string name="info_remote_notconnected">Remote not connected</string>
@@ -246,23 +222,20 @@
 	<string name="info_loading_failed">Loading failed, check your connection</string>
 	<string name="info_file_not_found">File has to be downloaded first</string>
 	<string name="info_file_already_downloaded">File is already downloaded</string>
-
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Settings</string>
 	<string name="menu_refresh">Refresh</string>
 	<string name="menu_addhost">Add host</string>
 	<string name="menu_addhost_scan">QR Scan</string>
-	<string name="menu_connect">Connect</string>
+	<string name="menu_connect">Select</string>
 	<string name="menu_disconnect">Disconnect</string>
 	<string name="menu_set_default_view">Set as Default</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
-
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Yes</string>
 	<string name="dialog_no">No</string>
 	<string name="dialog_cancel">Cancel</string>
 	<string name="dialog_title_addhost">Add new host</string>
-
 	<string name="quickactions_playclient">Play on PC</string>
 	<string name="quickactions_playdevice">Play locally</string>
 	<string name="quickactions_downloadsd">Download</string>
@@ -270,75 +243,17 @@
 	<string name="quickactions_stoptimeshift">Cancel</string>
 	<string name="quickactions_record">Record</string>
 	<string name="quickactions_cancelrecord">Cancel Rec.</string>
-
 	<string name="connection_successful">Successfully established connection to Remote
 	</string>
 	<string name="connection_failed">Remote Connection couldn\'t be established</string>
 	<string name="connection_closed">Remote Connection closed</string>
-
 	<string name="settings_host_useauth">Use Authentification</string>
 	<string name="remote_button_info">Info</string>
 	<string name="remote_button_subtitle">Subtitles</string>
 	<string name="remote_button_menu">Menu</string>
-
 	<string name="notification_download_failed">Download failed</string>
 	<string name="notification_download_succeeded">Download finished</string>
 	<string name="notification_title">aMPdroid</string>
-
-	<string-array name="settings_media_preloaditems_text">
-		<item>Load all</item>
-		<item>20</item>
-		<item>50</item>
-		<item>100</item>
-		<item>200</item>
-		<item>500</item>
-	</string-array>
-
-
-	<string-array name="settings_general_statusbar_autohide_text">
-		<item>Always Show</item>
-		<item>Always Hide</item>
-		<item>Show when connected</item>
-		<item>Manually show/hide</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_series_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Banner</item>
-		<item>Thumb</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_movies_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Thumb</item>
-	</string-array>
-	
-	<string-array name="settings_media_defaultview_videos_text">
-		<item>Text</item>
-		<item>Poster</item>
-		<item>Thumb</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_videoshares_text">
-		<item>Text</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_musicshares_text">
-		<item>Text</item>
-	</string-array>
-
-	<string-array name="settings_media_defaultview_musicartists_text">
-		<item>Text</item>
-	</string-array>
-	
-	<string-array name="settings_media_defaultview_musicalbums_text">
-		<item>Text</item>
-		<item>Thumb</item>
-	</string-array>
-	
-	<string-array name="settings_media_defaultview_musictracks_text">
-		<item>Text</item>
-	</string-array>
+	<string name="settings_media_defaultview_shares_title">Default View Shares</string>
+	<string name="settings_media_defaultview_shares_desc">Default View browsing your video shares</string>
 </resources>
