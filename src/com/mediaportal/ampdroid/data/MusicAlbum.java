@@ -3,9 +3,9 @@ package com.mediaportal.ampdroid.data;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.mediaportal.ampdroid.database.ColumnProperty;
+import com.mediaportal.ampdroid.utils.StringUtils;
 
 public class MusicAlbum {
-   private String AlbumArtistString;
    private String[] AlbumArtists;
    private String Title;
    private int Year;
@@ -13,24 +13,14 @@ public class MusicAlbum {
    private String Composer;
    private String Publisher;
    private String CoverPathLarge;
-   
-
 
    @Override
    public String toString() {
       return Title;
    }
 
-   @ColumnProperty(value="AlbumArtistsString", type="text")
-   @JsonProperty("AlbumArtistsString")
    public String getAlbumArtistString() {
-      return AlbumArtistString;
-   }
-
-   @ColumnProperty(value="AlbumArtistsString", type="text")
-   @JsonProperty("AlbumArtistsString")
-   public void setAlbumArtistString(String albumArtistString) {
-      AlbumArtistString = albumArtistString;
+      return StringUtils.createStringArray(AlbumArtists);
    }
 
    @ColumnProperty(value="AlbumArtists", type="textarray")

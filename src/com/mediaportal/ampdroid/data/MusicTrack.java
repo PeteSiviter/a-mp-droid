@@ -3,13 +3,12 @@ package com.mediaportal.ampdroid.data;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.mediaportal.ampdroid.database.ColumnProperty;
+import com.mediaportal.ampdroid.utils.StringUtils;
 
 public class MusicTrack {
    // MPDatabase Values
    private int TrackId;
-   private String ArtistsString;
    private String[] Artists;
-   private String AlbumArtistsString;
    private String[] AlbumArtists;
    private String Url;
    private int Duration;
@@ -41,17 +40,10 @@ public class MusicTrack {
       TrackId = trackId;
    }
 
-   @ColumnProperty(value="ArtistsString", type="text")
-   @JsonProperty("ArtistsString")
    public String getArtistsString() {
-      return ArtistsString;
+      return StringUtils.createStringArray(Artists);
    }
 
-   @ColumnProperty(value="ArtistsString", type="text")
-   @JsonProperty("ArtistsString")
-   public void setArtistsString(String artistsString) {
-      ArtistsString = artistsString;
-   }
 
    @ColumnProperty(value="Artists", type="textarray")
    @JsonProperty("Artists")
@@ -65,17 +57,10 @@ public class MusicTrack {
       Artists = artists;
    }
 
-   @ColumnProperty(value="AlbumArtistsString", type="text")
-   @JsonProperty("AlbumArtistsString")
    public String getAlbumArtistsString() {
-      return AlbumArtistsString;
+      return StringUtils.createStringArray(AlbumArtists);
    }
 
-   @ColumnProperty(value="AlbumArtistsString", type="text")
-   @JsonProperty("AlbumArtistsString")
-   public void setAlbumArtistsString(String albumArtistsString) {
-      AlbumArtistsString = albumArtistsString;
-   }
 
    @ColumnProperty(value="AlbumArtists", type="textarray")
    @JsonProperty("AlbumArtists")

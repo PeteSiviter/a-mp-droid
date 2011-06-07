@@ -190,7 +190,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                      .getItemAtPosition(_position)).getItem();
                final String trackTitle = selected.getTitle();
                final String trackPath = selected.getFilePath();
-               final String trackId = selected.getFilePath();
+               final String trackId = String.valueOf(selected.getTrackId());
                if (trackTitle != null) {
                   String dirName = DownloaderUtils.getMusicTrackPath();
                   final String fileName = dirName + Utils.getFileNameWithExtension(trackPath, "\\");

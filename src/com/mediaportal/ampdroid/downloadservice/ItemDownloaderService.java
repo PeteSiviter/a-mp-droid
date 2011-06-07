@@ -13,7 +13,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 import android.app.Notification;
@@ -40,7 +39,7 @@ public class ItemDownloaderService extends Service {
    public static final String ITEM_DOWNLOAD_PROGRESSED = "download_progressed";
    public static final String ITEM_DOWNLOAD_FINISHED = "download_finished";
    public static final int NOTIFICATION_ID = 44;
-   public static final int UPDATE_INTERVAL = 5000;
+   public static final int UPDATE_INTERVAL = 2000;
 
    private Intent mIntent;
    private ArrayList<DownloadJob> mDownloadJobs;
