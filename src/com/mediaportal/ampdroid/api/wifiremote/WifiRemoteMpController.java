@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.IClientControlApi;
@@ -37,6 +38,7 @@ import com.mediaportal.ampdroid.remote.RemotePropertiesUpdate;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
 import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
 import com.mediaportal.ampdroid.remote.RemoteWelcomeMessage;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.SoftkeyboardUtils;
 
 public class WifiRemoteMpController implements IClientControlApi {
@@ -54,7 +56,8 @@ public class WifiRemoteMpController implements IClientControlApi {
    private List<IClientControlListener> mListeners;
    private ObjectMapper mJsonObjectMapper;
    private BufferedReader input;
-   private Context mContext;;
+   private Context mContext;
+   private String mMac;
 
    private class TcpListenerTask extends AsyncTask<DataInputStream, Object, ConnectionState> {
       private List<IClientControlListener> listeners;
@@ -129,7 +132,11 @@ public class WifiRemoteMpController implements IClientControlApi {
 
                         if (((RemoteAuthenticationResponse) returnObject).isSuccess()) {
                            // initialise was successful
+                           Log.i(Constants.LOG_CONST, "Initialised WifiRemote successfully");
                            registerProperties();
+                        }
+                        else{
+                           Log.i(Constants.LOG_CONST, "Failed to initialise WifiRemote");
                         }
 
                         publishProgress(returnObject);
@@ -188,11 +195,12 @@ public class WifiRemoteMpController implements IClientControlApi {
       }
    }
 
-   public WifiRemoteMpController(Context _context, String _server, int _port, String _user,
+   public WifiRemoteMpController(Context _context, String _server, int _port, String _mac, String _user,
          String _pass, boolean _auth) {
       super();
       mServer = _server;
       mPort = _port;
+      mMac = _mac;
 
       mUser = _user;
       mPass = _pass;
@@ -206,7 +214,7 @@ public class WifiRemoteMpController implements IClientControlApi {
    }
 
    public WifiRemoteMpController(Context _context, String _server, int _port) {
-      this(_context, _server, _port, "", "", false);
+      this(_context, _server, _port, "", "", "", false);
    }
 
    @Override
@@ -238,6 +246,11 @@ public class WifiRemoteMpController implements IClientControlApi {
    public boolean getUseAuth() {
       return mUseAuth;
    }
+   
+   @Override
+   public String getMac() {
+      return mMac;
+   }
 
    @Override
    public int getTimeOut() {
@@ -257,8 +270,9 @@ public class WifiRemoteMpController implements IClientControlApi {
    public boolean connect() {
       try {
          mSocket = new Socket();
+         Log.i(Constants.LOG_CONST, "Connecting WifiRemote: " + mServer + ":" + mPort);
          SocketAddress socketAddress = new InetSocketAddress(mServer, mPort);
-         
+
          mSocket.connect(socketAddress, 2000);
 
          // outgoing stream redirect to socket
@@ -270,8 +284,11 @@ public class WifiRemoteMpController implements IClientControlApi {
 
          if (mSocket.isConnected()) {
             publishState(ConnectionState.Connected);
+            Log.i(Constants.LOG_CONST, "Successfully connected WifiRemote: " + mServer + ":"
+                  + mPort);
          } else {
             publishState(ConnectionState.Disconnected);
+            Log.i(Constants.LOG_CONST, "Failed connecting WifiRemote: " + mServer + ":" + mPort);
          }
 
          initialiseConnection();
@@ -279,9 +296,9 @@ public class WifiRemoteMpController implements IClientControlApi {
          return true;
 
       } catch (UnknownHostException e) {
-         e.printStackTrace();
+         Log.e(Constants.LOG_CONST, e.toString());
       } catch (IOException e) {
-         e.printStackTrace();
+         Log.e(Constants.LOG_CONST, e.toString());
       }
       return false;
    }
@@ -294,9 +311,11 @@ public class WifiRemoteMpController implements IClientControlApi {
       msg.Version = "0.4";
 
       if (mUseAuth) {
+         Log.i(Constants.LOG_CONST, "Initialising WifiRemote connection (" + mUser + "|" + mPass
+               + ")");
          msg.SetAuth(mUser, mPass);
-      }
-      else{
+      } else {
+         Log.i(Constants.LOG_CONST, "Initialising WifiRemote connection (no auth)");
          msg.SetAuth("", "");
       }
 
@@ -451,7 +470,7 @@ public class WifiRemoteMpController implements IClientControlApi {
    public void setVolume(int level) {
       writeObject(new WifiRemoteMessageSetVolume(level));
    }
-   
+
    @Override
    public void startAudio(String _path) {
       writeObject(new WifiRemotePlayFileMessage(_path, FileType.audio));

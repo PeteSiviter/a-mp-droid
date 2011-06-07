@@ -7,4 +7,5 @@ public class Constants {
    public static final int DEFAULT_REMOTEACCESS_PORT = 44321;
    public static final String DEFAULT_USERNAME = "admin";
    public static final String DEFAULT_PASSWORD = "admin";
+   public static final String LOG_CONST_ITEMDOWNLOADER = "ItemDownloaderService";
 }

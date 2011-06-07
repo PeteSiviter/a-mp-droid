@@ -24,8 +24,10 @@ import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -165,7 +167,7 @@ public class TabEpisodesActivity extends Activity {
                   String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
                   final String displayName = selected.toString();
-
+                  final String itemId = String.valueOf(selected.getId());
                   final QuickAction qa = new QuickAction(_view);
 
                   final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
@@ -197,7 +199,7 @@ public class TabEpisodesActivity extends Activity {
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           String url = mService.getDownloadUri(epFile);
+                           String url = mService.getDownloadUri(itemId, DownloadItemType.TvSeriesItem);
                            FileInfo info = mService.getFileInfo(epFile);
                            ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
@@ -205,6 +207,7 @@ public class TabEpisodesActivity extends Activity {
                               job.setUrl(url);
                               job.setFileName(fileName);
                               job.setDisplayName(displayName);
+                              job.setMediaType(MediaItemType.Video);
                               if (info != null) {
                                  job.setLength(info.getLength());
                               }

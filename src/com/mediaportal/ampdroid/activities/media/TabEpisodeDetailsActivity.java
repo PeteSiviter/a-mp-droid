@@ -29,9 +29,11 @@ import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesEpisodeFile;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -236,7 +238,8 @@ public class TabEpisodeDetailsActivity extends Activity {
                   String fileName = dirName + Utils.getFileNameWithExtension(epFileName, "\\");
                   File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
                   if (!localFileName.exists()) {
-                     String url = mService.getDownloadUri(epFileName);
+                     String url = mService.getDownloadUri(String.valueOf(mEpisodeDetails.getId()),
+                           DownloadItemType.TvSeriesItem);
                      FileInfo info = mService.getFileInfo(epFileName);
                      ApiCredentials cred = mService.getDownloadCredentials();
                      if (url != null) {
@@ -244,6 +247,7 @@ public class TabEpisodeDetailsActivity extends Activity {
                         job.setUrl(url);
                         job.setFileName(fileName);
                         job.setDisplayName(epFile.toString());
+                        job.setMediaType(MediaItemType.Video);
                         if (info != null) {
                            info.setLength(info.getLength());
                         }

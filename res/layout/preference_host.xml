@@ -4,7 +4,9 @@
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="vertical"
 		android:padding="10dip">
-		<Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/ButtonSwitchSimpleAdvanced" android:text="@string/settings_clients_switchadvanced"></Button>
+		<Button android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:id="@+id/ButtonSwitchSimpleAdvanced"
+			android:text="@string/settings_clients_switchadvanced"></Button>
 
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="@string/settings_clients_clientname" />
@@ -18,6 +20,11 @@
 				android:layout_width="wrap_content" android:text="@string/settings_clients_clienthost"></TextView>
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host"></EditText>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/TextView01"
+				android:text="@string/settings_clients_clientmac"></TextView>
+			<EditText android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/pref_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
 
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
@@ -58,6 +65,8 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_wifiremote_port"
 				android:imeOptions="actionNext" android:inputType="number"></EditText>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView02"></TextView>
+			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_wifiremote_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
 			<EditText android:text="" android:id="@+id/pref_wifiremote_user"
@@ -72,12 +81,13 @@
 				android:enabled="false" android:imeOptions="actionNext" />
 			<CheckBox android:checked="false" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@+id/pref_wifiremote_use_auth"
-				android:text="@string/settings_clients_clientuseauth" android:layout_marginBottom="20dip"/>
+				android:text="@string/settings_clients_clientuseauth"
+				android:layout_marginBottom="20dip" />
 
 			<TextView android:id="@+id/textView1" android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:text="@string/settings_clients_tv4home"
-				android:textStyle="bold"
-				android:layout_marginBottom="10dip" android:textSize="18dip"></TextView>
+				android:textStyle="bold" android:layout_marginBottom="10dip"
+				android:textSize="18dip"></TextView>
 			<CheckBox android:layout_marginBottom="20dip"
 				android:id="@+id/pref_tv4home_use_service" android:text="@string/settings_clients_enableservice"
 				android:checked="false" android:layout_height="wrap_content"
@@ -92,6 +102,8 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_tv4home_port"
 				android:imeOptions="actionNext" android:inputType="number"></EditText>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView03"></TextView>
+			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_tv4home_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
 			<EditText android:text="" android:id="@+id/pref_tv4home_user"
@@ -106,12 +118,13 @@
 				android:imeOptions="actionNext" />
 			<CheckBox android:checked="false" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@+id/pref_tv4home_use_auth"
-				android:text="@string/settings_clients_clientuseauth" android:layout_marginBottom="20dip"/>
+				android:text="@string/settings_clients_clientuseauth"
+				android:layout_marginBottom="20dip" />
 
 			<TextView android:id="@+id/textView1" android:layout_height="wrap_content"
 				android:layout_width="wrap_content" android:text="@string/settings_clients_gma"
-				android:textStyle="bold"
-				android:layout_marginBottom="10dip" android:textSize="18dip"></TextView>
+				android:textStyle="bold" android:layout_marginBottom="10dip"
+				android:textSize="18dip"></TextView>
 			<CheckBox android:id="@+id/pref_gma_use_service"
 				android:text="@string/settings_clients_enableservice"
 				android:checked="false" android:layout_height="wrap_content"
@@ -121,8 +134,9 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_gma_addr"
 				android:imeOptions="actionNext" android:inputType="text"></EditText>
-			<TextView android:id="@+id/textView1" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:text="@string/settings_clients_clientport"></TextView>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView04"></TextView>
+			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_gma_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientport" android:id="@+id/textView1"></TextView>
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_gma_port"
 				android:imeOptions="actionNext" android:inputType="number"></EditText>

@@ -25,9 +25,11 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
@@ -209,7 +211,8 @@ public class TabMovieDetailsActivity extends Activity {
             public void onClick(View _view) {
                if (mLocalFile == null) {
                   String movieFile = mMovie.getFilename();
-                  String url = mService.getDownloadUri(movieFile);
+                  String url = mService.getDownloadUri(String.valueOf(mMovie.getId()),
+                        DownloadItemType.MovieItem);
                   FileInfo info = mService.getFileInfo(movieFile);
                   String dirName = DownloaderUtils.getMoviePath(mMovie);
                   String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
@@ -219,6 +222,7 @@ public class TabMovieDetailsActivity extends Activity {
                      job.setUrl(url);
                      job.setFileName(fileName);
                      job.setDisplayName(mMovie.toString());
+                     job.setMediaType(MediaItemType.Video);
                      if (info != null) {
                         job.setLength(info.getLength());
                      }

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
-import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
@@ -18,6 +17,7 @@ import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
@@ -32,6 +32,7 @@ import com.mediaportal.ampdroid.data.TvVirtualCard;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.database.MediaAccessDatabaseHandler;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 
 public class DataHandler {
    private RemoteClient client;
@@ -671,8 +672,8 @@ public class DataHandler {
       return client.getClientControlApi().getVolume();
    }
 
-   public String getDownloadUri(String _filePath) {
-      return client.getRemoteAccessApi().getDownloadUri(_filePath);
+   public String getDownloadUri(String _itemId, DownloadItemType _itemType) {
+      return client.getRemoteAccessApi().getDownloadUri(_itemId, _itemType);
    }
    
    public ApiCredentials getDownloadCredentials(){
@@ -728,7 +729,17 @@ public class DataHandler {
       client.getClientControlApi().getClientImage(filePath);
    }
 
+   public IApiInterface getRemoteAccessApi() {
+      return client.getRemoteAccessApi();
+   }
 
+   public IApiInterface getRemoteControlApi() {
+      return client.getClientControlApi();
+   }
+   
+   public IApiInterface getTvApi() {
+      return client.getTvControlApi();
+   }
 
 
 }

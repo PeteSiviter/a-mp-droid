@@ -65,28 +65,30 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    private final String SWITCH_CHANNEL_GET_URL = "SwitchTVServerToChannelAndGetStreamingUrl";
    private final String SWITCH_CHANNEL_GET_FILE = "SwitchTVServerToChannelAndGetTimeshiftFilename";
 
-   private String m_server;
-   private int m_port;
+   private String mServer;
+   private int mPort;
    
-   private String m_user;
-   private String m_pass;
-   private boolean m_useAuth;
+   private String mUser;
+   private String mPass;
+   private boolean mUseAuth;
    
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
 
    private final String JSON_PREFIX = "http://";
    private final String JSON_SUFFIX = "/TV4Home.Server.CoreService/TVEInteractionService/json";
+   private String mMac;
 
    @SuppressWarnings("unchecked")
-   public Tv4HomeJsonApi(String _server, int _port, String _user, String _pass, boolean _auth) {
-      m_server = _server;
-      m_port = _port;
-      m_user = _user;
-      m_pass = _pass;
-      m_useAuth = _auth;
+   public Tv4HomeJsonApi(String _server, int _port, String _mac, String _user, String _pass, boolean _auth) {
+      mServer = _server;
+      mPort = _port;
+      mMac = _mac;
+      mUser = _user;
+      mPass = _pass;
+      mUseAuth = _auth;
       
-      mJsonClient = new JsonClient(JSON_PREFIX + m_server + ":" + m_port + JSON_SUFFIX, _user, _pass, _auth);
+      mJsonClient = new JsonClient(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX, _user, _pass, _auth);
       mJsonObjectMapper = new ObjectMapper();
       mJsonObjectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
    
@@ -96,32 +98,37 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    }
    
    public Tv4HomeJsonApi(String _server, int _port) {
-      this(_server, _port, "", "", false);
+      this(_server, _port, "", "", "", false);
    }
 
    @Override
    public String getServer() {
-      return m_server;
+      return mServer;
    }
 
    @Override
    public int getPort() {
-      return m_port;
+      return mPort;
    }
    
    @Override
    public String getUserName() {
-      return m_user;
+      return mUser;
    }
 
    @Override
    public String getUserPass() {
-      return m_pass;
+      return mPass;
    }
 
    @Override
    public boolean getUseAuth() {
-      return m_useAuth;
+      return mUseAuth;
+   }
+   
+   @Override
+   public String getMac() {
+      return mMac;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -161,7 +168,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
 
    @Override
    public String getAddress() {
-      return m_server;
+      return mServer;
    }
 
    @Override
@@ -170,6 +177,27 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
       mJsonClient.Execute(ADD_SCHEDULE, newPair("channelId", (_channelId)),
             newPair("title", (_title)), newPair("startTime", (_startTime)),
             newPair("endTime", (_endTime)), newPair("scheduleType", (_scheduleType)));
+   }
+   
+   @Override
+   public boolean TestConnectionToTVService() {
+      Log.i(Constants.LOG_CONST, "Testing Tv4Home connection: " + mServer + ":" + mPort + "@"
+            + mUser + ":" + mPass);
+      
+      String response = mJsonClient.Execute(TEST_SERVICE);
+
+      if (response != null) {
+         Boolean returnObject = (Boolean) getObjectsFromJson(response, Boolean.class);
+         
+         if (returnObject != null) {
+            Log.i(Constants.LOG_CONST, "Successfully tested Tv4Home connection: " + returnObject);
+            return returnObject;
+         } else {
+            Log.i(Constants.LOG_CONST, "Failed testing Tv4Home connection");
+            Log.e("Soap", "Error parsing result from soap method " + TEST_SERVICE);
+         }
+      }
+      return false;
    }
 
    @Override
@@ -182,11 +210,11 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + CANCEL_CURRENT_TIMESHIFT);
+            Log.e("Soap", "Error parsing result from soap method " + CANCEL_CURRENT_TIMESHIFT);
          }
       }
       else{
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + CANCEL_CURRENT_TIMESHIFT);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + CANCEL_CURRENT_TIMESHIFT);
       }
       return false;
    }
@@ -211,7 +239,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvVirtualCard>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_ACTIVE_CARDS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_ACTIVE_CARDS);
          }
       }
       return null;
@@ -227,7 +255,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvUser>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_ACTIVE_USERS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_ACTIVE_USERS);
          }
       }
       return null;
@@ -244,7 +272,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvCardDetails>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CARDS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CARDS);
          }
       }
       return null;
@@ -260,7 +288,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNEL_BY_ID);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNEL_BY_ID);
          }
       }
       return null;
@@ -278,7 +306,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNEL_DETAILED_BY_ID);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNEL_DETAILED_BY_ID);
          }
       }
       return null;
@@ -294,7 +322,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvChannel>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNELS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNELS);
          }
       }
       return null;
@@ -311,7 +339,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvChannelDetails>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNELS_DETAILS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNELS_DETAILS);
          }
       }
       return null;
@@ -328,7 +356,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvChannel>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNELS_INDEX);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNELS_INDEX);
          }
       }
       return null;
@@ -347,7 +375,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvChannelDetails>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNELS_DETAILS_INDEX);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNELS_DETAILS_INDEX);
          }
       }
       return null;
@@ -363,7 +391,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CHANNELS_COUNT);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CHANNELS_COUNT);
          }
       }
       return 0;
@@ -380,7 +408,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_CURRENT_PROGRAM_CHANNEL);
+            Log.e("Soap", "Error parsing result from soap method " + GET_CURRENT_PROGRAM_CHANNEL);
          }
       }
       return null;
@@ -397,7 +425,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvChannelGroup>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_GROUPS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_GROUPS);
          }
       }
       return null;
@@ -413,7 +441,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_PROGRAM);
+            Log.e("Soap", "Error parsing result from soap method " + GET_PROGRAM);
          }
       }
       return null;
@@ -430,7 +458,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method "
+            Log.e("Soap", "Error parsing result from soap method "
                   + GET_PROGRAM_IS_SCHEDULED_CHANNEL);
          }
       }
@@ -449,7 +477,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvProgramBase>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_PROGRAMS_BASIC_FOR_CHANNEL);
+            Log.e("Soap", "Error parsing result from soap method " + GET_PROGRAMS_BASIC_FOR_CHANNEL);
          }
       }
       return null;
@@ -467,7 +495,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvProgram>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_PROGRAMS_DETAILED_FOR_CHANNEL);
+            Log.e("Soap", "Error parsing result from soap method " + GET_PROGRAMS_DETAILED_FOR_CHANNEL);
          }
       }
       return null;
@@ -484,7 +512,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvRecording>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_RECORDINGS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_RECORDINGS);
          }
       }
       return null;
@@ -500,7 +528,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvSchedule>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_SCHEDULES);
+            Log.e("Soap", "Error parsing result from soap method " + GET_SCHEDULES);
          }
       }
       return null;
@@ -517,7 +545,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvRtspClient>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + GET_STREAMING_CLIENTS);
+            Log.e("Soap", "Error parsing result from soap method " + GET_STREAMING_CLIENTS);
          }
       }
       return null;
@@ -533,7 +561,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + DATABASE_READ);
+            Log.e("Soap", "Error parsing result from soap method " + DATABASE_READ);
          }
       }
       return null;
@@ -555,7 +583,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnArray != null) {
             return new ArrayList<TvProgram>(Arrays.asList(returnArray));
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + SEARCH_PROGRAMS);
+            Log.e("Soap", "Error parsing result from soap method " + SEARCH_PROGRAMS);
          }
       }
       return null;
@@ -572,7 +600,7 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + SWITCH_CHANNEL_GET_URL);
+            Log.e("Soap", "Error parsing result from soap method " + SWITCH_CHANNEL_GET_URL);
          }
       }
       return null;
@@ -589,26 +617,9 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d("Soap", "Error parsing result from soap method " + SWITCH_CHANNEL_GET_FILE);
+            Log.e("Soap", "Error parsing result from soap method " + SWITCH_CHANNEL_GET_FILE);
          }
       }
       return null;
    }
-
-   @Override
-   public boolean TestConnectionToTVService() {
-      String response = mJsonClient.Execute(TEST_SERVICE);
-
-      if (response != null) {
-         Boolean returnObject = (Boolean) getObjectsFromJson(response, Boolean.class);
-
-         if (returnObject != null) {
-            return returnObject;
-         } else {
-            Log.d("Soap", "Error parsing result from soap method " + TEST_SERVICE);
-         }
-      }
-      return false;
-   }
-
 }

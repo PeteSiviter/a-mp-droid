@@ -149,4 +149,13 @@ public class PreferencesManager {
       }
    }
 
+   public static boolean isWolAutoConnect() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("auto_wol", false);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
 }

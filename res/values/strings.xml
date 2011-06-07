@@ -6,9 +6,16 @@
 	<string name="welcome_choose_client">Choose client:</string>
 	<string name="welcome_auto_connect">Connect on startup</string>
 	<string name="welcome_no_client">Please select client...</string>
-	<string name="welcome_connect">Connect</string>
+	<string name="welcome_connect">Select</string>
 	<string name="welcome_no_clients">No clients defined yet, use the settings screen to
 		add clients</string>
+	<string name="home_wol_confirmation_title">No Connection</string>
+	<string name="home_wol_confirmation_text">No connection to service, wake pc using WOL?
+	</string>
+	<string name="home_wol_running">Sending WOL packets to pc</string>
+	<string name="home_wol_nomac">No connection and cannot send WOL packets unless a MAC address is defined in setting...</string>
+	<string name="downloads_delete_file_success">Successfully deleted file</string>
+	<string name="downloads_delete_file_failed">Couldn\'t deleted file</string>
 	<string name="series_actors">Actors</string>
 	<string name="series_seasons">Seasons</string>
 	<string name="series_release">Release Date</string>
@@ -183,6 +190,8 @@
 	<string name="settings_clients_noclients">Use menu to add host</string>
 	<string name="settings_clients_clientname">Name of this Instance:</string>
 	<string name="settings_clients_clienthost">Host or IP Address:</string>
+	<string name="settings_clients_clientmac">Mac Address:</string>
+	<string name="settings_clients_clientmac_hint">Use : or - as seperators"</string>
 	<string name="settings_clients_clientport">Port:</string>
 	<string name="settings_clients_clientusername">Username:</string>
 	<string name="settings_clients_default">Default:\u0020</string>
@@ -227,9 +236,10 @@
 	<string name="menu_refresh">Refresh</string>
 	<string name="menu_addhost">Add host</string>
 	<string name="menu_addhost_scan">QR Scan</string>
-	<string name="menu_connect">Select</string>
+	<string name="menu_connect">Connect</string>
 	<string name="menu_disconnect">Disconnect</string>
 	<string name="menu_set_default_view">Set as Default</string>
+	<string name="menu_clear_downloads">Clear Downloads</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Yes</string>
@@ -243,6 +253,9 @@
 	<string name="quickactions_stoptimeshift">Cancel</string>
 	<string name="quickactions_record">Record</string>
 	<string name="quickactions_cancelrecord">Cancel Rec.</string>
+	<string name="quickactions_canceldownload">Cancel DL</string>
+	<string name="quickactions_deletedownload">Delete DL</string>
+	<string name="quickactions_redownload">Download Again</string>
 	<string name="connection_successful">Successfully established connection to Remote
 	</string>
 	<string name="connection_failed">Remote Connection couldn\'t be established</string>

@@ -165,14 +165,17 @@ public class TvServerChannelsActivity extends BaseActivity {
 
                   mPlayingUrl = mService.startTimeshift(channel.getIdChannel(),
                         PreferencesManager.getTvClientName());
-                  mPlayingUrl = mPlayingUrl.replace("bagga-server", "10.1.0.166");
 
-                  try {
-                     Intent i = new Intent(Intent.ACTION_VIEW);
-                     i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
-                     startActivityForResult(i, 1);
-                  } catch (Exception ex) {
-                     Log.e(Constants.LOG_CONST, ex.toString());
+                  if (mPlayingUrl != null) {
+                     try {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
+                        startActivityForResult(i, 1);
+                     } catch (Exception ex) {
+                        Log.e(Constants.LOG_CONST, ex.toString());
+                     }
+                  } else {
+                     Util.showToast(_view.getContext(), getString(R.string.tvserver_errorplaying));
                   }
 
                   qa.dismiss();

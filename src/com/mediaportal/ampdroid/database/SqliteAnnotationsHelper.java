@@ -130,7 +130,9 @@ public class SqliteAnnotationsHelper {
                contentValues.put(a.columnName, (String) a.method.invoke(_object));
             } else if (a.columnType.equals("integer")) {
                contentValues.put(a.columnName, (Integer) a.method.invoke(_object));
-            } else if (a.columnType.equals("boolean")) {
+            } else if (a.columnType.equals("real")) {
+               contentValues.put(a.columnName, (Long) a.method.invoke(_object));
+            }else if (a.columnType.equals("boolean")) {
                contentValues.put(a.columnName, (Boolean) a.method.invoke(_object));
             } else if (a.columnType.equals("float")) {
                contentValues.put(a.columnName, (Float) a.method.invoke(_object));
@@ -206,7 +208,9 @@ public class SqliteAnnotationsHelper {
                h.method.invoke(_object, _cursor.getString(h.columnIndex));
             } else if (h.columnType.equals("integer")) {
                h.method.invoke(_object, _cursor.getInt(h.columnIndex));
-            } else if (h.columnType.equals("boolean")) {
+            } else if (h.columnType.equals("real")) {
+               h.method.invoke(_object, _cursor.getLong(h.columnIndex));
+            }else if (h.columnType.equals("boolean")) {
                h.method.invoke(_object, (_cursor.getInt(h.columnIndex) == 1));
             } else if (h.columnType.equals("float")) {
                h.method.invoke(_object, _cursor.getFloat(h.columnIndex));

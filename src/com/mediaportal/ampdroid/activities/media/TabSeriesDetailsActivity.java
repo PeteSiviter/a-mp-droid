@@ -41,8 +41,10 @@ import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingGalleryAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
@@ -93,7 +95,8 @@ public class TabSeriesDetailsActivity extends Activity {
             SeriesEpisode ep = episodes.get(0);
             String epFile = ep.getFileName();
 
-            String url = mService.getDownloadUri(epFile);
+            String url = mService.getDownloadUri(String.valueOf(ep.getId()),
+                  DownloadItemType.TvSeriesItem);
             FileInfo info = mService.getFileInfo(epFile);
             String dirName = DownloaderUtils.getTvEpisodePath(mSeries.getPrettyName(), ep);
             final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
@@ -104,6 +107,7 @@ public class TabSeriesDetailsActivity extends Activity {
                job.setUrl(url);
                job.setFileName(fileName);
                job.setDisplayName(ep.toString());
+               job.setMediaType(MediaItemType.Video);
                if (info != null) {
                   job.setLength(info.getLength());
                }
@@ -430,15 +434,14 @@ public class TabSeriesDetailsActivity extends Activity {
 
       }
    }
-   
-   
+
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views));
-      
-      if(mSeries != null){
+
+      if (mSeries != null) {
          String[] actors = mSeries.getActors();
          if (actors != null) {
             for (String a : actors) {
@@ -449,16 +452,15 @@ public class TabSeriesDetailsActivity extends Activity {
                   @Override
                   public boolean onMenuItemClick(MenuItem item) {
 
-                     
                      return true;
                   }
                });
             }
          }
       }
-      
+
       MenuItem imdbLookupMenu = _menu.add(0, Menu.FIRST + 1, Menu.NONE, "imdb");
-            //getString(R.string.menu_set_default_view));
+      // getString(R.string.menu_set_default_view));
       imdbLookupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

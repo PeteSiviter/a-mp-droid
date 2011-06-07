@@ -28,9 +28,10 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicAlbum;
 import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -74,7 +75,8 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          for (int i = 0; i < tracks.size(); i++) {
             MusicTrack track = tracks.get(i);
 
-            String url = mService.getDownloadUri(track.getFilePath());
+            String url = mService.getDownloadUri(String.valueOf(track.getTrackId()),
+                  DownloadItemType.MusicTrackItem);
             FileInfo info = mService.getFileInfo(track.getFilePath());
             String dirName = DownloaderUtils.getMusicTrackPath(album.getAlbumArtists()[0],
                   album.getTitle());
@@ -87,6 +89,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                job.setUrl(url);
                job.setFileName(fileName);
                job.setDisplayName(track.toString());
+               job.setMediaType(MediaItemType.Music);
                if (info != null) {
                   job.setLength(info.getLength());
                }
@@ -130,7 +133,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          if (mArtist == null) {
             int albumsCount = mService.getAlbumsCount();
             int loadItems = mItemsLoaded + _params[0];
-            if(_params[0] == 0){
+            if (_params[0] == 0) {
                loadItems = albumsCount;
             }
 
@@ -182,7 +185,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         s, showArtist));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
                         new MusicAlbumThumbViewAdapterItem(s, showArtist));
-                  
+
                   if (mAdapter.fastScrollingInitialised()) {
                      mAdapter.resetFastScrolling(mListView);
                   }
@@ -231,7 +234,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       mAdapter.addView(ViewTypes.ThumbView.ordinal());
 
       mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Albums));
-      
+
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -352,7 +355,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
       mAdapter.setLoadingText(getString(R.string.music_albums_loadalbums));
       mAdapter.showLoadingItem(true);
-      
+
       mPreloadItems = PreferencesManager.getNumItemsToLoad();
 
       Bundle extras = getIntent().getExtras();

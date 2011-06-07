@@ -24,7 +24,7 @@ public class RemoteClientsDatabaseHandler {
 
    public RemoteClientsDatabaseHandler(Context _context) {
       mContext = _context;
-      mDbHelper = new SettingsDatabaseHelper(mContext, "ampdroid_settings", null, 7);
+      mDbHelper = new SettingsDatabaseHelper(mContext, "ampdroid_settings", null, 10);
    }
 
    public void open() {
@@ -55,17 +55,17 @@ public class RemoteClientsDatabaseHandler {
                client.setClientDescription(s.getClientDescription());
 
                GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(s.getRemoteAccessServer(),
-                     s.getRemoteAccessPort(), s.getRemoteAccessUser(), s.getRemoteAccessPass(),
-                     s.isRemoteAccessUseAuth());
+                     s.getRemoteAccessPort(), s.getRemoteAccessMac(), s.getRemoteAccessUser(),
+                     s.getRemoteAccessPass(), s.isRemoteAccessUseAuth());
                client.setRemoteAccessApi(api);
 
                Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(s.getTvServer(), s.getTvPort(),
-                     s.getTvUser(), s.getTvPass(), s.isTvUseAuth());
+                     s.getTvMac(), s.getTvUser(), s.getTvPass(), s.isTvUseAuth());
                client.setTvControlApi(tvApi);
 
                WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext,
-                     s.getRemoteControlServer(), s.getRemoteControlPort(), s.getRemoteControlUser(),
-                     s.getRemoteControlPass(), s.isRemoteControlUseAuth());
+                     s.getRemoteControlServer(), s.getRemoteControlPort(), s.getRemoteControlMac(),
+                     s.getRemoteControlUser(), s.getRemoteControlPass(), s.isRemoteControlUseAuth());
                client.setClientControlApi(clientApi);
                returnList.add(client);
             }
@@ -104,18 +104,21 @@ public class RemoteClientsDatabaseHandler {
 
       setting.setRemoteAccessServer(_client.getRemoteAccessApi().getServer());
       setting.setRemoteAccessPort(_client.getRemoteAccessApi().getPort());
+      setting.setRemoteAccessMac(_client.getRemoteAccessApi().getMac());
       setting.setRemoteAccessUser(_client.getRemoteAccessApi().getUserName());
       setting.setRemoteAccessPass(_client.getRemoteAccessApi().getUserPass());
       setting.setRemoteAccessUseAuth(_client.getRemoteAccessApi().getUseAuth());
 
       setting.setTvServer(_client.getTvControlApi().getServer());
       setting.setTvPort(_client.getTvControlApi().getPort());
+      setting.setTvMac(_client.getTvControlApi().getMac());
       setting.setTvUser(_client.getTvControlApi().getUserName());
       setting.setTvPass(_client.getTvControlApi().getUserPass());
       setting.setTvUseAuth(_client.getTvControlApi().getUseAuth());
 
       setting.setRemoteControlServer(_client.getClientControlApi().getServer());
       setting.setRemoteControlPort(_client.getClientControlApi().getPort());
+      setting.setRemoteControlMac(_client.getClientControlApi().getMac());
       setting.setRemoteControlUser(_client.getClientControlApi().getUserName());
       setting.setRemoteControlPass(_client.getClientControlApi().getUserPass());
       setting.setRemoteControlUseAuth(_client.getClientControlApi().getUseAuth());
@@ -151,4 +154,5 @@ public class RemoteClientsDatabaseHandler {
       }
       return false;
    }
+
 }

@@ -12,10 +12,10 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.HashMap;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -28,8 +28,10 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.activities.HomeActivity;
+import com.mediaportal.ampdroid.activities.DownloadsActivity;
+import com.mediaportal.ampdroid.database.DownloadsDatabaseHandler;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -38,12 +40,14 @@ public class ItemDownloaderService extends Service {
    public static final String ITEM_DOWNLOAD_PROGRESSED = "download_progressed";
    public static final String ITEM_DOWNLOAD_FINISHED = "download_finished";
    public static final int NOTIFICATION_ID = 44;
+   public static final int UPDATE_INTERVAL = 5000;
 
    private Intent mIntent;
    private ArrayList<DownloadJob> mDownloadJobs;
-   private AsyncTask<String, Integer, Boolean> mDownloader;
+   private AsyncTask<String, Integer, HashMap<DownloadState, Integer>> mDownloader;
+   private DownloadsDatabaseHandler mDownloadDatabase;
 
-   private class DownloaderTask extends AsyncTask<String, Integer, Boolean> {
+   private class DownloaderTask extends AsyncTask<String, Integer, HashMap<DownloadState, Integer>> {
       private Notification mNotification;
       private NotificationManager mNotificationManager;
       private DownloadJob mCurrentJob;
@@ -57,7 +61,8 @@ public class ItemDownloaderService extends Service {
       }
 
       @Override
-      protected Boolean doInBackground(String... params) {
+      protected HashMap<DownloadState, Integer> doInBackground(String... params) {
+         HashMap<DownloadState, Integer> downloadResult = new HashMap<DownloadState, Integer>();
          while (mDownloadJobs != null && mDownloadJobs.size() > 0) {
             DownloadJob topmostTask = null;
             synchronized (mDownloadJobs) {
@@ -65,30 +70,46 @@ public class ItemDownloaderService extends Service {
                mDownloadJobs.remove(0);
             }
 
-            if (downloadFile(topmostTask)) {
-               // download succeeded -> next file
+            DownloadState state = downloadFile(topmostTask);
 
+            if (downloadResult.containsKey(state)) {
+               int num = downloadResult.get(state);
+               downloadResult.put(state, num++);
             } else {
-               // TODO: download failed -> retry?
-               return false;
+               downloadResult.put(state, 1);
             }
+            // download succeeded -> next file
+            // topmostTask.setState(DownloadState.Finished);
+
+            // TODO: download failed -> retry?
+            // return false;
          }
 
-         return true;
+         return downloadResult;
       }
 
-      private boolean downloadFile(DownloadJob _job) {
+      private DownloadState downloadFile(DownloadJob _job) {
+         File downloadFile = null;
+         mToastMessage = null;
+         long lastUpdated = new Date().getTime();
+         boolean cancelRequested = false;
          try {
             mNumberOfJobs++;
             mCurrentJob = _job;
             URL myFileUrl = new URL(_job.getUrl());
             String myFileName = _job.getFileName();
 
-            Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
+            Intent onClickIntent = new Intent(getApplicationContext(), DownloadsActivity.class);
+
+            _job.setState(DownloadState.Running);
+            _job.setDateStarted(new Date());
+            mDownloadDatabase.open();
+            mDownloadDatabase.updateDownloads(_job);
+            mDownloadDatabase.close();
 
             // configure the intent
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                  homeIntent, 0);
+                  onClickIntent, 0);
 
             // This is who should be launched if the user selects the app icon
             // in the notification.
@@ -129,12 +150,12 @@ public class ItemDownloaderService extends Service {
 
             InputStream inputStream = conn.getInputStream();
 
-            File downloadFile = new File(DownloaderUtils.getBaseDirectory() + "/" + myFileName);
+            downloadFile = new File(DownloaderUtils.getBaseDirectory() + "/" + myFileName);
             File donwloadDir = new File(Utils.getFolder(downloadFile.toString(), "/"));
 
             if (!donwloadDir.exists()) {
                if (donwloadDir.mkdirs()) {
-                  Log.d("ItemDownloaderService", "created directory on sd card");
+                  Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "created directory on sd card");
                }
             }
 
@@ -144,32 +165,58 @@ public class ItemDownloaderService extends Service {
             if (fileSize == -1) {
                fileSize = _job.getLength();
             }
-            int updateProgressStepsize = 0;
-            if (fileSize < 5000000) {
-               updateProgressStepsize = 9;
-            } else if (fileSize < 10000000) {
-               updateProgressStepsize = 4;
-            }
             long read = 0;
             int currentProgress = 0;
             int len;
-            while ((len = inputStream.read(buf)) > 0) {
+            while ((len = inputStream.read(buf)) > 0 && !cancelRequested) {
                out.write(buf, 0, len);
 
                read += len;
-               if (fileSize > 0) {
-                  int progress = (int) (read * 100 / fileSize);
-                  if (progress > currentProgress + updateProgressStepsize) {
-                     currentProgress = progress;
-
-                     publishProgress(progress);
+               long curTime = new Date().getTime();
+               if (curTime > lastUpdated + UPDATE_INTERVAL) {
+                  int progress = 0;
+                  if (fileSize == 0) {
+                     progress = -99;
+                  } else {
+                     progress = (int) (read * 100 / fileSize);
                   }
+
+                  currentProgress = progress;
+
+                  _job.setProgress(currentProgress);
+                  mDownloadDatabase.open();
+
+                  cancelRequested = mDownloadDatabase.getCancelRequest(_job);
+
+                  mDownloadDatabase.updateDownloads(_job);
+                  mDownloadDatabase.close();
+
+                  publishProgress(progress);
+
+                  lastUpdated = curTime;
                }
             }
             out.close();
             inputStream.close();
 
-            return true;
+            mDownloadDatabase.open();
+            if (cancelRequested) {
+               if (downloadFile != null) {
+                  deleteFile(downloadFile);
+               }
+               _job.setState(DownloadState.Stopped);
+               _job.setErrorMessage("Cancelled by User");
+            } else {
+               _job.setState(DownloadState.Finished);
+               _job.setProgress(100);
+            }
+            _job.setDateFinished(new Date());
+
+            mDownloadDatabase.updateDownloads(_job);
+            mDownloadDatabase.close();
+
+            // return true only if download finished
+            return _job.getState();
          } catch (MalformedURLException e) {
             if (e != null) {
                mToastMessage = e.getMessage();
@@ -192,7 +239,28 @@ public class ItemDownloaderService extends Service {
             }
          }
 
-         return false;
+         mDownloadDatabase.open();
+
+         // delete unfinished files
+         if (downloadFile != null) {
+            deleteFile(downloadFile);
+         }
+         _job.setState(DownloadState.Error);
+         _job.setErrorMessage(mToastMessage);
+         _job.setDateFinished(new Date());
+         mDownloadDatabase.updateDownloads(_job);
+         mDownloadDatabase.close();
+
+         return _job.getState();
+      }
+
+      private void deleteFile(File _file) {
+         try {
+            _file.delete();
+         } catch (Exception ex) {
+            Log.e(Constants.LOG_CONST_ITEMDOWNLOADER, ex.toString());
+         }
+
       }
 
       private void createNotificationText(int _progress) {
@@ -208,7 +276,7 @@ public class ItemDownloaderService extends Service {
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationProgressText,
                progressText);
 
-         if (_progress != -1) {
+         if (_progress != -99) {
             mNotification.contentView.setProgressBar(R.id.ProgressBarNotificationTransferStatus,
                   100, _progress, false);
          } else {
@@ -219,28 +287,54 @@ public class ItemDownloaderService extends Service {
       }
 
       @Override
-      protected void onPostExecute(Boolean result) {
+      protected void onPostExecute(HashMap<DownloadState, Integer> _result) {
          if (mNotificationManager != null) {
             stopSelf();
             mNotificationManager.cancel(NOTIFICATION_ID);
+
+            Intent onClickIntent = new Intent(getApplicationContext(), DownloadsActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                  onClickIntent, PendingIntent.FLAG_CANCEL_CURRENT);// PendingIntent.FLAG_CANCEL_CURRENT
             Notification notification = new Notification(R.drawable.mp_logo_2,
                   mContext.getString(R.string.notification_title), System.currentTimeMillis());
-            if (result) {
-               notification.setLatestEventInfo(getApplicationContext(), mContext
-                     .getString(R.string.notification_title), mContext
-                     .getString(R.string.notification_download_succeeded), PendingIntent
-                     .getActivity(getApplicationContext(), 0, mIntent,
-                           PendingIntent.FLAG_CANCEL_CURRENT));
+            if (_result != null) {
+               notification.setLatestEventInfo(getApplicationContext(),
+                     mContext.getString(R.string.notification_title),
+                     createFinishedNotificationText(_result), pendingIntent);
             } else {
-               notification.setLatestEventInfo(getApplicationContext(), mContext
-                     .getString(R.string.notification_title), mContext
-                     .getString(R.string.notification_download_failed), PendingIntent.getActivity(
-                     getApplicationContext(), 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+               notification.setLatestEventInfo(getApplicationContext(),
+                     mContext.getString(R.string.notification_title),
+                     mContext.getString(R.string.notification_download_failed), pendingIntent);
             }
 
             mNotificationManager.notify(49, notification);
          }
-         super.onPostExecute(result);
+         super.onPostExecute(_result);
+      }
+
+      private String createFinishedNotificationText(HashMap<DownloadState, Integer> _result) {
+         int numFinished = 0;
+         if (_result.containsKey(DownloadState.Finished)) {
+            numFinished += _result.get(DownloadState.Finished);
+         }
+
+         int numFailed = 0;
+         if (_result.containsKey(DownloadState.Stopped)) {
+            numFailed += _result.get(DownloadState.Stopped);
+         }
+         if (_result.containsKey(DownloadState.Error)) {
+            numFailed += _result.get(DownloadState.Error);
+         }
+
+         String retString = mContext.getString(R.string.notification_download_succeeded);
+         if (numFinished > 0) {
+            retString += "Succeeded: " + numFinished;
+         }
+         if (numFailed > 0) {
+            retString += " Failed: " + numFailed;
+         }
+
+         return retString;
       }
 
       @Override
@@ -270,6 +364,10 @@ public class ItemDownloaderService extends Service {
 
    @Override
    public int onStartCommand(Intent intent, int flags, int startId) {
+      if (mDownloadDatabase == null) {
+         mDownloadDatabase = new DownloadsDatabaseHandler(this);
+      }
+
       if ((flags & START_FLAG_RETRY) == 0) {
 
       } else {
@@ -279,7 +377,13 @@ public class ItemDownloaderService extends Service {
       synchronized (mDownloadJobs) {
          DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
 
+         mDownloadDatabase.open();
+         if (!mDownloadDatabase.updateDownloads(job)) {
+            mDownloadDatabase.addDownload(job);
+         }
+         mDownloadDatabase.close();
          mDownloadJobs.add(job);
+
          if (job.getDisplayName() != null) {
             Util.showToast(this, "Added " + job.getDisplayName() + " to download list");
          } else {

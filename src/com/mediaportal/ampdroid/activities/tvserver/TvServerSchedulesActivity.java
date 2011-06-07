@@ -121,7 +121,7 @@ public class TvServerSchedulesActivity extends BaseActivity {
 
             ActionItem addScheduleAction = new ActionItem();
             addScheduleAction.setTitle(getString(R.string.tvserver_cancel_recording));
-            addScheduleAction.setIcon(getResources().getDrawable(R.drawable.quickaction_delete));
+            addScheduleAction.setIcon(getResources().getDrawable(R.drawable.quickaction_remove));
             addScheduleAction.setOnClickListener(new OnClickListener() {
                @Override
                public void onClick(View _view) {

@@ -21,7 +21,7 @@ public class Util {
       if (toast != null) {
          toast.cancel();
       }
-      if (_text.equals(lastToastText)) {
+      if (_text != null && _text.equals(lastToastText)) {
          toast.show();
       } else {
          lastToastText = _text;

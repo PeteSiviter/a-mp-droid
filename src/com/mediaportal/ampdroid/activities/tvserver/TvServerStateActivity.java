@@ -138,7 +138,8 @@ public class TvServerStateActivity extends BaseActivity {
       @Override
       protected String doInBackground(TvChannel... _params) {
          if (_params != null) {
-            String url = mService.startTimeshift(_params[0].getIdChannel(), PreferencesManager.getTvClientName());
+            String url = mService.startTimeshift(_params[0].getIdChannel(),
+                  PreferencesManager.getTvClientName());
             return url;
          }
          return null;
@@ -244,16 +245,16 @@ public class TvServerStateActivity extends BaseActivity {
                @Override
                public void onClick(View _view) {
                   String playingUrl = card.getRTSPUrl();
-                  
-                  //TODO: temporary fix for me, remove when releasing
-                  playingUrl = playingUrl.replace("bagga-server", "10.1.0.166");
-
-                  try {
-                     Intent i = new Intent(Intent.ACTION_VIEW);
-                     i.setDataAndType(Uri.parse(playingUrl), "video/*");
-                     startActivityForResult(i, 1);
-                  } catch (Exception ex) {
-                     Log.e(Constants.LOG_CONST, ex.toString());
+                  if (playingUrl != null) {
+                     try {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setDataAndType(Uri.parse(playingUrl), "video/*");
+                        startActivityForResult(i, 1);
+                     } catch (Exception ex) {
+                        Log.e(Constants.LOG_CONST, ex.toString());
+                     }
+                  } else {
+                     Util.showToast(_view.getContext(), getString(R.string.tvserver_errorplaying));
                   }
 
                   qa.dismiss();
@@ -306,8 +307,8 @@ public class TvServerStateActivity extends BaseActivity {
    }
 
    private void refreshGroups() {
-      mLoadingDialog = ProgressDialog.show(TvServerStateActivity.this, getString(R.string.tvserver_loadgroups),
-            getString(R.string.info_loading_title), true);
+      mLoadingDialog = ProgressDialog.show(TvServerStateActivity.this,
+            getString(R.string.tvserver_loadgroups), getString(R.string.info_loading_title), true);
       mLoadingDialog.setCancelable(true);
 
       mGroupsUpdater = new UpdateGroupsTask();
@@ -337,8 +338,9 @@ public class TvServerStateActivity extends BaseActivity {
 
    private void fillChannelList(TvChannelGroup _group) {
       mLoadingDialog.cancel();
-      mLoadingDialog = ProgressDialog.show(TvServerStateActivity.this, getString(R.string.tvserver_loadchannels),
-            getString(R.string.info_loading_title), true);
+      mLoadingDialog = ProgressDialog
+            .show(TvServerStateActivity.this, getString(R.string.tvserver_loadchannels),
+                  getString(R.string.info_loading_title), true);
       mLoadingDialog.setCancelable(true);
 
       mChannelUpdater = new UpdateChannelsTask();

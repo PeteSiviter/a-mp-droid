@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">aMPdroid</string>
-	<string name="app_desc">Control MP from your Android phone</string>
+	<string name="app_desc">Bedien MP met je Android Device</string>
 	<string name="actionbar_activity_not_found">Fout bij openen</string>
 	<string name="welcome_choose_client">Kies client:</string>
 	<string name="welcome_auto_connect">Verbinden tijdens startup</string>
 	<string name="welcome_no_client">Kies client a.u.b. ...</string>
-	<string name="welcome_connect">Verbinden</string>
+	<string name="welcome_connect">Kies</string>
 	<string name="welcome_no_clients">Nog geen clients gedefinieerd, voeg clients toe in
 		settings scherm</string>
 	<string name="series_actors">Acteurs</string>
@@ -96,18 +96,18 @@
 	<string name="tvserver_recordings_desc">Alle opnamen op de server.</string>
 	<string name="tvserver_record_this">Alle opnamen op de server.</string>
 	<string name="tvserver_noconnection_tvserver_title">Geen verbinding</string>
-	<string name="tvserver_noconnection_tvserver_desc">Kan niet verbinden Tv Server</string>
+	<string name="tvserver_noconnection_tvserver_desc">Kan niet verbinden met Tv Server</string>
 	<string name="tvserver_starttimeshift_failed">Kan timeshift niet starten</string>
 	<string name="tvserver_stoptimeshift_failed">Kan timeshift niet stoppen</string>
 	<string name="tvserver_starttimeshift">Start timeshift</string>
 	<string name="tvserver_startrecording">Start opname</string>
 	<string name="tvserver_stoptimeshift">Stop timeshift</string>
-	<string name="tvserver_loadgroups">Groupen laden</string>
+	<string name="tvserver_loadgroups">Groepen laden</string>
 	<string name="tvserver_loadchannels">Channels laden</string>
 	<string name="tvserver_schedulecanceled">Geplande taak geannuleerd</string>
 	<string name="tvserver_schedulecancel_failed">Kan geplande taak niet annuleren</string>
-	<string name="tvserver_scheduleadded"></string>
-	<string name="tvserver_scheduleadd_failed"></string>
+	<string name="tvserver_scheduleadded">Taak toegevoegd</string>
+	<string name="tvserver_scheduleadd_failed">Kan taak niet toevoegen</string>
 	<string name="tvserver_cancel_schedule">Annuleer geplande taak</string>
 	<string name="tvserver_cancel_recording">Annuleer opname</string>
 	<string name="tvserver_loadschedules">Geplande taak laden ...</string>
@@ -158,7 +158,7 @@
 	<string name="settings_media_loaddetails_title">Details automatisch laden</string>
 	<string name="settings_media_loaddetails_desc">Laad details van media items automatisch of alleen
 		als item is geselecteerd</string>
-	<string name="settings_media_cachevalid_title">Cache valid</string>
+	<string name="settings_media_cachevalid_title">Cache akkoord</string>
 	<string name="settings_media_cachevalid_desc">Bewaarde items vernieuwen als ouder dan
 	</string>
 	<string name="settings_categories_clients_desc">Bewerk Clients</string>
@@ -196,8 +196,8 @@
 	<string name="settings_delete_client_start">Weet u zeker dat u de client wilt verwijderen \\"
 	</string>
 	<string name="settings_delete_client_end">\\"?</string>
-	<string name="settings_media_preload_items_title"></string>
-	<string name="settings_media_preload_items_desc"></string>
+	<string name="settings_media_preload_items_title">Items vooraf laden</string>
+	<string name="settings_media_preload_items_desc">Hoeveel items wilt u laden als het eind van de lijst bereikt is?</string>
 	<string name="settings_media_defaultview_series_title">Standaard View Series</string>
 	<string name="settings_media_defaultview_series_desc">Standaard View voor het verkennen van uw tv shows
 	</string>
@@ -209,14 +209,14 @@
 	</string>
 	<string name="settings_media_defaultview_videoshares_title">Standaard View gedeelde videos</string>
 	<string name="settings_media_defaultview_videoshares_desc">Standaard View voor verkennen gedeelde videos</string>
-	<string name="settings_media_defaultview_musicshares_title"></string>
-	<string name="settings_media_defaultview_musicshares_desc"></string>
-	<string name="settings_media_defaultview_musicalbums_title"></string>
-	<string name="settings_media_defaultview_musicalbums_desc"></string>
-	<string name="settings_media_defaultview_musicartists_title"></string>
-	<string name="settings_media_defaultview_musicartists_desc"></string>
-	<string name="settings_media_defaultview_musictracks_title"></string>
-	<string name="settings_media_defaultview_musictracks_desc"></string>
+	<string name="settings_media_defaultview_musicshares_title">Standaard View gedeelde muziek</string>
+	<string name="settings_media_defaultview_musicshares_desc">Standaard View voor verkennen gedeelde muziek</string>
+	<string name="settings_media_defaultview_musicalbums_title">Standaard View  voor muziekalbums</string>
+	<string name="settings_media_defaultview_musicalbums_desc">Standaard View voor verkennen muziekalbums</string>
+	<string name="settings_media_defaultview_musicartists_title">Standaard View muziek artiesten</string>
+	<string name="settings_media_defaultview_musicartists_desc">Standaard View voor verkennen muziek artiesten</string>
+	<string name="settings_media_defaultview_musictracks_title">Standaard View muziek nummers</string>
+	<string name="settings_media_defaultview_musictracks_desc">Standaard View voor verkennen muziek nummers</string>
 	<string name="info_not_implemented">werkt nog niet</string>
 	<string name="info_no_connection">Geen verbinding met service</string>
 	<string name="info_remote_notconnected">Remote niet verbonden</string>

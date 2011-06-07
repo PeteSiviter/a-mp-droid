@@ -153,6 +153,11 @@ public class RemoteClient {
          return _api1.getUserPass().equals(_api2.getUserPass());
       case 3:
          return _api1.getUseAuth() == _api2.getUseAuth();
+      case 4:
+         if (_api1.getMac() == null || _api2.getMac() == null) {
+            return false;
+         }
+         return _api1.getMac().equals(_api2.getMac());
       default:
          return true;
       }
@@ -233,10 +238,32 @@ public class RemoteClient {
          return "No api defined";// shouldn't be possible
       }
    }
+   
+   public String getMac() {
+      if (!compareApiClients(4)) {// all clients have same address
+         return "Different";
+      } else {
+         if (mRemoteAccessApi != null) {
+            return mRemoteAccessApi.getMac();
+         }
+         if (mClientControlApi != null) {
+            return mClientControlApi.getMac();
+         }
+         if (mTvControlApi != null) {
+            return mTvControlApi.getMac();
+         }
+         return "No api defined";// shouldn't be possible
+      }
+   }
 
    public boolean hasDifferentSettings() {
       if (!Util.compare(mClientControlApi.getAddress(), mRemoteAccessApi.getAddress(),
             mTvControlApi.getAddress())) {
+         return true;
+      }
+      
+      if (!Util.compare(mClientControlApi.getMac(), mRemoteAccessApi.getMac(),
+            mTvControlApi.getMac())) {
          return true;
       }
       
@@ -254,4 +281,6 @@ public class RemoteClient {
       }
       return false;
    }
+
+
 }

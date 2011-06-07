@@ -27,9 +27,11 @@ import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -202,6 +204,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                   String dirName = DownloaderUtils.getMoviePath(selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
                   final String displayName = selected.toString();
+                  final String itemId = String.valueOf(selected.getId());
                   final QuickAction qa = new QuickAction(_view);
 
                   final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
@@ -233,7 +236,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           String url = mService.getDownloadUri(movieFile);
+                           String url = mService.getDownloadUri(itemId, DownloadItemType.VideoDatabaseItem);
                            FileInfo info = mService.getFileInfo(movieFile);
                            ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
@@ -241,6 +244,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                               job.setUrl(url);
                               job.setFileName(fileName);
                               job.setDisplayName(displayName);
+                              job.setMediaType(MediaItemType.Video);
                               if (info != null) {
                                  job.setLength(info.getLength());
                               }

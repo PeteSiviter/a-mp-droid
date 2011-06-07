@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.SubtextViewHolder;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
    private MusicAlbum mAlbum;
@@ -27,16 +29,26 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
       mAlbum = _album;
       mShowArtist = _showArtist;
 
-      String fileName = Utils.getFileNameWithExtension(mAlbum.getCoverPathLarge(), "\\");
-      String cacheName = "Music" + File.separator + mAlbum.getAlbumArtists()[0] + File.separator
-            + "Thumbs" + File.separator + fileName;
+      try {
+         String artistName = null;
+         if (mAlbum.getAlbumArtists() != null && mAlbum.getAlbumArtists().length > 0) {
+            artistName = mAlbum.getAlbumArtists()[0];
+         } else {
+            artistName = "Various";
+         }
+         String fileName = Utils.getFileNameWithExtension(mAlbum.getCoverPathLarge(), "\\");
+         String cacheName = "Music" + File.separator + artistName + File.separator
+               + mAlbum.getTitle() + File.separator + "Thumbs" + File.separator + fileName;
 
-      mImage = new LazyLoadingImage(mAlbum.getCoverPathLarge(), cacheName, 200, 100);
-      
-      String prettyName = mAlbum.getTitle();
-      if(prettyName != null && prettyName.length() > 0){
-         String firstLetter = prettyName.substring(0, 1);
-         mSection = firstLetter.toUpperCase();
+         mImage = new LazyLoadingImage(mAlbum.getCoverPathLarge(), cacheName, 200, 100);
+
+         String prettyName = mAlbum.getTitle();
+         if (prettyName != null && prettyName.length() > 0) {
+            String firstLetter = prettyName.substring(0, 1);
+            mSection = firstLetter.toUpperCase();
+         }
+      } catch (Exception ex) {
+         Log.e(Constants.LOG_CONST, ex.toString());
       }
    }
 
@@ -84,7 +96,7 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
          holder.text.setText(mAlbum.getAlbumArtistString());
          holder.text.setTextColor(Color.WHITE);
       }
-      
+
       if (holder.subtext != null) {
          holder.subtext.setText(String.valueOf(mAlbum.getYear()));
       }
@@ -99,7 +111,7 @@ public class MusicAlbumThumbViewAdapterItem implements ILoadingAdapterItem {
    public int getDefaultImageResource() {
       return R.drawable.listview_imageloading_poster_2;
    }
-   
+
    @Override
    public String getSection() {
       return mSection;

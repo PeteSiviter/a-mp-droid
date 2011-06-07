@@ -31,6 +31,9 @@
 		<activity android:name="com.mediaportal.ampdroid.activities.MediaActivity"
 			android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar">
 		</activity>
+				<activity android:name="com.mediaportal.ampdroid.activities.DownloadsActivity"
+			android:screenOrientation="portrait" android:theme="@android:style/Theme.NoTitleBar">
+		</activity>
 		<activity
 			android:name="com.mediaportal.ampdroid.activities.media.TabMoviesActivity"
 			android:screenOrientation="portrait">

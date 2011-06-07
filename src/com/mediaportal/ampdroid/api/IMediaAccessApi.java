@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 
-import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
@@ -13,10 +12,12 @@ import com.mediaportal.ampdroid.data.MusicArtist;
 import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 
 public interface IMediaAccessApi extends IApiInterface {
    List<Movie> getAllMovies();
@@ -52,7 +53,7 @@ public interface IMediaAccessApi extends IApiInterface {
 
    SupportedFunctions getSupportedFunctions();
 
-   String getDownloadUri(String _filePath);
+   String getDownloadUri(String _itemId, DownloadItemType _itemType);
 
    List<VideoShare> getVideoShares();
 

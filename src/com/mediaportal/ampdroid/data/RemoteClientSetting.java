@@ -7,24 +7,26 @@ public class RemoteClientSetting {
    
    private int mClientId;
    
-   
    private String mClientName;
    private String mClientDescription;
    
    private String mRemoteAccessServer;
    private int mRemoteAccessPort;
+   private String mRemoteAccessMac;
    private String mRemoteAccessUser;
    private String mRemoteAccessPass;
    private boolean mRemoteAccessUseAuth;
    
    private String mTvServer;
    private int mTvPort;
+   private String mTvMac;
    private String mTvUser;
    private String mTvPass;
    private boolean mTvUseAuth;
    
    private String mRemoteControlServer;
    private int mRemoteControlPort;
+   private String mRemoteControlMac;
    private String mRemoteControlUser;
    private String mRemoteControlPass;
    private boolean mRemoteControlUseAuth;
@@ -207,6 +209,36 @@ public class RemoteClientSetting {
    @ColumnProperty(value="RemoteControlUseAuth", type="boolean")
    public void setRemoteControlUseAuth(boolean remoteControlUseAuth) {
       mRemoteControlUseAuth = remoteControlUseAuth;
+   }
+
+   @ColumnProperty(value="RemoteAccessMac", type="text")
+   public void setRemoteAccessMac(String remoteAccessMac) {
+      mRemoteAccessMac = remoteAccessMac;
+   }
+
+   @ColumnProperty(value="RemoteAccessMac", type="text")
+   public String getRemoteAccessMac() {
+      return mRemoteAccessMac;
+   }
+
+   @ColumnProperty(value="TvMac", type="text")
+   public void setTvMac(String tvMac) {
+      mTvMac = tvMac;
+   }
+
+   @ColumnProperty(value="TvMac", type="text")
+   public String getTvMac() {
+      return mTvMac;
+   }
+
+   @ColumnProperty(value="RemoteControlMac", type="text")
+   public void setRemoteControlMac(String remoteControlMac) {
+      mRemoteControlMac = remoteControlMac;
+   }
+
+   @ColumnProperty(value="RemoteControlMac", type="text")
+   public String getRemoteControlMac() {
+      return mRemoteControlMac;
    }
    
    

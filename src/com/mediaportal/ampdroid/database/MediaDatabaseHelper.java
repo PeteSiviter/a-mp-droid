@@ -14,6 +14,7 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 
 public class MediaDatabaseHelper extends SQLiteOpenHelper {
    private String mSeriesTableString;
@@ -27,7 +28,7 @@ public class MediaDatabaseHelper extends SQLiteOpenHelper {
    private String mSupportedFunctionsString;
    private String mVideosTableString;
    private String mVideoDetailsTableString;
-
+   
    public MediaDatabaseHelper(Context context, String name, CursorFactory factory, int version) {
       super(context, name, factory, version);
       mSeriesTableString = SqliteAnnotationsHelper
@@ -54,6 +55,7 @@ public class MediaDatabaseHelper extends SQLiteOpenHelper {
       
       mSupportedFunctionsString = SqliteAnnotationsHelper.getCreateTableStringFromClass(SupportedFunctions.TABLE_NAME, 
             SupportedFunctions.class, true);
+      
    }
 
    @Override

@@ -1,20 +1,27 @@
 package com.mediaportal.ampdroid.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.view.View;
 import android.widget.ImageButton;
 
 import com.mediaportal.ampdroid.R;
+import com.mediaportal.ampdroid.activities.settings.ClientPreference;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
+import com.mediaportal.ampdroid.utils.WakeOnLan;
 
 public class HomeActivity extends BaseActivity {
    private LoadServiceTask mServiceLoaderTask = null;
 
-   private class LoadServiceTask extends AsyncTask<String, Void, Intent> {
+   private class LoadServiceTask extends AsyncTask<String, String, Intent> {
       Context mContext;
 
       private LoadServiceTask(Context _context) {
@@ -38,6 +45,9 @@ public class HomeActivity extends BaseActivity {
                myIntent.putExtra("supports_movies", functions.supportsMovies());
                return myIntent;
             }
+            else{
+               publishProgress(loader);
+            }
 
          } else if (loader.equals("music")) {
             SupportedFunctions functions = mService.getSupportedFunctions();
@@ -45,14 +55,87 @@ public class HomeActivity extends BaseActivity {
                Intent myIntent = new Intent(mContext, MusicActivity.class);
                return myIntent;
             }
+            else{
+               publishProgress(loader);
+            }
          } else if (loader.equals("tvservice")) {
             if (mService.isTvServiceActive()) {
                Intent myIntent = new Intent(mContext, TvServerOverviewActivity.class);
                return myIntent;
             }
+            else{
+               publishProgress(loader);
+            }
          }
 
          return null;
+      }
+
+
+
+      @Override
+      protected void onProgressUpdate(String... _params) {
+         String loader = _params[0];
+         String mac = null;
+         String ip = null;
+         int port = 0;
+         if (loader.equals("media") || loader.equals("music")) {
+            mac = mService.getRemoteAccessApi().getMac();
+            ip = mService.getRemoteAccessApi().getServer();
+            port = mService.getRemoteAccessApi().getPort();
+         } else if (loader.equals("tvservice")) {
+            mac = mService.getTvApi().getMac();
+            ip = mService.getTvApi().getServer();
+            port = mService.getTvApi().getPort();
+         }
+         
+         final String macString = mac;//we need a final for the dialog
+         
+         boolean autoConnect = PreferencesManager.isWolAutoConnect();
+         
+
+         if (autoConnect) {
+            if (mac != null && !mac.equals("")) {
+               // we have a valid mac and user wants autoWOL -> start WOL
+               Util.showToast(mContext, getString(R.string.home_wol_running));
+               WakeOnLan.sendMagicPacket(mac);
+
+            } else {
+               // user wants wol but hasn't entered a valid mac -> ask for it
+               Util.showToast(mContext, getString(R.string.home_wol_nomac));
+            }
+         }
+         if (!autoConnect) {
+            if (mac != null & !mac.equals("")) {
+               // no autoconnect, but valid mac -> ask user if WOL
+               AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+               builder.setTitle(mContext.getString(R.string.home_wol_confirmation_title));
+               builder.setMessage(mContext.getString(R.string.home_wol_confirmation_text));
+               builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
+                     new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                           //user wants to send WOL
+                           Util.showToast(mContext, getString(R.string.home_wol_running));
+                           WakeOnLan.sendMagicPacket(macString);
+                        }
+                     });
+               builder.setNegativeButton(mContext.getString(R.string.dialog_no),
+                     new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                           Util.showToast(mContext, getString(R.string.info_no_connection));
+                           dialog.cancel();
+                        }
+                     });
+               builder.create().show();
+               
+            }
+            else{
+               Util.showToast(mContext, getString(R.string.info_no_connection));
+            }
+         }
+         
+         
+         super.onProgressUpdate(_params);
       }
 
       @Override
@@ -60,7 +143,7 @@ public class HomeActivity extends BaseActivity {
          if (_intent != null) {
             startActivity(_intent);
          } else {
-            Util.showToast(mContext, getString(R.string.info_no_connection));
+            
          }
          mStatusBarHandler.setLoading(false);
          mServiceLoaderTask = null;
@@ -130,7 +213,11 @@ public class HomeActivity extends BaseActivity {
       buttonPlugins.setOnClickListener(new View.OnClickListener() {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
-            Util.showToast(_view.getContext(), getString(R.string.info_not_implemented));
+
+            Intent myIntent = new Intent(_view.getContext(), DownloadsActivity.class);
+            startActivity(myIntent);
+            // Util.showToast(_view.getContext(),
+            // getString(R.string.info_not_implemented));
          }
       });
    }

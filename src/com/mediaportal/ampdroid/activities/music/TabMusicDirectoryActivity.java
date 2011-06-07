@@ -24,9 +24,14 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -96,11 +101,11 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
             mAdapter.showLoadingItem(false);
             mAdapter.notifyDataSetChanged();
          }
-         
+
          if (mAdapter.fastScrollingInitialised()) {
             mAdapter.resetFastScrolling(mListView);
          }
-         
+
          mStatusBarHandler.setLoading(false);
          mDirLoaderTask = null;
       }
@@ -147,7 +152,8 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                   myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                   View view = TabMusicSharesActivityGroup.getGroup().getLocalActivityManager()
-                        .startActivity("music_dir" + selectedFileInfo.getFullPath(), myIntent).getDecorView();
+                        .startActivity("music_dir" + selectedFileInfo.getFullPath(), myIntent)
+                        .getDecorView();
 
                   TabMusicSharesActivityGroup.getGroup().replaceView(view);
                }
@@ -200,20 +206,30 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           String url = mService.getDownloadUri(trackPath);
+                           String url = mService.getDownloadUri(trackPath,
+                                 DownloadItemType.MusicShareItem);
                            FileInfo info = mService.getFileInfo(trackPath);
-                           if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
-                              if (info != null) {
-                                 download.putExtra("length", info.getLength());
-                              }
-                              startService(download);
 
-                              qa.dismiss();
+                           ApiCredentials cred = mService.getDownloadCredentials();
+                           if (url != null) {
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(fileName);
+                              job.setMediaType(MediaItemType.Music);
+                              if (info != null) {
+                                 job.setLength(info.getLength());
+                              }
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
+
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
+                              startService(download);
                            }
+                           qa.dismiss();
+
                         }
                      });
                      qa.addActionItem(sdCardAction);

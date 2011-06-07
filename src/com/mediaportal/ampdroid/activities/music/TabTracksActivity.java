@@ -16,7 +16,6 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -29,8 +28,10 @@ import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -125,8 +126,6 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
          super.onProgressUpdate(values);
       }
 
-      
-
       @Override
       protected void onPostExecute(Boolean _result) {
          if (_result) {
@@ -191,6 +190,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                      .getItemAtPosition(_position)).getItem();
                final String trackTitle = selected.getTitle();
                final String trackPath = selected.getFilePath();
+               final String trackId = selected.getFilePath();
                if (trackTitle != null) {
                   String dirName = DownloaderUtils.getMusicTrackPath();
                   final String fileName = dirName + Utils.getFileNameWithExtension(trackPath, "\\");
@@ -227,7 +227,8 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           String url = mService.getDownloadUri(trackPath);
+                           String url = mService.getDownloadUri(trackId,
+                                 DownloadItemType.MusicTrackItem);
                            FileInfo info = mService.getFileInfo(trackPath);
                            ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
@@ -235,6 +236,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                               job.setUrl(url);
                               job.setFileName(fileName);
                               job.setDisplayName(displayName);
+                              job.setMediaType(MediaItemType.Music);
                               if (info != null) {
                                  job.setLength(info.getLength());
                               }

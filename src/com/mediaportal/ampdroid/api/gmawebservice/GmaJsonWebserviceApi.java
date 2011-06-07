@@ -29,7 +29,6 @@ import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
-import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
@@ -38,10 +37,12 @@ import com.mediaportal.ampdroid.data.MusicArtist;
 import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
+import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.SupportedFunctions;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.utils.Constants;
 
 public class GmaJsonWebserviceApi implements IMediaAccessApi {
@@ -72,11 +73,13 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    private JsonClient mJsonClient;
    private ObjectMapper mJsonObjectMapper;
+   private String mMac;
 
    @SuppressWarnings("unchecked")
-   public GmaJsonWebserviceApi(String _server, int _port, String _user, String _pass, boolean _auth) {
+   public GmaJsonWebserviceApi(String _server, int _port, String _mac, String _user, String _pass, boolean _auth) {
       mServer = _server;
       mPort = _port;
+      mMac = _mac;
 
       mUser = _user;
       mPass = _pass;
@@ -100,7 +103,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
 
    public GmaJsonWebserviceApi(String _server, int _port) {
-      this(_server, _port, "", "", false);
+      this(_server, _port, "", "", "", false);
    }
 
    @Override
@@ -126,6 +129,11 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    @Override
    public boolean getUseAuth() {
       return mUseAuth;
+   }
+   
+   @Override
+   public String getMac() {
+      return mMac;
    }
 
    @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -153,17 +161,20 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       String methodName = GET_SUPPORTED_FUNCTIONS;
       String response = mJsonClient.Execute(methodName);
 
+      Log.i(Constants.LOG_CONST, "Getting GmaWebservice functions: " + mServer + ":" + mPort + "@"
+            + mUser + ":" + mPass);
       if (response != null) {
          SupportedFunctions returnObject = (SupportedFunctions) getObjectsFromJson(response,
                SupportedFunctions.class);
 
          if (returnObject != null) {
+            Log.i(Constants.LOG_CONST, "Successfully connected to GmaWebservice");
             return returnObject;
          } else {
-            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -179,10 +190,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<VideoShare>(Arrays.asList(returnObject));
          } else {
-            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -198,10 +209,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return new ArrayList<FileInfo>(Arrays.asList(returnObject));
          } else {
-            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -217,10 +228,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -242,10 +253,10 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
             return retList;
          } else {
-            Log.d(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
          }
       } else {
-         Log.d(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
       }
       return null;
    }
@@ -346,8 +357,8 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       URL myFileUrl = null;
       Bitmap bmImg = null;
       try {
-         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
-               + GET_IMAGE + "?path=" + URLEncoder.encode(_url, "UTF-8"));
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/" + GET_IMAGE
+               + "?path=" + URLEncoder.encode(_url, "UTF-8"));
 
          if (mUseAuth) {
             Authenticator.setDefault(new Authenticator() {
@@ -409,22 +420,23 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
 
    @Override
-   public String getDownloadUri(String _filePath) {
+   public String getDownloadUri(String _itemId, DownloadItemType _itemType) {
       String fileUrl = null;
       try {
-         fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/" + GET_MEDIA_ITEM + "?path="
-               + URLEncoder.encode(_filePath, "UTF-8");
+         fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/" + GET_MEDIA_ITEM
+               + "?type=" + DownloadItemType.toInt(_itemType) + "&itemId="
+               + URLEncoder.encode(_itemId, "UTF-8");
       } catch (UnsupportedEncodingException e) {
          e.printStackTrace();
       }
       return fileUrl;
 
    }
-   
+
    @Override
    public List<VideoShare> getMusicShares() {
       return mMusicAPI.getMusicShares();
-      
+
    }
 
    @Override

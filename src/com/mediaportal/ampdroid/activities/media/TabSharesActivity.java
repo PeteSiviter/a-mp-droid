@@ -25,6 +25,7 @@ import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
@@ -51,7 +52,7 @@ public class TabSharesActivity extends Activity {
 
          return shares;
       }
- 
+
       @Override
       protected void onPostExecute(List<VideoShare> _result) {
          mListItems.clear();
@@ -105,8 +106,9 @@ public class TabSharesActivity extends Activity {
       }
 
       private boolean checkForValidExt(FileInfo f) {
-         for(String e : mCurrentShare.Extensions){
-            if(f.getFullPath() != null && f.getFullPath().endsWith(e)) return true;
+         for (String e : mCurrentShare.Extensions) {
+            if (f.getFullPath() != null && f.getFullPath().endsWith(e))
+               return true;
          }
          return false;
       }
@@ -148,7 +150,7 @@ public class TabSharesActivity extends Activity {
             }
          }
       });
-      
+
       mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
          @Override
          public boolean onItemLongClick(AdapterView<?> _adapter, View _view, final int _pos,
@@ -156,11 +158,10 @@ public class TabSharesActivity extends Activity {
             try {
                if (_adapter.getAdapter().equals(mFileItems)) {
                   final FileInfo selected = (FileInfo) mListView.getItemAtPosition(_pos);
-                                
                   final String fileName = DownloaderUtils.getVideoPath(mCurrentShare, selected);
 
                   final QuickAction qa = new QuickAction(_view);
-                  
+
                   final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
                         + fileName);
 
@@ -168,8 +169,8 @@ public class TabSharesActivity extends Activity {
                      ActionItem playItemAction = new ActionItem();
 
                      playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play));
+                     playItemAction
+                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
                      playItemAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
@@ -182,15 +183,16 @@ public class TabSharesActivity extends Activity {
                      });
 
                      qa.addActionItem(playItemAction);
-                  }
-                  else{
+                  } else {
                      ActionItem sdCardAction = new ActionItem();
                      sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                     sdCardAction.setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
+                     sdCardAction
+                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           String url = mService.getDownloadUri(selected.getFullPath());
+                           String url = mService.getDownloadUri(selected.getFullPath(),
+                                 DownloadItemType.VideoShareItem);
                            FileInfo info = mService.getFileInfo(selected.getFullPath());
                            if (url != null) {
                               Intent download = new Intent(_view.getContext(),
@@ -202,14 +204,14 @@ public class TabSharesActivity extends Activity {
                               }
                               startService(download);
                            }
-                           
+
                            qa.dismiss();
                         }
                      });
                      qa.addActionItem(sdCardAction);
                   }
-                  
-                  if(mService.isClientControlConnected()){
+
+                  if (mService.isClientControlConnected()) {
                      ActionItem playOnClientAction = new ActionItem();
 
                      playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
@@ -219,7 +221,7 @@ public class TabSharesActivity extends Activity {
                         @Override
                         public void onClick(View _view) {
                            mService.playVideoFileOnClient(selected.getFullPath());
-                           
+
                            qa.dismiss();
                         }
                      });
@@ -238,10 +240,10 @@ public class TabSharesActivity extends Activity {
       });
 
       mBreadCrumb = new ArrayList<String>();
-      
+
       mBaseActivity = (BaseTabActivity) getParent();
       mService = DataHandler.getCurrentRemoteInstance();
-      
+
       if (mBaseActivity != null && mService != null) {
          mStatusBarHandler = new StatusBarActivityHandler(mBaseActivity, mService);
          mStatusBarHandler.setHome(false);
@@ -251,8 +253,9 @@ public class TabSharesActivity extends Activity {
    }
 
    private void loadShares() {
-      mLoadingDialog = ProgressDialog.show(getParent(), getString(R.string.media_shares_loadshares),
-            getString(R.string.info_loading_title), true);
+      mLoadingDialog = ProgressDialog.show(getParent(),
+            getString(R.string.media_shares_loadshares), getString(R.string.info_loading_title),
+            true);
       mLoadingDialog.setCancelable(true);
 
       mSeriesLoaderTask = new LoadSharesTask();

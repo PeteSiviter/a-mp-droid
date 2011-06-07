@@ -23,8 +23,7 @@
 			android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
 		<CheckBoxPreference android:key="auto_wol"
 			android:title="@string/settings_general_autowol_title"
-			android:summary="@string/settings_general_autowol_desc"
-			android:enabled="false"></CheckBoxPreference>
+			android:summary="@string/settings_general_autowol_desc"></CheckBoxPreference>
 		<ListPreference android:summary="@string/settings_general_statusbar_hide_desc"
 			android:key="statusbar_autohide" android:title="@string/settings_general_statusbar_hide_title"
 			android:entries="@array/settings_general_statusbar_autohide_text"

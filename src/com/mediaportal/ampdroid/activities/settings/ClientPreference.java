@@ -40,14 +40,18 @@ public class ClientPreference extends DialogPreference {
    private EditText mHostView;
    private EditText mUserView;
    private EditText mPassView;
+   private EditText mEditTextMac;
 
    private CheckBox mUseAuthView;
    private EditText mEditTextGmaHost;
    private EditText mEditTextGmaPort;
+   private EditText mEditTextGmaMac;
    private EditText mEditTextTv4HomeHost;
    private EditText mEditTextTv4HomePort;
+   private EditText mEditTextTv4HomeMac;
    private EditText mEditTextWifiRemoteHost;
    private EditText mEditTextWifiRemotePort;
+   private EditText mEditTextWifiRemoteMac;
    private CheckBox mUseGma;
    private CheckBox mUseTv4Home;
    private CheckBox mUseWifiRemote;
@@ -173,6 +177,7 @@ public class ClientPreference extends DialogPreference {
       mNameView = (EditText) parent.findViewById(R.id.pref_name);
       mHostView = (EditText) parent.findViewById(R.id.pref_host);
       mUserView = (EditText) parent.findViewById(R.id.pref_user);
+      mEditTextMac = (EditText) parent.findViewById(R.id.pref_mac);
       mUserView.setHint(mContext.getString(R.string.settings_clients_default)
             + Constants.DEFAULT_USERNAME);
       mPassView = (EditText) parent.findViewById(R.id.pref_pass);
@@ -191,6 +196,7 @@ public class ClientPreference extends DialogPreference {
       mEditTextGmaPort = (EditText) parent.findViewById(R.id.pref_host_gma_port);
       mEditTextGmaPort.setHint(mContext.getString(R.string.settings_clients_default)
             + String.valueOf(Constants.DEFAULT_REMOTEACCESS_PORT));
+      mEditTextGmaMac = (EditText) parent.findViewById(R.id.pref_host_gma_mac);
       mUseGma = (CheckBox) parent.findViewById(R.id.pref_gma_use_service);
       mUseGmaAuth = (CheckBox) parent.findViewById(R.id.pref_gma_use_auth);
       mUserViewGma = (EditText) parent.findViewById(R.id.pref_gma_user);
@@ -210,6 +216,7 @@ public class ClientPreference extends DialogPreference {
       mEditTextTv4HomePort = (EditText) parent.findViewById(R.id.pref_host_tv4home_port);
       mEditTextTv4HomePort.setHint(mContext.getString(R.string.settings_clients_default)
             + String.valueOf(Constants.DEFAULT_TV_PORT));
+      mEditTextTv4HomeMac = (EditText) parent.findViewById(R.id.pref_host_tv4home_mac);
       mUseTv4Home = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_service);
       mUseTv4HomeAuth = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_auth);
       mUserViewTv4Home = (EditText) parent.findViewById(R.id.pref_tv4home_user);
@@ -229,6 +236,7 @@ public class ClientPreference extends DialogPreference {
       mEditTextWifiRemotePort = (EditText) parent.findViewById(R.id.pref_host_wifiremote_port);
       mEditTextWifiRemotePort.setHint(mContext.getString(R.string.settings_clients_default)
             + String.valueOf(Constants.DEFAULT_WIFI_PORT));
+      mEditTextWifiRemoteMac = (EditText) parent.findViewById(R.id.pref_host_wifiremote_mac);
       mUseWifiRemote = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_service);
       mUseWifiRemoteAuth = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_auth);
       mUserViewWifiRemote = (EditText) parent.findViewById(R.id.pref_wifiremote_user);
@@ -286,6 +294,11 @@ public class ClientPreference extends DialogPreference {
             .toString(), mEditTextWifiRemoteHost.getText().toString())) {
          return true;
       }
+      
+      if (!Util.compare(mEditTextTv4HomeMac.getText().toString(), mEditTextGmaMac.getText()
+            .toString(), mEditTextWifiRemoteMac.getText().toString())) {
+         return true;
+      }
 
       if (!Util.compare(mUserViewTv4Home.getText().toString(), mUserViewGma.getText().toString(),
             mUserViewWifiRemote.getText().toString())) {
@@ -325,6 +338,13 @@ public class ClientPreference extends DialogPreference {
          } else {
             mHostView.setText("");
          }
+         
+         if (Util.compare(mEditTextTv4HomeMac.getText().toString(), mEditTextGmaMac.getText().toString(),
+               mEditTextWifiRemoteMac.getText().toString())) {
+            mEditTextMac.setText(mEditTextTv4HomeMac.getText().toString());
+         } else {
+            mEditTextMac.setText("");
+         }
 
          if (Util.compare(mUserViewTv4Home.getText().toString(), mUserViewGma.getText().toString(),
                mUserViewWifiRemote.getText().toString())) {
@@ -351,22 +371,26 @@ public class ClientPreference extends DialogPreference {
          String host = mHostView.getText().toString();
          String user = mUserView.getText().toString();
          String pass = mPassView.getText().toString();
+         String mac = mEditTextMac.getText().toString();
          boolean useAuth = mUseAuthView.isChecked();
 
          mEditTextGmaHost.setText(host);
          mEditTextGmaPort.setText(String.valueOf(Constants.DEFAULT_REMOTEACCESS_PORT));
          mUserViewGma.setText(user);
          mPassViewGma.setText(pass);
+         mEditTextGmaMac.setText(mac);
          setUseAuth(useAuth, mUseGmaAuth, mUserViewGma, mPassViewGma);
 
          mEditTextTv4HomeHost.setText(host);
          mEditTextTv4HomePort.setText(String.valueOf(Constants.DEFAULT_TV_PORT));
+         mEditTextTv4HomeMac.setText(mac);
          mUserViewTv4Home.setText(user);
          mPassViewTv4Home.setText(pass);
          setUseAuth(useAuth, mUseTv4HomeAuth, mUserViewTv4Home, mPassViewTv4Home);
 
          mEditTextWifiRemoteHost.setText(host);
          mEditTextWifiRemotePort.setText(String.valueOf(Constants.DEFAULT_WIFI_PORT));
+         mEditTextWifiRemoteMac.setText(mac);
          mUserViewWifiRemote.setText(user);
          mPassViewWifiRemote.setText(pass);
          setUseAuth(useAuth, mUseWifiRemoteAuth, mUserViewWifiRemote, mPassViewWifiRemote);
@@ -384,10 +408,12 @@ public class ClientPreference extends DialogPreference {
 
          // simple
          String addr = mClient.getClientAddress();
+         String mac = mClient.getMac();
          String user = mClient.getUserName();
          String pwd = mClient.getUserPassword();
 
          mHostView.setText(addr);
+         mEditTextMac.setText(mac);
          mUserView.setText(user);
          mPassView.setText(pwd);
          setUseAuth(mClient.useAuth(), mUseAuthView, mUserView, mPassView);
@@ -395,6 +421,7 @@ public class ClientPreference extends DialogPreference {
          // advanced
          mEditTextGmaHost.setText(mClient.getRemoteAccessApi().getServer());
          mEditTextGmaPort.setText(String.valueOf(mClient.getRemoteAccessApi().getPort()));
+         mEditTextGmaMac.setText(String.valueOf(mClient.getRemoteAccessApi().getMac()));
          mUserViewGma.setText(mClient.getRemoteAccessApi().getUserName());
          mPassViewGma.setText(mClient.getRemoteAccessApi().getUserPass());
          setUseAuth(mClient.getRemoteAccessApi().getUseAuth(), mUseGmaAuth, mUserViewGma,
@@ -402,6 +429,7 @@ public class ClientPreference extends DialogPreference {
 
          mEditTextTv4HomeHost.setText(mClient.getTvControlApi().getServer());
          mEditTextTv4HomePort.setText(String.valueOf(mClient.getTvControlApi().getPort()));
+         mEditTextTv4HomeMac.setText(String.valueOf(mClient.getTvControlApi().getMac()));
          mUserViewTv4Home.setText(mClient.getTvControlApi().getUserName());
          mPassViewTv4Home.setText(mClient.getTvControlApi().getUserPass());
          setUseAuth(mClient.getTvControlApi().getUseAuth(), mUseTv4HomeAuth, mUserViewTv4Home,
@@ -409,6 +437,7 @@ public class ClientPreference extends DialogPreference {
 
          mEditTextWifiRemoteHost.setText(mClient.getClientControlApi().getServer());
          mEditTextWifiRemotePort.setText(String.valueOf(mClient.getClientControlApi().getPort()));
+         mEditTextWifiRemoteMac.setText(String.valueOf(mClient.getClientControlApi().getMac()));
          mUserViewWifiRemote.setText(mClient.getClientControlApi().getUserName());
          mPassViewWifiRemote.setText(mClient.getClientControlApi().getUserPass());
          setUseAuth(mClient.getClientControlApi().getUseAuth(), mUseWifiRemoteAuth,
@@ -443,47 +472,50 @@ public class ClientPreference extends DialogPreference {
 
          if (mUseSimple) {
             String addr = mHostView.getText().toString();
+            String mac = mEditTextMac.getText().toString();
             String user = mUserView.getText().toString();
             String pass = mPassView.getText().toString();
             boolean auth = mUseAuthView.isChecked();
             GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(addr,
-                  Constants.DEFAULT_REMOTEACCESS_PORT, user, pass, auth);
+                  Constants.DEFAULT_REMOTEACCESS_PORT, mac, user, pass, auth);
             mClient.setRemoteAccessApi(api);
 
-            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, Constants.DEFAULT_TV_PORT, user, pass,
+            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, Constants.DEFAULT_TV_PORT, mac, user, pass,
                   auth);
             mClient.setTvControlApi(tvApi);
 
             WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, addr,
-                  Constants.DEFAULT_WIFI_PORT, user, pass, auth);
+                  Constants.DEFAULT_WIFI_PORT, mac, user, pass, auth);
             mClient.setClientControlApi(clientApi);
          } else {
             String gmaAddr = mEditTextGmaHost.getText().toString();
             String gmaPort = mEditTextGmaPort.getText().toString();
+            String gmaMac = mEditTextGmaMac.getText().toString();
             String gmaUser = mUserViewGma.getText().toString();
             String gmaPass = mPassViewGma.getText().toString();
             boolean gmaUseAuth = mUseGmaAuth.isChecked();
             GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(gmaAddr, Integer.valueOf(gmaPort),
-                  gmaUser, gmaPass, gmaUseAuth);
+                  gmaMac, gmaUser, gmaPass, gmaUseAuth);
             mClient.setRemoteAccessApi(api);
 
             String tv4homeAddr = mEditTextTv4HomeHost.getText().toString();
             String tv4homePort = mEditTextTv4HomePort.getText().toString();
-
+            String tv4homeMac = mEditTextTv4HomeMac.getText().toString();
             String tvUser = mUserViewTv4Home.getText().toString();
             String tvPass = mPassViewTv4Home.getText().toString();
             boolean tvUseAuth = mUseTv4HomeAuth.isChecked();
             Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(tv4homeAddr, Integer.valueOf(tv4homePort),
-                  tvUser, tvPass, tvUseAuth);
+                  tv4homeMac, tvUser, tvPass, tvUseAuth);
             mClient.setTvControlApi(tvApi);
 
             String wifiAddr = mEditTextWifiRemoteHost.getText().toString();
             String wifiPort = mEditTextWifiRemotePort.getText().toString();
+            String wifiMac = mEditTextWifiRemoteMac.getText().toString();
             String wifiUser = mUserViewWifiRemote.getText().toString();
             String wifiPass = mPassViewWifiRemote.getText().toString();
             boolean wifiUseAuth = mUseWifiRemoteAuth.isChecked();
             WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, wifiAddr,
-                  Integer.valueOf(wifiPort), wifiUser, wifiPass, wifiUseAuth);
+                  Integer.valueOf(wifiPort), wifiMac, wifiUser, wifiPass, wifiUseAuth);
             mClient.setClientControlApi(clientApi);
          }
 

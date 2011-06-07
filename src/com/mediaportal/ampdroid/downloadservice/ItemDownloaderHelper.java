@@ -12,10 +12,12 @@ public class ItemDownloaderHelper {
       download.putExtra("file_name", _job.getFileName());
       download.putExtra("display_name", _job.getDisplayName());
       download.putExtra("length", _job.getLength());
+      download.putExtra("item_type", _job.getMediaTypeInt());
       
       download.putExtra("useAuth", _job.isUseAut());
       download.putExtra("username", _job.getUsername());
       download.putExtra("password", _job.getPassword());
+      download.putExtra("job_id", _job.getId());
       
       return download;
    }
@@ -28,12 +30,16 @@ public class ItemDownloaderHelper {
       boolean useAuth = intent.getBooleanExtra("useAuth", false);
       String username = intent.getStringExtra("username");
       String password = intent.getStringExtra("password");
+      int itemType = intent.getIntExtra("item_type", 0);
+      int id = intent.getIntExtra("job_id", 0);
       
       DownloadJob job = new DownloadJob();
+      job.setId(id);
       job.setUrl(url);
       job.setFileName(fileName);
       job.setDisplayName(displayName);
       job.setLength(length);
+      job.setMediaTypeInt(itemType);
       
       if(useAuth)
       {
