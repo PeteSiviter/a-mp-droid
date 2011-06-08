@@ -207,6 +207,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
 
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views));
+      viewItem.setIcon(R.drawable.ic_menu_slideshow);
 
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views_text));
@@ -255,6 +256,7 @@ public class TabSeriesActivity extends Activity implements ILoadingListener {
       
       MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setIcon(R.drawable.ic_menu_set_as);
       setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

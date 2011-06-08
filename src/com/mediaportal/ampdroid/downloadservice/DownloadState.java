@@ -1,7 +1,30 @@
 package com.mediaportal.ampdroid.downloadservice;
 
+import com.mediaportal.ampdroid.R;
+
+import android.content.Context;
+
 public enum DownloadState {
    Queued, Running, Paused, Stopped, Finished, Error;
+
+   public String toStringLocalised(Context _context) {
+      switch (this) {
+      case Queued:
+         return _context.getString(R.string.downloads_state_queued);
+      case Running:
+         return _context.getString(R.string.downloads_state_running);
+      case Paused:
+         return _context.getString(R.string.downloads_state_paused);
+      case Stopped:
+         return _context.getString(R.string.downloads_state_stopped);
+      case Finished:
+         return _context.getString(R.string.downloads_state_finished);
+      case Error:
+         return _context.getString(R.string.downloads_state_failed);
+      default:
+         return _context.getString(R.string.downloads_state_queued);
+      }
+   }
 
    public static DownloadState fromInt(int _state) {
       switch (_state) {

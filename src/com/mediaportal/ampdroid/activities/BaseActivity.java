@@ -193,6 +193,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
       }
 
       mConnectItem = _menu.add(0, Menu.FIRST, Menu.NONE, title);
+      mConnectItem.setIcon(R.drawable.ic_menu_share);
       mConnectItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

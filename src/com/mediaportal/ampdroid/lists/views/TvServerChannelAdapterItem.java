@@ -7,9 +7,9 @@ import android.widget.TextView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.SubtextViewHolder;
+import com.mediaportal.ampdroid.lists.ViewHolder;
 
 public class TvServerChannelAdapterItem implements ILoadingAdapterItem {
    TvChannel mChannel;

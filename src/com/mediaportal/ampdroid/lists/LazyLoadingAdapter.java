@@ -148,11 +148,6 @@ public class LazyLoadingAdapter extends BaseAdapter implements SectionIndexer {
       return position;
    }
 
-   public static class ViewHolder {
-      public TextView text;
-      public ImageView image;
-   }
-
    @Override
    public int getItemViewType(int position) {
       if (position == mCurrentViewData.size()) {
@@ -190,7 +185,7 @@ public class LazyLoadingAdapter extends BaseAdapter implements SectionIndexer {
                Log.d("Adapter", ex.getMessage());
             }
          } else {
-            holder = (SubtextViewHolder) vi.getTag();
+            holder = (ViewHolder) vi.getTag();
          }
 
          if (holder != null) {

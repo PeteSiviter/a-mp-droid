@@ -129,6 +129,7 @@ public class WelcomeScreenActivity extends Activity {
    public boolean onCreateOptionsMenu(Menu _menu) {
       MenuItem settingsItem = _menu
             .add(0, Menu.FIRST, Menu.NONE, getString(R.string.menu_settings));
+      settingsItem.setIcon(R.drawable.ic_menu_preferences);
       settingsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

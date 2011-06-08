@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.data.TvProgramBase;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.SubtextViewHolder;
+import com.mediaportal.ampdroid.lists.ViewHolder;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 
 public class TvServerProgramsDetailsViewItem implements ILoadingAdapterItem {

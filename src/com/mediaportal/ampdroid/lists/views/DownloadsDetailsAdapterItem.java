@@ -1,21 +1,37 @@
 package com.mediaportal.ampdroid.lists.views;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.DownloadState;
+import com.mediaportal.ampdroid.lists.DownloadsViewHolder;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
-import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
-import com.mediaportal.ampdroid.lists.SubtextViewHolder;
+import com.mediaportal.ampdroid.lists.ViewHolder;
+import com.mediaportal.ampdroid.utils.DateTimeHelper;
 
-public class DownloadsDetailsAdapterItem  implements ILoadingAdapterItem{
+public class DownloadsDetailsAdapterItem implements ILoadingAdapterItem {
    private DownloadJob mDownload;
-   public DownloadsDetailsAdapterItem(DownloadJob _job){
+   private String mFinished;
+   private Context mContext;
+
+   public DownloadsDetailsAdapterItem(DownloadJob _job, Context _context) {
       mDownload = _job;
+      mContext = _context;
+
+      if (_job.getState() == DownloadState.Finished) {
+         mFinished = DateTimeHelper.getDateString(_job.getDateFinished(), true);
+      }else if(_job.getState() == DownloadState.Running){
+         mFinished = String.valueOf(mDownload.getProgress()) + " %";
+      } else {
+         mFinished = DateTimeHelper.getDateString(_job.getDateFinished(), true) + 
+                     " (" + String.valueOf(mDownload.getProgress()) + " %)";
+      }
    }
-   
+
    @Override
    public LazyLoadingImage getImage() {
       return null;
@@ -48,20 +64,21 @@ public class DownloadsDetailsAdapterItem  implements ILoadingAdapterItem{
 
    @Override
    public ViewHolder createViewHolder(View _view) {
-      SubtextViewHolder holder = new SubtextViewHolder();
-      holder.text = (TextView) _view.findViewById(R.id.TextViewState);
-      holder.subtext = (TextView) _view.findViewById(R.id.TextViewProgress);
-      holder.title = (TextView) _view.findViewById(R.id.TextViewName);
+      DownloadsViewHolder holder = new DownloadsViewHolder();
+      holder.state = (TextView) _view.findViewById(R.id.TextViewDownloadState);
+      holder.finished = (TextView) _view.findViewById(R.id.TextViewDownloadFinished);
+      holder.filename = (TextView) _view.findViewById(R.id.TextViewDownloadFilename);
+      holder.text = (TextView) _view.findViewById(R.id.TextViewDownloadName);
       return holder;
    }
 
    @Override
    public void fillViewFromViewHolder(ViewHolder _holder) {
-      SubtextViewHolder holder = (SubtextViewHolder) _holder;
-      holder.text.setText(mDownload.getState().toString());
-      holder.subtext.setText(String.valueOf(mDownload.getProgress()));
-      holder.title.setText(mDownload.getDisplayName());
-      
+      DownloadsViewHolder holder = (DownloadsViewHolder) _holder;
+      holder.state.setText(mDownload.getState().toStringLocalised(mContext));
+      holder.finished.setText(mFinished);
+      holder.text.setText(mDownload.getDisplayName());
+      holder.filename.setText(mDownload.getFileName());
    }
 
    @Override

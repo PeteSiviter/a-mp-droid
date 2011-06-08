@@ -7,8 +7,8 @@ import android.view.View;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
-import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ViewHolder;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.lists.ViewHolder;
 
 public class PosterGalleryViewAdapterItem implements ILoadingAdapterItem {
    private LazyLoadingImage mImage;

@@ -51,12 +51,10 @@ public class DownloadsActivity extends BaseActivity {
       mListView = (ListView) findViewById(R.id.ListViewItems);
       mDatabase = new DownloadsDatabaseHandler(this);
       
-      mDatabase.open();
-      mDownloads = mDatabase.getDownloads();
-      mDatabase.close();
-
       mAdapter = new LazyLoadingAdapter(this);
       mListView.setAdapter(mAdapter);
+      
+      fillListView();
 
       mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
          @Override
@@ -155,10 +153,16 @@ public class DownloadsActivity extends BaseActivity {
             return true;
          }
       });
+   }
 
+   private void fillListView() {
+      mDatabase.open();
+      mDownloads = mDatabase.getDownloads();
+      mDatabase.close();
+      
       if (mDownloads != null) {
          for (DownloadJob j : mDownloads) {
-            mAdapter.addItem(new DownloadsDetailsAdapterItem(j));
+            mAdapter.addItem(new DownloadsDetailsAdapterItem(j, this));
          }
       }
    }
@@ -167,8 +171,9 @@ public class DownloadsActivity extends BaseActivity {
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
 
-      MenuItem clearDownloadsItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+      MenuItem clearDownloadsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
             getString(R.string.menu_clear_downloads));
+      clearDownloadsItem.setIcon(R.drawable.ic_menu_close_clear_cancel);
       clearDownloadsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
@@ -182,6 +187,19 @@ public class DownloadsActivity extends BaseActivity {
             }
             mDatabase.close();
             mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
+            return true;
+         }
+      });
+      
+      MenuItem refreshDownloadsItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_refresh));
+      refreshDownloadsItem.setIcon(R.drawable.ic_menu_refresh);
+      refreshDownloadsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            mAdapter.clear();
+            fillListView();
             mAdapter.notifyDataSetChanged();
             return true;
          }

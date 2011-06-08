@@ -16,6 +16,12 @@
 	<string name="home_wol_nomac">No connection and cannot send WOL packets unless a MAC address is defined in setting...</string>
 	<string name="downloads_delete_file_success">Successfully deleted file</string>
 	<string name="downloads_delete_file_failed">Couldn\'t deleted file</string>
+	<string name="downloads_state_queued">Queued</string>
+	<string name="downloads_state_running">Running</string>
+	<string name="downloads_state_paused">Paused</string>
+	<string name="downloads_state_stopped">Stopped</string>
+	<string name="downloads_state_finished">Finished</string>
+	<string name="downloads_state_failed">Failed</string>
 	<string name="series_actors">Actors</string>
 	<string name="series_seasons">Seasons</string>
 	<string name="series_release">Release Date</string>
@@ -236,10 +242,10 @@
 	<string name="menu_refresh">Refresh</string>
 	<string name="menu_addhost">Add host</string>
 	<string name="menu_addhost_scan">QR Scan</string>
-	<string name="menu_connect">Connect</string>
+	<string name="menu_connect">Connect Remote</string>
 	<string name="menu_disconnect">Disconnect</string>
 	<string name="menu_set_default_view">Set as Default</string>
-	<string name="menu_clear_downloads">Clear Downloads</string>
+	<string name="menu_clear_downloads">Clear</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Yes</string>

@@ -2,10 +2,11 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent" android:orientation="vertical">
+  android:layout_height="fill_parent" android:orientation="vertical" android:paddingLeft="10dip" android:paddingRight="10dip" android:paddingTop="5dip" android:paddingBottom="5dip">
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Displayname" android:id="@+id/TextViewDownloadName" android:textStyle="bold" android:textSize="16dip"></TextView>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Filename" android:id="@+id/TextViewDownloadFilename" android:maxLines="1" android:lines="1"></TextView>
     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TextView" android:id="@+id/TextViewState"></TextView>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TextView" android:id="@+id/TextViewProgress"></TextView>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="State" android:id="@+id/TextViewDownloadState"></TextView>
+        <TextView android:layout_height="wrap_content" android:text="Finished" android:layout_gravity="right" android:gravity="right" android:layout_width="fill_parent" android:id="@+id/TextViewDownloadFinished"></TextView>
     </LinearLayout>
-    <TextView android:text="TextView" android:id="@+id/TextViewName" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 </LinearLayout>
