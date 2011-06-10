@@ -246,7 +246,7 @@ public class TabEpisodeDetailsActivity extends Activity {
                         DownloadJob job = new DownloadJob();
                         job.setUrl(url);
                         job.setFileName(fileName);
-                        job.setDisplayName(epFile.toString());
+                        job.setDisplayName(mSeriesName + ": " + epFile.toString());
                         job.setMediaType(MediaItemType.Video);
                         if (info != null) {
                            info.setLength(info.getLength());

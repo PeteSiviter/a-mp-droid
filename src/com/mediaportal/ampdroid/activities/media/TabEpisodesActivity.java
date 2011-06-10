@@ -166,7 +166,7 @@ public class TabEpisodesActivity extends Activity {
                if (epFile != null) {
                   String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, selected);
                   final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
-                  final String displayName = selected.toString();
+                  final String displayName = mSeriesName + ": " + selected.toString();
                   final String itemId = String.valueOf(selected.getId());
                   final QuickAction qa = new QuickAction(_view);
 

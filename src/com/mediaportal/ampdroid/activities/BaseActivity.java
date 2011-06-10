@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -205,8 +206,25 @@ public class BaseActivity extends Activity implements IClientControlListener {
             return true;
          }
       });
+      
+      MenuItem downloadsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
+            getString(R.string.menu_downloads));
+      downloadsItem.setIcon(R.drawable.ic_menu_save);
+      downloadsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            startDownloads();
+            return true;
+         }
+
+      });
 
       return true;
+   }
+   
+   private void startDownloads() {
+      Intent myIntent = new Intent(this, DownloadsActivity.class);
+      startActivity(myIntent);
    }
 
    protected void connectClientControl() {

@@ -138,13 +138,29 @@ public class WelcomeScreenActivity extends Activity {
          }
       });
 
+      MenuItem downloadsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
+            getString(R.string.menu_downloads));
+      downloadsItem.setIcon(R.drawable.ic_menu_save);
+      downloadsItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            startDownloads();
+            return true;
+         }
+
+      });
+
       return true;
+   }
+
+   private void startDownloads() {
+      Intent myIntent = new Intent(this, DownloadsActivity.class);
+      startActivity(myIntent);
    }
 
    private void startSettings() {
       Intent settingsIntent = new Intent(this, SettingsActivity.class);
       startActivity(settingsIntent);
-      // startActivityForResult(settingsIntent, 0);
    }
 
    @Override

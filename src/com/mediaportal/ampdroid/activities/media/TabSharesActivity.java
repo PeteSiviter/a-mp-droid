@@ -22,14 +22,19 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.StringUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabSharesActivity extends Activity {
@@ -94,7 +99,7 @@ public class TabSharesActivity extends Activity {
 
          if (_result != null) {
             for (FileInfo f : _result) {
-               if (f.isFolder() || checkForValidExt(f)) {
+               if (f.isFolder() || StringUtils.containedInArray(f.getExtension(), mCurrentShare.Extensions)) {
                   mFileItems.add(f);
                }
             }
@@ -103,14 +108,6 @@ public class TabSharesActivity extends Activity {
          mListView.setAdapter(mFileItems);
          mFileItems.notifyDataSetChanged();
          mLoadingDialog.dismiss();
-      }
-
-      private boolean checkForValidExt(FileInfo f) {
-         for (String e : mCurrentShare.Extensions) {
-            if (f.getFullPath() != null && f.getFullPath().endsWith(e))
-               return true;
-         }
-         return false;
       }
    }
 
@@ -194,17 +191,24 @@ public class TabSharesActivity extends Activity {
                            String url = mService.getDownloadUri(selected.getFullPath(),
                                  DownloadItemType.VideoShareItem);
                            FileInfo info = mService.getFileInfo(selected.getFullPath());
+                           ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
-                              Intent download = new Intent(_view.getContext(),
-                                    ItemDownloaderService.class);
-                              download.putExtra("url", url);
-                              download.putExtra("name", fileName);
+                              DownloadJob job = new DownloadJob();
+                              job.setUrl(url);
+                              job.setFileName(fileName);
+                              job.setDisplayName(selected.getName());
+                              job.setMediaType(MediaItemType.Video);
                               if (info != null) {
-                                 download.putExtra("length", info.getLength());
+                                 job.setLength(info.getLength());
                               }
+                              if (cred.useAut()) {
+                                 job.setAuth(cred.getUsername(), cred.getPassword());
+                              }
+
+                              Intent download = ItemDownloaderHelper.createDownloadIntent(
+                                    _view.getContext(), job);
                               startService(download);
                            }
-
                            qa.dismiss();
                         }
                      });

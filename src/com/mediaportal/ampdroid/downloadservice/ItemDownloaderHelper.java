@@ -19,6 +19,11 @@ public class ItemDownloaderHelper {
       download.putExtra("password", _job.getPassword());
       download.putExtra("job_id", _job.getId());
       
+      download.putExtra("group_name", _job.getGroupName());
+      download.putExtra("group_id", _job.getGroupId());
+      download.putExtra("group_part", _job.getGroupPart());
+      download.putExtra("group_size", _job.getGroupSize());
+      
       return download;
    }
 
@@ -33,6 +38,11 @@ public class ItemDownloaderHelper {
       int itemType = intent.getIntExtra("item_type", 0);
       int id = intent.getIntExtra("job_id", 0);
       
+      String groupName = intent.getStringExtra("group_name");
+      int groupId = intent.getIntExtra("group_id", 0);
+      int groupPart = intent.getIntExtra("group_part", 0);
+      int groupSize = intent.getIntExtra("group_size", 0);
+      
       DownloadJob job = new DownloadJob();
       job.setId(id);
       job.setUrl(url);
@@ -40,6 +50,11 @@ public class ItemDownloaderHelper {
       job.setDisplayName(displayName);
       job.setLength(length);
       job.setMediaTypeInt(itemType);
+      
+      job.setGroupId(groupId);
+      job.setGroupName(groupName);
+      job.setGroupPart(groupPart);
+      job.setGroupSize(groupSize);
       
       if(useAuth)
       {

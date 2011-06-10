@@ -311,7 +311,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
 
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views));
-
+      viewItem.setIcon(R.drawable.ic_menu_slideshow);
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views_text));
       // MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3,
@@ -325,16 +325,18 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
             return true;
          }
       });
-
-      // thumbsSettingsItem.setOnMenuItemClickListener(new
-      // OnMenuItemClickListener() {
-      // @Override
-      // public boolean onMenuItemClick(MenuItem item) {
-      // mAdapter.setView(ViewTypes.ThumbView.ordinal());
-      // mAdapter.notifyDataSetInvalidated();
-      // return true;
-      // }
-      // });
+      
+      MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setIcon(R.drawable.ic_menu_set_as);
+      setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            ViewTypes currentView = mAdapter.getCurrentView();
+            PreferencesManager.setDefaultView(MediaListType.Songs, currentView);
+            return true;
+         }
+      });
 
       return true;
    }

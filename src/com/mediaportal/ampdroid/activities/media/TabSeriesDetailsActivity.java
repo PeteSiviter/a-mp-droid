@@ -3,6 +3,7 @@ package com.mediaportal.ampdroid.activities.media;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -59,12 +60,12 @@ public class TabSeriesDetailsActivity extends Activity {
    private LazyLoadingGalleryAdapter mAdapter;
    private LinearLayout mSeasonLayout;
    private ImageView mSeriesPoster;
-   private TextView mSeriesName;
-   private TextView mSeriesOverview;
-   private TextView mSeriesReleaseDate;
-   private TextView mSeriesRuntime;
-   private TextView mSeriesCertification;
-   private TextView mSeriesActors;
+   private TextView mTextViewSeriesName;
+   private TextView mTextViewSeriesOverview;
+   private TextView mTextViewSeriesReleaseDate;
+   private TextView mTextViewSeriesRuntime;
+   private TextView mTextViewSeriesCertification;
+   private TextView mTextViewSeriesActors;
    private RatingBar mSeriesRating;
 
    private Gallery mPosterGallery;
@@ -77,6 +78,7 @@ public class TabSeriesDetailsActivity extends Activity {
    private DataHandler mService;
    private ProgressDialog mLoadingDialog;
    private BaseTabActivity mBaseActivity;
+   private String mSeriesName;
 
    private class DownloadSeasonTask extends AsyncTask<SeriesSeason, Intent, Boolean> {
       private Context mContext;
@@ -88,8 +90,10 @@ public class TabSeriesDetailsActivity extends Activity {
       @Override
       protected Boolean doInBackground(SeriesSeason... _params) {
          SeriesSeason season = _params[0];
+         int groupId = new Random().nextInt();
 
-         for (int i = 0; i < season.getEpisodesCount(); i++) {
+         int epCount = season.getEpisodesCount();
+         for (int i = 0; i < epCount; i++) {
             List<SeriesEpisode> episodes = mService.getEpisodesForSeason(mSeriesId,
                   season.getSeasonNumber(), i, i + 1);
             SeriesEpisode ep = episodes.get(0);
@@ -103,11 +107,16 @@ public class TabSeriesDetailsActivity extends Activity {
 
             ApiCredentials cred = mService.getDownloadCredentials();
             if (url != null) {
-               DownloadJob job = new DownloadJob();
+               DownloadJob job = new DownloadJob(groupId);
                job.setUrl(url);
                job.setFileName(fileName);
-               job.setDisplayName(ep.toString());
+               job.setDisplayName(mSeriesName + ": " + ep.toString());
                job.setMediaType(MediaItemType.Video);
+               job.setGroupName(mSeriesName + ", "
+                     + mContext.getString(R.string.media_series_season) + season.getSeasonNumber()
+                     + " (" + (i + 1) + "/" + epCount + ")");
+               job.setGroupPart(i);
+               job.setGroupSize(epCount);
                if (info != null) {
                   job.setLength(info.getLength());
                }
@@ -173,14 +182,14 @@ public class TabSeriesDetailsActivity extends Activity {
 
             if (firstAired != null) {
                String date = DateTimeHelper.getDateString(firstAired, false);
-               mSeriesReleaseDate.setText(date);
+               mTextViewSeriesReleaseDate.setText(date);
             }
 
             int runtime = _result.getRuntime();
             if (runtime != 0) {
-               mSeriesRuntime.setText(String.valueOf(runtime));
+               mTextViewSeriesRuntime.setText(String.valueOf(runtime));
             } else {
-               mSeriesRuntime.setText("-");
+               mTextViewSeriesRuntime.setText("-");
             }
 
             String[] actors = _result.getActors();
@@ -189,15 +198,15 @@ public class TabSeriesDetailsActivity extends Activity {
                for (String a : actors) {
                   actorsString += " - " + a + "\n";
                }
-               mSeriesActors.setText(actorsString);
+               mTextViewSeriesActors.setText(actorsString);
             } else {
-               mSeriesActors.setText("-");
+               mTextViewSeriesActors.setText("-");
             }
 
             int rating = (int) _result.getRating();
             mSeriesRating.setRating(rating);
 
-            mSeriesOverview.setText(_result.getSummary());
+            mTextViewSeriesOverview.setText(_result.getSummary());
             mLoadingDialog.cancel();
          } else {
             mLoadingDialog.cancel();
@@ -399,13 +408,13 @@ public class TabSeriesDetailsActivity extends Activity {
       setContentView(R.layout.tabseriesdetailsactivity);
       mSeasonLayout = (LinearLayout) findViewById(R.id.LinearLayoutSeasons);
       mSeriesPoster = (ImageView) findViewById(R.id.ImageViewSeriesPoster);
-      mSeriesName = (TextView) findViewById(R.id.TextViewSeriesName);
-      mSeriesOverview = (TextView) findViewById(R.id.TextViewOverview);
+      mTextViewSeriesName = (TextView) findViewById(R.id.TextViewSeriesName);
+      mTextViewSeriesOverview = (TextView) findViewById(R.id.TextViewOverview);
       mPosterGallery = (Gallery) findViewById(R.id.GalleryAllMoviePosters);
-      mSeriesReleaseDate = (TextView) findViewById(R.id.TextViewSeriesRelease);
-      mSeriesRuntime = (TextView) findViewById(R.id.TextViewSeriesRuntime);
-      mSeriesCertification = (TextView) findViewById(R.id.TextViewSeriesCertification);
-      mSeriesActors = (TextView) findViewById(R.id.TextViewSeriesActors);
+      mTextViewSeriesReleaseDate = (TextView) findViewById(R.id.TextViewSeriesRelease);
+      mTextViewSeriesRuntime = (TextView) findViewById(R.id.TextViewSeriesRuntime);
+      mTextViewSeriesCertification = (TextView) findViewById(R.id.TextViewSeriesCertification);
+      mTextViewSeriesActors = (TextView) findViewById(R.id.TextViewSeriesActors);
       mSeriesRating = (RatingBar) findViewById(R.id.RatingBarSeriesRating);
       mSeriesRating.setNumStars(10);
 
@@ -414,8 +423,8 @@ public class TabSeriesDetailsActivity extends Activity {
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
          mSeriesId = extras.getInt("series_id");
-         String seriesName = extras.getString("series_name");
-         mSeriesName.setText(seriesName);
+         mSeriesName = extras.getString("series_name");
+         mTextViewSeriesName.setText(mSeriesName);
 
          mService = DataHandler.getCurrentRemoteInstance();
          mImageHandler = new ImageHandler(this);

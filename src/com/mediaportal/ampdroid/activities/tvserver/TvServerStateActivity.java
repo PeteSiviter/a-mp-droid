@@ -223,7 +223,7 @@ public class TvServerStateActivity extends BaseActivity {
             ActionItem sdCardAction = new ActionItem();
 
             sdCardAction.setTitle(getString(R.string.tvserver_stoptimeshift));
-            sdCardAction.setIcon(getResources().getDrawable(R.drawable.bubble_del));
+            sdCardAction.setIcon(getResources().getDrawable(R.drawable.quickaction_delete));
 
             VirtualCardStateAdapterItem selected = (VirtualCardStateAdapterItem) mListView
                   .getItemAtPosition(_position);

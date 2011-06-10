@@ -1,6 +1,7 @@
 package com.mediaportal.ampdroid.database;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -9,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 
 public class DownloadsDatabaseHandler {
@@ -19,7 +19,7 @@ public class DownloadsDatabaseHandler {
 
    public DownloadsDatabaseHandler(Context _context) {
       mContext = _context;
-      mDbHelper = new DownloadsDatabaseHelper(mContext, "ampdroid_downloads", null, 17);
+      mDbHelper = new DownloadsDatabaseHelper(mContext, "ampdroid_downloads", null, 26);
    }
 
    public void open() {
@@ -53,8 +53,10 @@ public class DownloadsDatabaseHandler {
    public boolean addDownload(DownloadJob _download) {
       if (mDatabase != null) {
          try {
+            _download.setDateLastUpdated(new Date());
             ContentValues downloadValues = SqliteAnnotationsHelper.getContentValuesFromObject(
                   _download, DownloadJob.class);
+            
 
             long row = mDatabase.insert(DownloadJob.TABLE_NAME, null, downloadValues);
             if (row > 0)
@@ -69,9 +71,10 @@ public class DownloadsDatabaseHandler {
    public boolean updateDownloads(DownloadJob _download) {
       if (mDatabase != null) {
          try {
+            _download.setDateLastUpdated(new Date());
             ContentValues clubValues = SqliteAnnotationsHelper.getContentValuesFromObject(
                   _download, DownloadJob.class);
-
+            
             int rows = mDatabase.update(DownloadJob.TABLE_NAME, clubValues,
                   "Id=" + _download.getId(), null);
 
@@ -113,5 +116,25 @@ public class DownloadsDatabaseHandler {
          }
       }
       return false;
+   }
+
+   public DownloadJob getDownload(int _jobId) {
+      if (mDatabase != null) {
+         try {
+            Cursor result = mDatabase.query(DownloadJob.TABLE_NAME, null, "Id=" + _jobId,
+                  null, null, null, null);
+            DownloadJob job = null;
+            if (result.getCount() == 1) {
+               result.moveToFirst();
+               job = (DownloadJob) SqliteAnnotationsHelper.getObjectFromCursor(result,
+                     DownloadJob.class);
+            }
+            result.close();
+            return job;
+         } catch (Exception ex) {
+            Log.e("Database", ex.getMessage());
+         }
+      }
+      return null;
    }
 }

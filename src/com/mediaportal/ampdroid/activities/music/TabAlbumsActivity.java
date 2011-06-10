@@ -1,11 +1,37 @@
+/*
+ *       Copyright (C) 2010-2011  Benjamin Gmeiner 
+ *       mail.bgmeiner@gmail.com
+ *       
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
+ * MA  02110-1301, USA.
+ */
+
+
+
 package com.mediaportal.ampdroid.activities.music;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -45,6 +71,7 @@ import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.PlaylistUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabAlbumsActivity extends Activity implements ILoadingListener {
@@ -71,8 +98,9 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          MusicAlbum album = _params[0];
          List<MusicTrack> tracks = mService.getSongsOfAlbum(album.getTitle(),
                album.getAlbumArtistString());
-
-         for (int i = 0; i < tracks.size(); i++) {
+         int albumSize = tracks.size();
+         int groupId = new Random().nextInt();
+         for (int i = 0; i < albumSize; i++) {
             MusicTrack track = tracks.get(i);
 
             String url = mService.getDownloadUri(String.valueOf(track.getTrackId()),
@@ -85,11 +113,14 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
             ApiCredentials cred = mService.getDownloadCredentials();
             if (url != null) {
-               DownloadJob job = new DownloadJob();
+               DownloadJob job = new DownloadJob(groupId);
                job.setUrl(url);
                job.setFileName(fileName);
                job.setDisplayName(track.toString());
                job.setMediaType(MediaItemType.Music);
+               job.setGroupName(album.getTitle() + " (" + (i + 1) + "/" + albumSize + ")");
+               job.setGroupPart(i);
+               job.setGroupSize(albumSize);
                if (info != null) {
                   job.setLength(info.getLength());
                }
@@ -301,8 +332,25 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            // TODO: play complete album with music player
-                           Util.showToast(_view.getContext(),
-                                 getString(R.string.info_not_implemented));
+                           String m3u = PlaylistUtils.createM3UPlaylistFromFolder(localFileName,
+                                 new String[] { "mp3" });
+                           File playlistFile = new File(localFileName.getAbsolutePath() + "/" + trackTitle + ".m3u");
+                           FileWriter w;
+                           try {
+                              w = new FileWriter(playlistFile);
+                              w.write(m3u);
+                              w.flush();
+                              w.close();
+                           } catch (IOException e) {
+                              e.printStackTrace();
+                           }
+                           
+                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
+                           playIntent.setDataAndType(Uri.fromFile(playlistFile),
+                                 "audio/*");
+                           startActivity(playIntent);
+
+                           qa.dismiss();
                         }
                      });
 
@@ -381,7 +429,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views));
-
+      viewItem.setIcon(R.drawable.ic_menu_slideshow);
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views_text));
       MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,
@@ -401,6 +449,18 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          public boolean onMenuItemClick(MenuItem item) {
             mAdapter.setView(ViewTypes.ThumbView);
             mAdapter.notifyDataSetInvalidated();
+            return true;
+         }
+      });
+      
+      MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
+            getString(R.string.menu_set_default_view));
+      setDefaultViewItem.setIcon(R.drawable.ic_menu_set_as);
+      setDefaultViewItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            ViewTypes currentView = mAdapter.getCurrentView();
+            PreferencesManager.setDefaultView(MediaListType.Albums, currentView);
             return true;
          }
       });

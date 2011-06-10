@@ -21,13 +21,19 @@ public class DownloadsDetailsAdapterItem implements ILoadingAdapterItem {
    public DownloadsDetailsAdapterItem(DownloadJob _job, Context _context) {
       mDownload = _job;
       mContext = _context;
+      
+      updateViewValues();
+   }
 
-      if (_job.getState() == DownloadState.Finished) {
-         mFinished = DateTimeHelper.getDateString(_job.getDateFinished(), true);
-      }else if(_job.getState() == DownloadState.Running){
+   public void updateViewValues() {
+      if (mDownload.getState() == DownloadState.Finished) {
+         mFinished = DateTimeHelper.getDateString(mDownload.getDateFinished(), true);
+      }else if(mDownload.getState() == DownloadState.Running){
          mFinished = String.valueOf(mDownload.getProgress()) + " %";
-      } else {
-         mFinished = DateTimeHelper.getDateString(_job.getDateFinished(), true) + 
+      } else if(mDownload.getState() == DownloadState.Queued){
+         mFinished = DateTimeHelper.getDateString(mDownload.getDateAdded(), true);
+      }else {
+         mFinished = DateTimeHelper.getDateString(mDownload.getDateFinished(), true) + 
                      " (" + String.valueOf(mDownload.getProgress()) + " %)";
       }
    }
@@ -69,6 +75,7 @@ public class DownloadsDetailsAdapterItem implements ILoadingAdapterItem {
       holder.finished = (TextView) _view.findViewById(R.id.TextViewDownloadFinished);
       holder.filename = (TextView) _view.findViewById(R.id.TextViewDownloadFilename);
       holder.text = (TextView) _view.findViewById(R.id.TextViewDownloadName);
+
       return holder;
    }
 

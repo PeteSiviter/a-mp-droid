@@ -21,12 +21,13 @@ public class SqliteAnnotationsHelper {
    public static HashMap<Integer, List<AccessHolder>> cachedSetterValues = new HashMap<Integer, List<AccessHolder>>();
    public static HashMap<Integer, List<AccessHolder>> contentValues = new HashMap<Integer, List<AccessHolder>>();
 
-   public static <T> String getCreateTableStringFromClass(String _tableName, Class<T> _class, boolean _hasClientId) {
+   public static <T> String getCreateTableStringFromClass(String _tableName, Class<T> _class,
+         boolean _hasClientId) {
       Method[] methods = _class.getMethods();
 
       String createString = "create table " + _tableName
             + " ( RowId integer primary key autoincrement";
-      if(_hasClientId){
+      if (_hasClientId) {
          createString += ", ClientId integer";
       }
       for (Method m : methods) {
@@ -44,8 +45,6 @@ public class SqliteAnnotationsHelper {
 
       return createString;
    }
-
-
 
    public static <T> List<T> getObjectsFromCursor(Cursor _cursor, Class<T> _class, int _limit) {
       try {
@@ -132,7 +131,7 @@ public class SqliteAnnotationsHelper {
                contentValues.put(a.columnName, (Integer) a.method.invoke(_object));
             } else if (a.columnType.equals("real")) {
                contentValues.put(a.columnName, (Long) a.method.invoke(_object));
-            }else if (a.columnType.equals("boolean")) {
+            } else if (a.columnType.equals("boolean")) {
                contentValues.put(a.columnName, (Boolean) a.method.invoke(_object));
             } else if (a.columnType.equals("float")) {
                contentValues.put(a.columnName, (Float) a.method.invoke(_object));
@@ -149,8 +148,11 @@ public class SqliteAnnotationsHelper {
                   contentValues.put(a.columnName, arrayBuilder.toString());
                }
             } else if (a.columnType.equals("date")) {
-               Date d = (Date) a.method.invoke(_object);
-               contentValues.put(a.columnName, d.getTime());
+               Object o = a.method.invoke(_object);
+               if (o != null) {
+                  Date d = (Date) o;
+                  contentValues.put(a.columnName, d.getTime());
+               }
             }
          } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -199,7 +201,6 @@ public class SqliteAnnotationsHelper {
       return accessHolders;
    }
 
-
    private static void fillObjectFromAccessHolders(Object _object, Cursor _cursor,
          List<AccessHolder> _holders) {
       for (AccessHolder h : _holders) {
@@ -210,7 +211,7 @@ public class SqliteAnnotationsHelper {
                h.method.invoke(_object, _cursor.getInt(h.columnIndex));
             } else if (h.columnType.equals("real")) {
                h.method.invoke(_object, _cursor.getLong(h.columnIndex));
-            }else if (h.columnType.equals("boolean")) {
+            } else if (h.columnType.equals("boolean")) {
                h.method.invoke(_object, (_cursor.getInt(h.columnIndex) == 1));
             } else if (h.columnType.equals("float")) {
                h.method.invoke(_object, _cursor.getFloat(h.columnIndex));
@@ -218,13 +219,15 @@ public class SqliteAnnotationsHelper {
                h.method.invoke(_object, _cursor.getDouble(h.columnIndex));
             } else if (h.columnType.equals("date")) {
                long dateTimestamp = _cursor.getLong(h.columnIndex);
-               Date date = new Date(dateTimestamp);
-               h.method.invoke(_object, date);
+               if (dateTimestamp != 0) {
+                  Date date = new Date(dateTimestamp);
+                  h.method.invoke(_object, date);
+               }
             } else if (h.columnType.equals("textarray")) {
                String arrayString = _cursor.getString(h.columnIndex);
                if (arrayString != null) {
                   String[] array = arrayString.split("\\|");
-                  h.method.invoke(_object, (Object)array);
+                  h.method.invoke(_object, (Object) array);
                }
             }
          } catch (IllegalArgumentException e) {

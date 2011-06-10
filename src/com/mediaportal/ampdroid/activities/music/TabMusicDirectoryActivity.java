@@ -43,6 +43,7 @@ import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.StringUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabMusicDirectoryActivity extends Activity implements ILoadingListener {
@@ -82,8 +83,10 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
             List<FileInfo> items = values[0];
             if (items != null) {
                for (FileInfo f : items) {
-                  mAdapter.addItem(ViewTypes.TextView.ordinal(),
-                        new MusicFileInfoTextViewAdapterItem(f));
+                  if (f.isFolder() || StringUtils.containedInArray(f.getExtension(), mExtensions)) {
+                     mAdapter.addItem(ViewTypes.TextView.ordinal(),
+                           new MusicFileInfoTextViewAdapterItem(f));
+                  }
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -180,24 +183,26 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                         + fileName);
 
                   if (localFileName.exists()) {
-                     ActionItem playItemAction = new ActionItem();
+                     if (!localFileName.isDirectory()) {
+                        ActionItem playItemAction = new ActionItem();
 
-                     playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-                     playItemAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.parse(localFileName.toString()),
-                                 "audio/mp3");
-                           startActivity(playIntent);
+                        playItemAction.setTitle(getString(R.string.quickactions_playdevice));
+                        playItemAction.setIcon(getResources().getDrawable(
+                              R.drawable.quickaction_play));
+                        playItemAction.setOnClickListener(new OnClickListener() {
+                           @Override
+                           public void onClick(View _view) {
+                              Intent playIntent = new Intent(Intent.ACTION_VIEW);
+                              playIntent.setDataAndType(Uri.parse(localFileName.toString()),
+                                    "audio/mp3");
+                              startActivity(playIntent);
 
-                           qa.dismiss();
-                        }
-                     });
+                              qa.dismiss();
+                           }
+                        });
 
-                     qa.addActionItem(playItemAction);
+                        qa.addActionItem(playItemAction);
+                     }
                   } else {
                      ActionItem sdCardAction = new ActionItem();
                      sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
@@ -292,7 +297,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
 
       SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views));
-
+      viewItem.setIcon(R.drawable.ic_menu_slideshow);
       MenuItem textSettingsItem = viewItem.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.media_views_text));
       MenuItem thumbsSettingsItem = viewItem.add(0, Menu.FIRST + 3, Menu.NONE,

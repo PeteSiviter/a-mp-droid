@@ -132,8 +132,10 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                         final String trackTitle = selected.getTitle();
                         final String trackPath = selected.getFilePath();
                         final String trackId = String.valueOf(selected.getTrackId());
+                        
                         if (trackTitle != null) {
-                           String dirName = DownloaderUtils.getMusicTrackPath();
+                           String dirName = DownloaderUtils.getMusicTrackPath(mAlbumArtists[0],
+                                 mAlbumName);
                            final String fileName = dirName
                                  + Utils.getFileNameWithExtension(trackPath, "\\");
                            final String displayName = selected.toString();

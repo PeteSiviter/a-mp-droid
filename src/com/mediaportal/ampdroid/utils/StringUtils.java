@@ -13,4 +13,14 @@ public class StringUtils {
       return "";
    }
 
+   public static boolean containedInArray(String _string, String[] _array) {
+      if(_array == null)return false;
+      for(String s : _array){
+         if(s != null && s.equals(_string)){
+            return true;
+         }
+      }
+      return false;
+   }
+
 }

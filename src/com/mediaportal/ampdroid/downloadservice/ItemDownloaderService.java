@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,17 +46,19 @@ public class ItemDownloaderService extends Service {
    private ArrayList<DownloadJob> mDownloadJobs;
    private AsyncTask<String, Integer, HashMap<DownloadState, Integer>> mDownloader;
    private DownloadsDatabaseHandler mDownloadDatabase;
+   private HashMap<Integer, DownloadGroup> mDownloadGroups = new HashMap<Integer, DownloadGroup>();
 
    private class DownloaderTask extends AsyncTask<String, Integer, HashMap<DownloadState, Integer>> {
       private Notification mNotification;
       private NotificationManager mNotificationManager;
       private DownloadJob mCurrentJob;
-      private int mNumberOfJobs;
+      private int mNumberOfJobsDone;
       private Context mContext;
       private String mToastMessage;
+      private DownloadGroup mCurrentGroup;
 
       private DownloaderTask(Context _context) {
-         mNumberOfJobs = 0;
+         mNumberOfJobsDone = 0;
          mContext = _context;
       }
 
@@ -71,17 +74,17 @@ public class ItemDownloaderService extends Service {
 
             DownloadState state = downloadFile(topmostTask);
 
-            if (downloadResult.containsKey(state)) {
-               int num = downloadResult.get(state);
-               downloadResult.put(state, num++);
-            } else {
-               downloadResult.put(state, 1);
+            if (topmostTask.getGroupId() == 0
+                  || topmostTask.getGroupPart() == topmostTask.getGroupSize() - 1) {
+               //either not part of a group or the last part of the group
+               //TODO: what if only part of the group fails?
+               if (downloadResult.containsKey(state)) {
+                  int num = downloadResult.get(state);
+                  downloadResult.put(state, num + 1);
+               } else {
+                  downloadResult.put(state, 1);
+               }
             }
-            // download succeeded -> next file
-            // topmostTask.setState(DownloadState.Finished);
-
-            // TODO: download failed -> retry?
-            // return false;
          }
 
          return downloadResult;
@@ -92,19 +95,37 @@ public class ItemDownloaderService extends Service {
          mToastMessage = null;
          long lastUpdated = new Date().getTime();
          boolean cancelRequested = false;
+         
+         mDownloadDatabase.open();
+         DownloadJob downloadJob = mDownloadDatabase.getDownload(_job.getId());
+         DownloadGroup group = null;
+
+         if (downloadJob == null || downloadJob.getState() != DownloadState.Queued) {
+            // check if the download has been stopped in the meantime (between
+            // creation and start)
+            return DownloadState.Stopped;
+         }
+         
+         if (downloadJob.getGroupId() != 0 && mDownloadGroups.containsKey(downloadJob.getGroupId())) {
+            group = mDownloadGroups.get(downloadJob.getGroupId());
+         }
+         
+         if(group == null || downloadJob.getGroupPart() == 0){
+            mNumberOfJobsDone++;
+         }
+
          try {
-            mNumberOfJobs++;
-            mCurrentJob = _job;
-            URL myFileUrl = new URL(_job.getUrl());
-            String myFileName = _job.getFileName();
+            mCurrentJob = downloadJob;
+            mCurrentGroup = group;
+            URL myFileUrl = new URL(downloadJob.getUrl());
+            String myFileName = downloadJob.getFileName();
 
             Intent onClickIntent = new Intent(getApplicationContext(), DownloadsActivity.class);
 
-            _job.setState(DownloadState.Running);
-            _job.setDateStarted(new Date());
-            mDownloadDatabase.open();
-            mDownloadDatabase.updateDownloads(_job);
-            mDownloadDatabase.close();
+            downloadJob.setState(DownloadState.Running);
+            downloadJob.setDateStarted(new Date());
+
+            mDownloadDatabase.updateDownloads(downloadJob);
 
             // configure the intent
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
@@ -124,7 +145,11 @@ public class ItemDownloaderService extends Service {
             mNotification.contentIntent = pendingIntent;
             mNotification.contentView.setImageViewResource(R.id.status_icon, R.drawable.icon);
 
-            createNotificationText(0);
+            if (group == null) {
+               createNotificationText(0);
+            } else {
+               createNotificationText(group.getPercentageDone());
+            }
 
             mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(
                   getApplicationContext().NOTIFICATION_SERVICE);
@@ -132,9 +157,9 @@ public class ItemDownloaderService extends Service {
 
             HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
 
-            if (_job.isUseAut()) {
-               final String username = _job.getUsername();
-               final String password = _job.getPassword();
+            if (downloadJob.isUseAut()) {
+               final String username = downloadJob.getUsername();
+               final String password = downloadJob.getPassword();
                Authenticator.setDefault(new Authenticator() {
                   protected PasswordAuthentication getPasswordAuthentication() {
                      return new PasswordAuthentication(username, password.toCharArray());
@@ -160,10 +185,14 @@ public class ItemDownloaderService extends Service {
 
             OutputStream out = new FileOutputStream(downloadFile);
             byte buf[] = new byte[1024];
-            long fileSize = conn.getContentLength();
+
+            long fileSize = downloadJob.getLength();
             if (fileSize == -1) {
-               fileSize = _job.getLength();
+               // if no filesize was specified, try to get the filesize from the
+               // connection
+               fileSize = conn.getContentLength();
             }
+
             long read = 0;
             int currentProgress = 0;
             int len;
@@ -171,24 +200,36 @@ public class ItemDownloaderService extends Service {
                out.write(buf, 0, len);
 
                read += len;
+               if (group != null) {
+                  group.addRead(len);
+               }
+
                long curTime = new Date().getTime();
                if (curTime > lastUpdated + UPDATE_INTERVAL) {
                   int progress = 0;
-                  if (fileSize == 0) {
-                     progress = -99;
+                  if (group == null) {
+                     if (fileSize == 0) {
+                        progress = -99;
+                     } else {
+                        progress = (int) (read * 100 / fileSize);
+                     }
                   } else {
-                     progress = (int) (read * 100 / fileSize);
+                     long totalLength = group.getGroupContentSize();
+                     long totalDone = group.getTotalDone();
+                     if (totalLength == 0) {
+                        progress = -99;
+                     } else {
+                        progress = (int) (totalDone * 100 / totalLength);
+                     }
+                     group.setPercentageDone(progress);
                   }
 
                   currentProgress = progress;
 
-                  _job.setProgress(currentProgress);
-                  mDownloadDatabase.open();
+                  downloadJob.setProgress(currentProgress);
+                  cancelRequested = mDownloadDatabase.getCancelRequest(downloadJob);
 
-                  cancelRequested = mDownloadDatabase.getCancelRequest(_job);
-
-                  mDownloadDatabase.updateDownloads(_job);
-                  mDownloadDatabase.close();
+                  mDownloadDatabase.updateDownloads(downloadJob);
 
                   publishProgress(progress);
 
@@ -198,24 +239,23 @@ public class ItemDownloaderService extends Service {
             out.close();
             inputStream.close();
 
-            mDownloadDatabase.open();
             if (cancelRequested) {
                if (downloadFile != null) {
                   deleteFile(downloadFile);
                }
-               _job.setState(DownloadState.Stopped);
-               _job.setErrorMessage("Cancelled by User");
+               downloadJob.setState(DownloadState.Stopped);
+               downloadJob.setErrorMessage("Cancelled by User");
             } else {
-               _job.setState(DownloadState.Finished);
-               _job.setProgress(100);
+               downloadJob.setState(DownloadState.Finished);
+               downloadJob.setProgress(100);
             }
-            _job.setDateFinished(new Date());
+            downloadJob.setDateFinished(new Date());
 
-            mDownloadDatabase.updateDownloads(_job);
+            mDownloadDatabase.updateDownloads(downloadJob);
+
             mDownloadDatabase.close();
-
             // return true only if download finished
-            return _job.getState();
+            return downloadJob.getState();
          } catch (MalformedURLException e) {
             if (e != null) {
                mToastMessage = e.getMessage();
@@ -238,19 +278,17 @@ public class ItemDownloaderService extends Service {
             }
          }
 
-         mDownloadDatabase.open();
-
          // delete unfinished files
          if (downloadFile != null) {
             deleteFile(downloadFile);
          }
-         _job.setState(DownloadState.Error);
-         _job.setErrorMessage(mToastMessage);
-         _job.setDateFinished(new Date());
-         mDownloadDatabase.updateDownloads(_job);
+         downloadJob.setState(DownloadState.Error);
+         downloadJob.setErrorMessage(mToastMessage);
+         downloadJob.setDateFinished(new Date());
+         mDownloadDatabase.updateDownloads(downloadJob);
          mDownloadDatabase.close();
 
-         return _job.getState();
+         return downloadJob.getState();
       }
 
       private void deleteFile(File _file) {
@@ -263,12 +301,17 @@ public class ItemDownloaderService extends Service {
       }
 
       private void createNotificationText(int _progress) {
-         int totalDownloads = mNumberOfJobs + mDownloadJobs.size();
-         String filename = Utils.getFileNameWithExtension(mCurrentJob.getFileName(), "/");
-         String overview = (mDownloadJobs.size() > 0 ? mNumberOfJobs + "/" + totalDownloads
-               : "1 File");
-         String progressText = _progress + " %";
+         int totalDownloads = mNumberOfJobsDone + getNumberOfTotalDownloads();
+         String filename = null;
+         if (mCurrentGroup == null) {
+            filename = mCurrentJob.getDisplayName();
+         } else {
+            filename = mCurrentJob.getGroupName();
+         }
 
+         String overview = (totalDownloads > 0 ? mNumberOfJobsDone + "/" + totalDownloads : "");
+         String progressText = _progress + " %";
+         
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationFileName, filename);
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationOverview, overview);
 
@@ -283,6 +326,25 @@ public class ItemDownloaderService extends Service {
                   100, 0, true);
          }
 
+      }
+
+      /***
+       * Calculates the number of downloads in the queue (takes in accounts that
+       * multiple items may belong to one group)
+       * 
+       * @return Number of total downloads
+       */
+      private int getNumberOfTotalDownloads() {
+         int numDownloads = 0;
+         synchronized (mDownloadJobs) {
+            for (DownloadJob j : mDownloadJobs) {
+               if (j.getGroupId() == 0 || j.getGroupPart() == 0) {
+                  numDownloads++;
+               }
+            }
+         }
+
+         return numDownloads;
       }
 
       @Override
@@ -316,6 +378,7 @@ public class ItemDownloaderService extends Service {
          if (_result.containsKey(DownloadState.Finished)) {
             numFinished += _result.get(DownloadState.Finished);
          }
+         numFinished = mNumberOfJobsDone;
 
          int numFailed = 0;
          if (_result.containsKey(DownloadState.Stopped)) {
@@ -325,12 +388,12 @@ public class ItemDownloaderService extends Service {
             numFailed += _result.get(DownloadState.Error);
          }
 
-         String retString = mContext.getString(R.string.notification_download_succeeded);
-         if (numFinished > 0) {
-            retString += "Succeeded: " + numFinished;
-         }
+         // Will result in smth. like: "3 Download(s) finished (1 failed)"
+         String retString = numFinished
+               + mContext.getString(R.string.notification_download_succeeded);
          if (numFailed > 0) {
-            retString += " Failed: " + numFailed;
+            retString += " (" + numFailed
+                  + mContext.getString(R.string.notification_download_failed) + ")";
          }
 
          return retString;
@@ -373,21 +436,40 @@ public class ItemDownloaderService extends Service {
 
       }
 
+      DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
+      DownloadsDatabaseHandler db = new DownloadsDatabaseHandler(this);
+      db.open();
+      job.setDateAdded(new Date());
+      job.setState(DownloadState.Queued);
+      if (!db.updateDownloads(job)) {
+         db.addDownload(job);
+      }
+      db.close();
+
       synchronized (mDownloadJobs) {
-         DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
-
-         mDownloadDatabase.open();
-         if (!mDownloadDatabase.updateDownloads(job)) {
-            mDownloadDatabase.addDownload(job);
-         }
-         mDownloadDatabase.close();
          mDownloadJobs.add(job);
+      }
 
+      // Toast notification if job either not part of a group or first part of a
+      // group
+      if (job.getGroupId() == 0) {
          if (job.getDisplayName() != null) {
             Util.showToast(this, "Added " + job.getDisplayName() + " to download list");
          } else {
             Util.showToast(this, "Added " + job.getFileName() + " to download list");
          }
+      } else if (job.getGroupPart() == 0) {
+         Util.showToast(this, "Added " + job.getGroupName() + " to download list");
+      }
+
+      int groupId = job.getGroupId();
+      if (groupId != 0) {
+         // part of a group
+         if (!mDownloadGroups.containsKey(groupId)) {
+            DownloadGroup group = new DownloadGroup(groupId);
+            mDownloadGroups.put(groupId, group);
+         }
+         mDownloadGroups.get(groupId).addItem(job);
       }
 
       if (mDownloader == null || mDownloader.isCancelled()) {

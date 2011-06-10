@@ -254,7 +254,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
 
                if (program.isIsScheduled()) {
                   ActionItem addScheduleAction = new ActionItem();
-                  addScheduleAction.setTitle(getString(R.string.quickactions_cancelrecord));
+                  addScheduleAction.setTitle(getString(R.string.quickactions_cancel));
                   addScheduleAction.setIcon(getResources().getDrawable(R.drawable.bubble_del));
                   addScheduleAction.setOnClickListener(new OnClickListener() {
                      @Override
