@@ -368,20 +368,24 @@ public class RemoteControlActivity extends BaseActivity {
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
-      SubMenu viewItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
+      SubMenu moreItem = _menu.addSubMenu(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.remote_menu_morecommands));
-      createMoreCommandsMenu(viewItem);
+      moreItem.setIcon(R.drawable.ic_menu_more2);
+      createMoreCommandsMenu(moreItem);
 
       SubMenu powerItem = _menu.addSubMenu(0, Menu.FIRST + 2, Menu.NONE,
             getString(R.string.remote_menu_powermodes));
+      powerItem.setIcon(R.drawable.ic_menu_powermodes);
       createPowerModeMenu(powerItem);
 
       SubMenu pluginsItem = _menu.addSubMenu(0, Menu.FIRST + 3, Menu.NONE,
             getString(R.string.remote_menu_plugins));
+      pluginsItem.setIcon(R.drawable.ic_menu_more);
       createPluginsMenu(pluginsItem);
 
       MenuItem keyboardItem = _menu.add(0, Menu.FIRST + 4, Menu.NONE,
             getString(R.string.remote_menu_keyboard));
+      keyboardItem.setIcon(R.drawable.ic_menu_keyboard);
       keyboardItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {

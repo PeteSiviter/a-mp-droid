@@ -64,8 +64,8 @@ public class ClientSettingsActivity extends PreferenceActivity {
       }
 
       setPreferenceScreen(mRoot);
-      
-      if(mQrDescription != null){
+
+      if (mQrDescription != null) {
          ClientPreference pref = new ClientPreference(this);
          pref.setTitle("New Client");
          pref.create(mPrefsManager, mRoot);
@@ -85,8 +85,10 @@ public class ClientSettingsActivity extends PreferenceActivity {
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      menu.addSubMenu(0, MENU_ADD_HOST, 0, getString(R.string.menu_addhost));// .setIcon(R.drawable.menu_add_host);
-      menu.addSubMenu(0, MENU_ADD_HOST_SCAN, 0, getString(R.string.menu_addhost_scan));// .setIcon(R.drawable.menu_add_host);
+      menu.addSubMenu(0, MENU_ADD_HOST, 0, getString(R.string.menu_addhost)).setIcon(
+            R.drawable.ic_menu_addclients);
+      menu.addSubMenu(0, MENU_ADD_HOST_SCAN, 0, getString(R.string.menu_addhost_scan)).setIcon(
+            R.drawable.ic_menu_barcode);
       // menu.addSubMenu(0, MENU_EXIT, 0, "Exit");//
       // .setIcon(R.drawable.menu_exit);
 
@@ -127,7 +129,7 @@ public class ClientSettingsActivity extends PreferenceActivity {
                String content = scanResult.getContents();
                ObjectMapper mapper = new ObjectMapper();
                mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-               
+
                // add a client from QR code information
                mQrDescription = mapper.readValue(content, QRClientDescription.class);
             } catch (JsonParseException e) {
