@@ -216,10 +216,10 @@ public class TabEpisodeDetailsActivity extends Activity {
             String epFile = mEpisodeDetails.getEpisodeFile().getFileName();
             String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, mEpisodeDetails);
             String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
-            File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
-            if (localFileName.exists()) {
+            File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+            if (localFile.exists()) {
                Intent playIntent = new Intent(Intent.ACTION_VIEW);
-               playIntent.setDataAndType(Uri.parse(localFileName.toString()), "video/*");
+               playIntent.setDataAndType(Uri.fromFile(localFile), "video/*");
                startActivity(playIntent);
             } else {
                Util.showToast(v.getContext(), getString(R.string.info_file_not_found));

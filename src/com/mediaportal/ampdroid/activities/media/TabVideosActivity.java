@@ -207,10 +207,10 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                   final String itemId = String.valueOf(selected.getId());
                   final QuickAction qa = new QuickAction(_view);
 
-                  final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
+                  final File localFile = new File(DownloaderUtils.getBaseDirectory() + "/"
                         + fileName);
 
-                  if (localFileName.exists()) {
+                  if (localFile.exists()) {
                      ActionItem playItemAction = new ActionItem();
 
                      playItemAction.setTitle(getString(R.string.quickactions_playdevice));
@@ -220,7 +220,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.parse(localFileName.toString()), "video/*");
+                           playIntent.setDataAndType(Uri.fromFile(localFile), "video/*");
                            startActivity(playIntent);
 
                            qa.dismiss();

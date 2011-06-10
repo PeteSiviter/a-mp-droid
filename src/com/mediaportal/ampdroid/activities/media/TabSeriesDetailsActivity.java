@@ -113,7 +113,7 @@ public class TabSeriesDetailsActivity extends Activity {
                job.setDisplayName(mSeriesName + ": " + ep.toString());
                job.setMediaType(MediaItemType.Video);
                job.setGroupName(mSeriesName + ", "
-                     + mContext.getString(R.string.media_series_season) + season.getSeasonNumber()
+                     + mContext.getString(R.string.media_series_season) + " " + season.getSeasonNumber()
                      + " (" + (i + 1) + "/" + epCount + ")");
                job.setGroupPart(i);
                job.setGroupSize(epCount);

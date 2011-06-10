@@ -332,6 +332,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         @Override
                         public void onClick(View _view) {
                            // TODO: play complete album with music player
+                           // TODO: where do I get a list of valid extensions?
                            String m3u = PlaylistUtils.createM3UPlaylistFromFolder(localFileName,
                                  new String[] { "mp3" });
                            File playlistFile = new File(localFileName.getAbsolutePath() + "/" + trackTitle + ".m3u");
