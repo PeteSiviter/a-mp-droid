@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api;
 
 import java.io.BufferedReader;
@@ -32,6 +42,8 @@ import android.util.Log;
 import com.mediaportal.ampdroid.utils.Constants;
 
 public class JsonClient {
+   public static int DEFAULT_TIMEOUT = 5000;
+   
    public enum RequestMethod {
       GET, POST
    }
@@ -78,23 +90,40 @@ public class JsonClient {
    }
 
    public String Execute(String methodName) {
-      return Execute(methodName, RequestMethod.GET);
+      return Execute(methodName, DEFAULT_TIMEOUT, RequestMethod.GET);
+   }
+   
+   public String Execute(String methodName, int _timeout) {
+      return Execute(methodName, _timeout, RequestMethod.GET);
+   }
+   
+   public String Execute(String methodName, int _timeout, NameValuePair... _params) {
+      return Execute(methodName, _timeout, RequestMethod.GET, _params);
    }
 
    public String Execute(String methodName, NameValuePair... _params) {
       return Execute(methodName, RequestMethod.GET, _params);
    }
-
+   
    public String Execute(String methodName, RequestMethod methodType, NameValuePair... _params) {
       try {
-         return DoExecute(methodName, methodType, _params);
+         return DoExecute(methodName, DEFAULT_TIMEOUT, methodType, _params);
+      } catch (Exception e) {
+         Log.e(Constants.LOG_CONST, e.toString());
+         return null;
+      }
+   }
+   
+   public String Execute(String methodName, int _timeout, RequestMethod methodType, NameValuePair... _params) {
+      try {
+         return DoExecute(methodName, _timeout, methodType, _params);
       } catch (Exception e) {
          Log.e(Constants.LOG_CONST, e.toString());
          return null;
       }
    }
 
-   private String DoExecute(String methodName, RequestMethod methodType, NameValuePair... _params)
+   private String DoExecute(String methodName, int _timeout, RequestMethod methodType, NameValuePair... _params)
          throws Exception {
       switch (methodType) {
       case GET: {
@@ -119,7 +148,7 @@ public class JsonClient {
             request.addHeader(h.getName(), h.getValue());
          }
 
-         return executeRequest(request, url);
+         return executeRequest(request, _timeout, url);
       }
       case POST: {
          HttpPost request = new HttpPost(url + "/" + methodName);
@@ -137,17 +166,17 @@ public class JsonClient {
             request.setEntity(new UrlEncodedFormEntity(paramList, HTTP.UTF_8));
          }
 
-         return executeRequest(request, url);
+         return executeRequest(request, _timeout, url);
       }
       default:
          return null;
       }
    }
 
-   private String executeRequest(HttpUriRequest request, String url) {
+   private String executeRequest(HttpUriRequest request, int _timeout, String url) {
       HttpParams httpParameters = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
-      HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+      HttpConnectionParams.setConnectionTimeout(httpParameters, _timeout);
+      HttpConnectionParams.setSoTimeout(httpParameters, _timeout);
       HttpConnectionParams.setTcpNoDelay(httpParameters, true);
 
       DefaultHttpClient client = new DefaultHttpClient(httpParameters);

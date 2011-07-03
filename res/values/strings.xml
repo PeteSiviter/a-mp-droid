@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2011 Benjamin Gmeiner. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	GNU Public License v2.0 which accompanies this distribution, and is available 
+	at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html Contributors: Benjamin 
+	Gmeiner - Project Owner -->
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">Control MP from your Android phone</string>
@@ -13,12 +18,14 @@
 	<string name="home_wol_confirmation_text">No connection to service, wake pc using WOL?
 	</string>
 	<string name="home_wol_running">Sending WOL packets to pc</string>
-	<string name="home_wol_nomac">No connection and cannot send WOL packets unless a MAC address is defined in setting...</string>
+	<string name="home_wol_nomac">No connection and cannot send WOL packets unless a
+		MAC address is defined in setting...</string>
 	<string name="downloads_title">aMPdroid Downloads</string>
 	<string name="downloads_delete_file_success">Successfully deleted file</string>
 	<string name="downloads_delete_file_failed">Couldn\'t deleted file</string>
 	<string name="downloads_also_remove_queued_title">Remove Queued</string>
-	<string name="downloads_also_remove_queued_text">Remove items that are currently waiting to be downloaded?</string>
+	<string name="downloads_also_remove_queued_text">Remove items that are currently waiting to be
+		downloaded?</string>
 	<string name="downloads_state_queued">Queued</string>
 	<string name="downloads_state_running">Running</string>
 	<string name="downloads_state_paused">Paused</string>
@@ -165,11 +172,11 @@
 	<string name="settings_tvserver_showall_title">Show \"All Channel\" Group</string>
 	<string name="settings_tvserver_showall_desc">Show the \"All Channel\" Group which contains all
 		channels of the tv server</string>
-	<string name="settings_tvserver_clientname_title">Client Name</string>
-	<string name="settings_tvserver_clientname_desc">The Name of this client when interacting with the
-		MediaPortal Tv Server</string>
+	<string name="settings_general_clientname_title">Client Name</string>
+	<string name="settings_general_clientname_desc">The Name of this client when interacting with the
+		MediaPortal</string>
 	<string name="settings_media_cachemedia_title">Cache information locally</string>
-	<string name="settings_media_cachemedia_desc">Cache media information ()</string>
+	<string name="settings_media_cachemedia_desc">Cache media information</string>
 	<string name="settings_media_loaddetails_title">Load details automatically</string>
 	<string name="settings_media_loaddetails_desc">Load details for media items automatically or only
 		when item is selected</string>
@@ -191,6 +198,9 @@
 	<string name="settings_general_autoconnect_title">Auto-Connect</string>
 	<string name="settings_general_autoconnect_desc">Automatically connect to MediaPortal client on
 		startup</string>
+	<string name="settings_general_autoreconnect_title">Reconnect</string>
+	<string name="settings_general_autoreconnect_desc">Automatically reconnect to MediaPortal client on
+		connection loss</string>
 	<string name="settings_general_autowol_title">WOL on connect</string>
 	<string name="settings_general_autowol_desc">Automatically wake pc on connect</string>
 	<string name="settings_general_statusbar_hide_title">Hide Statusbar</string>
@@ -211,7 +221,8 @@
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Delete Client?</string>
-	<string name="settings_delete_client_start">Are you sure you want to delete the client \"</string>
+	<string name="settings_delete_client_start">Are you sure you want to delete the client \"
+	</string>
 	<string name="settings_delete_client_end">\"?</string>
 	<string name="settings_media_preload_items_title">Preload Items</string>
 	<string name="settings_media_preload_items_desc">How many items should be loaded when the end of a
@@ -232,6 +243,19 @@
 	<string name="settings_media_defaultview_musicartists_desc">Default View browsing your music artists</string>
 	<string name="settings_media_defaultview_musictracks_title">Default View Music Tracks</string>
 	<string name="settings_media_defaultview_musictracks_desc">Default View browsing your music tracks</string>
+	<string name="settings_streaming_buffering_title">Buffering Mode</string>
+	<string name="settings_streaming_buffering_desc">Select the buffering mode for video playback
+	</string>
+	<string name="settings_streaming_quality_title">Streaming quality</string>
+	<string name="settings_streaming_quality_desc">Select the quality of the video stream. Note that
+		this setting will become invalid if the streaming profiles are changed
+		on the backend.</string>
+	<string name="settings_streaming_useexternal_title">Use external Player</string>
+	<string name="settings_streaming_useexternal_desc">If checked, instead of using the internal
+		MediaPlayer (only available for > 2.3) the stream is started with an
+		installed external player. Only use this if you have problems with the
+		inbuild video player.</string>
+
 	<string name="info_not_implemented">Not implemented yet</string>
 	<string name="info_no_connection">No connection to service</string>
 	<string name="info_remote_notconnected">Remote not connected</string>
@@ -239,6 +263,7 @@
 	<string name="info_loading_failed">Loading failed, check your connection</string>
 	<string name="info_file_not_found">File has to be downloaded first</string>
 	<string name="info_file_already_downloaded">File is already downloaded</string>
+	<string name="info_no_groups_defined">No Groups defined on MediaPortal Tv Server</string>
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Settings</string>
 	<string name="menu_refresh">Refresh</string>
@@ -249,6 +274,9 @@
 	<string name="menu_set_default_view">Set as Default</string>
 	<string name="menu_clear_downloads">Clear</string>
 	<string name="menu_downloads">Downloads</string>
+	<string name="menu_beam_to_pc">Beam to HTPC</string>
+	<string name="menu_select_stream_quality">Stream Quality</string>
+	<string name="menu_quit_client">Quit Client</string>
 	<string name="remote_menu_keyboard">Keyboard</string>
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Yes</string>
@@ -257,6 +285,9 @@
 	<string name="dialog_title_addhost">Add new host</string>
 	<string name="quickactions_playclient">Play on PC</string>
 	<string name="quickactions_playdevice">Play locally</string>
+	<string name="quickactions_streamdevice">Stream</string>
+	<string name="quickactions_streamdevice_details">Stream (adv)</string>
+	<string name="quickactions_details">Details</string>
 	<string name="quickactions_downloadsd">Download</string>
 	<string name="quickactions_start">Start</string>
 	<string name="quickactions_stop">Stop</string>
@@ -276,6 +307,18 @@
 	<string name="notification_download_failed">\u0020failed</string>
 	<string name="notification_download_succeeded">\u0020Download(s) finished</string>
 	<string name="notification_title">aMPdroid</string>
-	<string name="settings_media_defaultview_shares_title">Default View Shares</string>
-	<string name="settings_media_defaultview_shares_desc">Default View browsing your video shares</string>
+	<string name="settings_category_streaming">Streaming</string>
+	<string name="streaming_playfromstart_title">Play</string>
+	<string name="streaming_playfromstart_text">Play using profile\u0020</string>
+	<string name="streaming_resumefrompos_title">Resume</string>
+	<string name="streaming_resumefrompos_text">Continue from\u0020</string>
+	<string name="streaming_quality_title">Streaming Quality</string>
+	<string name="streaming_quality_text">Select the video stream quality</string>
+	<string name="streaming_tvserver_use_rtsp_title">Watch RTSP stream</string>
+	<string name="streaming_tvserver_use_rtsp_text">Watch the original RTSP stream of MediaPortal.
+		(Best quality, requires external player)</string>
+	<string name="streaming_remember_settings_title">Remember</string>
+	<string name="streaming_remember_settings_text">Remember these stream settings</string>
+	<string name="streaming_initfailed_title">Couldn\'t start stream</string>
+	<string name="streaming_initfailed_text">Error on starting the tv stream, maybe no free cards are available.</string>
 </resources>

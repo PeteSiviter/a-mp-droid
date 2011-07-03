@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.settings;
 
 import java.util.Random;
@@ -27,14 +37,14 @@ import com.mediaportal.ampdroid.api.gmawebservice.GmaJsonWebserviceApi;
 import com.mediaportal.ampdroid.api.tv4home.Tv4HomeJsonApi;
 import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteMpController;
 import com.mediaportal.ampdroid.data.RemoteClient;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class ClientPreference extends DialogPreference {
    private Context mContext;
    private RemoteClient mClient;
-   private RemoteClientsDatabaseHandler mDbHandler;
+   private SettingsDatabaseHandler mDbHandler;
 
    private EditText mNameView;
    private EditText mHostView;
@@ -131,7 +141,7 @@ public class ClientPreference extends DialogPreference {
       return mClient;
    }
 
-   public void setDbHandler(RemoteClientsDatabaseHandler _dbHandler) {
+   public void setDbHandler(SettingsDatabaseHandler _dbHandler) {
       mDbHandler = _dbHandler;
    }
 

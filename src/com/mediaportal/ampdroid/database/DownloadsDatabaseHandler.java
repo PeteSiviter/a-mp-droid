@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.database;
 
 import java.util.ArrayList;
@@ -19,7 +29,7 @@ public class DownloadsDatabaseHandler {
 
    public DownloadsDatabaseHandler(Context _context) {
       mContext = _context;
-      mDbHelper = new DownloadsDatabaseHelper(mContext, "ampdroid_downloads", null, 26);
+      mDbHelper = new DownloadsDatabaseHelper(mContext, "ampdroid_downloads", null, 30);
    }
 
    public void open() {

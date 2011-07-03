@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import java.util.List;
@@ -21,8 +31,9 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.IClientControlListener;
+import com.mediaportal.ampdroid.asynctasks.ReconnectTask;
 import com.mediaportal.ampdroid.data.RemoteClient;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
@@ -67,6 +78,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
    protected StatusBarActivityHandler mStatusBarHandler;
    private ConnectClientControlTask mConnectTask;
    private MenuItem mConnectItem;
+   protected ReconnectTask mReconnectTask;
 
    /** Called when the activity is first created. */
    @Override
@@ -129,7 +141,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
       if (v.getTag() != null && v.getTag().equals("switchclients")) {
          menu.setHeaderTitle(getString(R.string.menu_clients));
 
-         RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
+         SettingsDatabaseHandler remoteClientsDb = new SettingsDatabaseHandler(this);
          remoteClientsDb.open();
          List<RemoteClient> clients = remoteClientsDb.getClients();
          remoteClientsDb.close();
@@ -166,8 +178,10 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
          String title = null;
          if (!mService.isClientControlConnected()) {
             title = getString(R.string.menu_connect);
+            mConnectItem.setIcon(R.drawable.ic_menu_connect);
          } else {
             title = getString(R.string.menu_disconnect);
+            mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
          }
          mConnectItem.setTitle(title);
       }
@@ -284,14 +298,21 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
             if (_state == ConnectionState.Disconnected) {
                if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_connect));
+                  mConnectItem.setIcon(R.drawable.ic_menu_connect);
                }
                if (mStatusBarHandler != null) {
                   mStatusBarHandler.setNowPlayingInfoVisible(false);
                   mStatusBarHandler.setConnected(false);
                }
+               
+               if(PreferencesManager.getAutoReconnect()){
+                  mReconnectTask = new ReconnectTask();
+                  mReconnectTask.execute(mService);
+               }
             } else if (_state == ConnectionState.Connected) {
                if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_disconnect));
+                  mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
                }
                if (mStatusBarHandler != null) {
                   mStatusBarHandler.setNowPlayingInfoVisible(true);

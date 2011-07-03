@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import java.util.List;
@@ -21,8 +31,9 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.IClientControlListener;
+import com.mediaportal.ampdroid.asynctasks.ReconnectTask;
 import com.mediaportal.ampdroid.data.RemoteClient;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
@@ -67,6 +78,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    protected StatusBarActivityHandler mStatusBarHandler;
    private ConnectClientControlTask mConnectTask;
    private MenuItem mConnectItem;
+   protected ReconnectTask mReconnectTask;
 
    /** Called when the activity is first created. */
    @Override
@@ -100,20 +112,22 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private void handleAutoHide() {
       StatusbarAutohide autohide = PreferencesManager.getStatusbarAutohide();
 
-      switch (autohide) {
-      case AlwaysHide:
-         mStatusBarHandler.hide();
-         break;
-      case AlwaysShow:
-         mStatusBarHandler.show();
-         break;
-      case ShowWhenConnected:
-         if (mService.isClientControlConnected()) {
-            mStatusBarHandler.show();
-         } else {
+      if (mStatusBarHandler != null) {
+         switch (autohide) {
+         case AlwaysHide:
             mStatusBarHandler.hide();
+            break;
+         case AlwaysShow:
+            mStatusBarHandler.show();
+            break;
+         case ShowWhenConnected:
+            if (mService.isClientControlConnected()) {
+               mStatusBarHandler.show();
+            } else {
+               mStatusBarHandler.hide();
+            }
+            break;
          }
-         break;
       }
    }
 
@@ -129,7 +143,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
       if (v.getTag() != null && v.getTag().equals("switchclients")) {
          menu.setHeaderTitle(getString(R.string.menu_clients));
 
-         RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
+         SettingsDatabaseHandler remoteClientsDb = new SettingsDatabaseHandler(this);
          remoteClientsDb.open();
          List<RemoteClient> clients = remoteClientsDb.getClients();
          remoteClientsDb.close();
@@ -166,8 +180,10 @@ public class BaseActivity extends Activity implements IClientControlListener {
          String title = null;
          if (!mService.isClientControlConnected()) {
             title = getString(R.string.menu_connect);
+            mConnectItem.setIcon(R.drawable.ic_menu_connect);
          } else {
             title = getString(R.string.menu_disconnect);
+            mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
          }
          mConnectItem.setTitle(title);
       }
@@ -194,7 +210,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
       }
 
       mConnectItem = _menu.add(0, Menu.FIRST, Menu.NONE, title);
-      mConnectItem.setIcon(R.drawable.ic_menu_share);
+      mConnectItem.setIcon(R.drawable.ic_menu_connect);
       mConnectItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
          @Override
          public boolean onMenuItemClick(MenuItem item) {
@@ -206,7 +222,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
             return true;
          }
       });
-      
+
       MenuItem downloadsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
             getString(R.string.menu_downloads));
       downloadsItem.setIcon(R.drawable.ic_menu_save);
@@ -221,7 +237,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
 
       return true;
    }
-   
+
    private void startDownloads() {
       Intent myIntent = new Intent(this, DownloadsActivity.class);
       startActivity(myIntent);
@@ -237,7 +253,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private void disconnectClientControl() {
       mService.disconnectClientControl();
    }
-   
+
    @Override
    public void messageReceived(Object _message) {
       if (_message.getClass().equals(RemoteStatusMessage.class)) {
@@ -282,14 +298,21 @@ public class BaseActivity extends Activity implements IClientControlListener {
             if (_state == ConnectionState.Disconnected) {
                if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_connect));
+                  mConnectItem.setIcon(R.drawable.ic_menu_connect);
                }
                if (mStatusBarHandler != null) {
                   mStatusBarHandler.setNowPlayingInfoVisible(false);
                   mStatusBarHandler.setConnected(false);
                }
+               
+               if(PreferencesManager.getAutoReconnect()){
+                  mReconnectTask = new ReconnectTask();
+                  mReconnectTask.execute(mService);
+               }
             } else if (_state == ConnectionState.Connected) {
                if (mConnectItem != null) {
                   mConnectItem.setTitle(getString(R.string.menu_disconnect));
+                  mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
                }
                if (mStatusBarHandler != null) {
                   mStatusBarHandler.setNowPlayingInfoVisible(true);

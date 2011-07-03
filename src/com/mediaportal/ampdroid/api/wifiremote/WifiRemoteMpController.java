@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api.wifiremote;
 
 import java.io.BufferedReader;
@@ -27,6 +37,8 @@ import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IClientControlListener;
 import com.mediaportal.ampdroid.api.PowerModes;
 import com.mediaportal.ampdroid.api.wifiremote.WifiRemotePlayFileMessage.FileType;
+import com.mediaportal.ampdroid.data.MusicTrack;
+import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
 import com.mediaportal.ampdroid.remote.RemoteAuthenticationResponse;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
@@ -106,6 +118,9 @@ public class WifiRemoteMpController implements IClientControlApi {
                         for (RemotePropertiesUpdate p : props.getProperties()) {
                            publishProgress(p);
                         }
+                     } else if (type.equals("playlist")) {
+                        @SuppressWarnings("unused")
+                        String playlist = response;
                      } else if (type.equals("propertychanged")) {
                         Object returnObject = mJsonObjectMapper.readValue(response,
                               RemotePropertiesUpdate.class);
@@ -134,8 +149,7 @@ public class WifiRemoteMpController implements IClientControlApi {
                            // initialise was successful
                            Log.i(Constants.LOG_CONST, "Initialised WifiRemote successfully");
                            registerProperties();
-                        }
-                        else{
+                        } else {
                            Log.i(Constants.LOG_CONST, "Failed to initialise WifiRemote");
                         }
 
@@ -195,8 +209,8 @@ public class WifiRemoteMpController implements IClientControlApi {
       }
    }
 
-   public WifiRemoteMpController(Context _context, String _server, int _port, String _mac, String _user,
-         String _pass, boolean _auth) {
+   public WifiRemoteMpController(Context _context, String _server, int _port, String _mac,
+         String _user, String _pass, boolean _auth) {
       super();
       mServer = _server;
       mPort = _port;
@@ -246,7 +260,7 @@ public class WifiRemoteMpController implements IClientControlApi {
    public boolean getUseAuth() {
       return mUseAuth;
    }
-   
+
    @Override
    public String getMac() {
       return mMac;
@@ -415,11 +429,6 @@ public class WifiRemoteMpController implements IClientControlApi {
    }
 
    @Override
-   public void sendPlayFileCommand(String _file) {
-      writeObject(new WifiRemotePlayFileMessage(_file, FileType.video));
-   }
-
-   @Override
    public void sendPosition(int _position) {
       writeObject(new WifiRemotePositionMessage(_position));
    }
@@ -472,13 +481,13 @@ public class WifiRemoteMpController implements IClientControlApi {
    }
 
    @Override
-   public void startAudio(String _path) {
-      writeObject(new WifiRemotePlayFileMessage(_path, FileType.audio));
+   public void startAudio(String _path, int _pos) {
+      writeObject(new WifiRemotePlayFileMessage(_path, FileType.audio, _pos));
    }
 
    @Override
-   public void startVideo(String _path) {
-      writeObject(new WifiRemotePlayFileMessage(_path, FileType.video));
+   public void startVideo(String _path, int _pos) {
+      writeObject(new WifiRemotePlayFileMessage(_path, FileType.video, _pos));
    }
 
    @Override
@@ -508,4 +517,43 @@ public class WifiRemoteMpController implements IClientControlApi {
    public void getClientImage(String _filePath) {
       writeObject(new WifiRemoteImageMessage(_filePath));
    }
+
+   @Override
+   public void createPlaylistWithSongs(List<MusicTrack> _tracks, boolean _autoPlay, int _startPos) {
+      writeObject(WifiRemoteCreatePlaylistMessage.createFromMusicTracks(_tracks, _autoPlay, _startPos));
+   }
+   
+   @Override
+   public void createPlaylistWithEpisodes(List<SeriesEpisode> _episodes, boolean _autoPlay,
+         int _startPos) {
+      writeObject(WifiRemoteCreatePlaylistMessage.createFromEpisodes(_episodes, _autoPlay, _startPos));
+      
+   }
+
+   @Override
+   public void requestPlaylist(String _type) {
+      writeObject(new WifiRemotePlaylistMessage(_type, "get"));
+   }
+
+   @Override
+   public void movePlaylistItem(String _type, int _oldIndex, int _newIndex) {
+      writeObject(new WifiRemoteMovePlaylistItemMessage(_type, "move", _oldIndex, _newIndex));
+   }
+
+   @Override
+   public void playPlaylistItem(String _type, int _index) {
+      writeObject(new WifiRemotePlaylistIndexItemMessage(_type, "play", _index));
+   }
+
+   @Override
+   public void clearPlaylistItems(String _type) {
+      writeObject(new WifiRemotePlaylistMessage(_type, "clear"));
+   }
+
+   @Override
+   public void removePlaylistItem(String _type, int _index) {
+      writeObject(new WifiRemotePlaylistIndexItemMessage(_type, "remove", _index));
+   }
+
+
 }

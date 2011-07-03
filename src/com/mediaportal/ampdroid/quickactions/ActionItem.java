@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.quickactions;
 
 
@@ -12,9 +22,10 @@ import android.view.View.OnClickListener;
  *
  */
 public class ActionItem {
-	private Drawable mIcon;
-	private String mTitle;
-	private OnClickListener mListener;
+	private Drawable mIcon = null;
+	private String mTitle = null;
+	private OnClickListener mListener = null;
+   private boolean mEnabled = true;
 	
 	/**
 	 * Constructor
@@ -82,4 +93,12 @@ public class ActionItem {
 	public OnClickListener getListener() {
 		return this.mListener;
 	}
+
+   public void setEnabled(boolean _enabled) {
+      mEnabled = _enabled;
+   }
+
+   public boolean getEnabled() {
+      return mEnabled;
+   }
 }

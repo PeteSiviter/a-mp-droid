@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.tvserver;
 
 import android.app.Activity;
@@ -78,7 +88,7 @@ public class TvServerProgramDetailsActivity extends BaseActivity {
    public void onCreate(Bundle _savedInstanceState) {
       setTitle(R.string.title_tvserver_epg);
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tvserverprogramdetailsactivity);
+      setContentView(R.layout.activity_recordingdetails);
       
       mService = DataHandler.getCurrentRemoteInstance();
       mStatusBarHandler = new StatusBarActivityHandler(this, mService);

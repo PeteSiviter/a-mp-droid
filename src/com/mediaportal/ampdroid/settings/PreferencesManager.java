@@ -1,4 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.settings;
+
+import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -152,6 +164,102 @@ public class PreferencesManager {
    public static boolean isWolAutoConnect() {
       if (Preferences != null) {
          return Preferences.getBoolean("auto_wol", false);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
+   public static boolean useDirectStream() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("settings_tvserver_use_rtsp", false);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
+   public static String getDefaultTvProfile() {
+      if (Preferences != null) {
+         return Preferences.getString("settings_tvserver_tvprofile_default", null);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return null;
+      }
+   }
+
+   public static List<String> getTvProfiles() {
+      if (Preferences != null) {
+         // return Preferences.getString("settings_tvserver_tvprofiles", null);
+         return null;
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return null;
+      }
+   }
+
+   public static boolean isQuickStartEnabled(boolean _tv) {
+      if (Preferences != null) {
+         if (_tv) {
+            return Preferences.getBoolean("tvserver_streaming_quickconf", false);
+         } else {
+            return Preferences.getBoolean("media_streaming_quickconf", false);
+
+         }
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
+   public static void setDefaultProfile(String _profile, boolean _tv) {
+      if (Preferences != null) {
+         Editor editor = Preferences.edit();
+         if (_tv) {
+            editor.putString("default_profile_tv", _profile);
+         } else {
+            editor.putString("default_profile_media", _profile);
+         }
+         editor.commit();
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+      }
+   }
+
+   public static String getDefaultProfile(boolean _tv) {
+      if (Preferences != null) {
+         if (_tv) {
+            return Preferences.getString("default_profile_tv", null);
+         } else {
+            return Preferences.getString("default_profile_media", null);
+         }
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return null;
+      }
+   }
+
+   public static boolean getUseExternalPlayer() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("streaming_use_external", false);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
+   public static boolean getShowAllChannelsGroup() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("tvserver_showall", false);
+      } else {
+         Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
+         return false;
+      }
+   }
+
+   public static boolean getAutoReconnect() {
+      if (Preferences != null) {
+         return Preferences.getBoolean("auto_reconnect", false);
       } else {
          Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
          return false;

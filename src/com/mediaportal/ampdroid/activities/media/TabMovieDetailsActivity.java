@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.media;
 
 import java.io.File;
@@ -8,33 +18,27 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
-import com.mediaportal.ampdroid.downloadservice.DownloadJob;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.quickactions.QuickActionView;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
-import com.mediaportal.ampdroid.utils.Util;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 
 public class TabMovieDetailsActivity extends Activity {
    private DataHandler mService;
@@ -52,10 +56,6 @@ public class TabMovieDetailsActivity extends Activity {
    private TextView mTextViewMovieRuntime;
    private TextView mTextViewMovieActors;
    private String mMovieName;
-   private Button mButtonPlayPc;
-   private Button mButtonPlayMobile;
-   private Button mButtonDownload;
-   private File mLocalFile;
 
    private class LoadVideoDetailsTask extends AsyncTask<Integer, List<Movie>, MovieFull> {
       Activity mContext;
@@ -119,17 +119,30 @@ public class TabMovieDetailsActivity extends Activity {
                String dirName = DownloaderUtils.getMoviePath(mMovie);
                String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
 
-               File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+               File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
 
-               if (localFileName.exists()) {
-                  mLocalFile = localFileName;
-                  mButtonDownload.setEnabled(false);
-                  mButtonPlayMobile.setEnabled(true);
+               QuickActionView view = (QuickActionView) findViewById(R.id.QuickActionViewItemActions);
+
+               String displayName = mMovie.toString();
+               String itemId = String.valueOf(mMovieId);
+
+               if (localFile.exists()) {
+                  QuickActionUtils.createPlayOnDeviceQuickAction(mContext, view, localFile,
+                        MediaItemType.Video);
                } else {
-                  mLocalFile = null;
-                  mButtonDownload.setEnabled(true);
-                  mButtonPlayMobile.setEnabled(false);
+                  QuickActionUtils.createDownloadSdCardQuickAction(mContext, view, mService,
+                        itemId, movieFile, DownloadItemType.MovieItem, MediaItemType.Video,
+                        fileName, displayName);
                }
+
+               if (Constants.ENABLE_STREAMING) {
+                  QuickActionUtils.createStreamOnClientQuickAction(mContext, view, mService,
+                        itemId, DownloadItemType.MovieItem, fileName, displayName);
+
+               }
+
+               QuickActionUtils.createPlayOnClientQuickAction(mContext, view, mService, movieFile);
+               view.createActionList();
             }
 
             mLoadingDialog.cancel();
@@ -154,7 +167,7 @@ public class TabMovieDetailsActivity extends Activity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabmoviedetailsactivity);
+      setContentView(R.layout.activity_tabmoviedetails);
 
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
@@ -172,70 +185,10 @@ public class TabMovieDetailsActivity extends Activity {
          mTextViewMovieOverview = (TextView) findViewById(R.id.TextViewMovieOverview);
          mTextViewMovieRuntime = (TextView) findViewById(R.id.TextViewMovieRuntime);
          mTextViewMovieActors = (TextView) findViewById(R.id.TextViewMovieActors);
-
-         mButtonPlayPc = (Button) findViewById(R.id.ButtonPlayPc);
-         mButtonPlayMobile = (Button) findViewById(R.id.ButtonPlayMobile);
-         mButtonDownload = (Button) findViewById(R.id.ButtonDownload);
-
          mImageViewMoviePoster.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-               mService.playVideoFileOnClient(mMovie.getFilename());
-            }
-         });
-
-         mButtonPlayPc.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               if (mService.isClientControlConnected()) {
-                  mService.playVideoFileOnClient(mMovie.getFilename());
-               } else {
-                  Util.showToast(v.getContext(), getString(R.string.info_remote_notconnected));
-               }
-            }
-         });
-
-         mButtonPlayMobile.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               if (mLocalFile != null) {
-                  Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                  playIntent.setDataAndType(Uri.parse(mLocalFile.toString()), "video/*");
-                  startActivity(playIntent);
-               }
-            }
-         });
-
-         mButtonDownload.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View _view) {
-               if (mLocalFile == null) {
-                  String movieFile = mMovie.getFilename();
-                  String url = mService.getDownloadUri(String.valueOf(mMovie.getId()),
-                        DownloadItemType.MovieItem);
-                  FileInfo info = mService.getFileInfo(movieFile);
-                  String dirName = DownloaderUtils.getMoviePath(mMovie);
-                  String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
-                  ApiCredentials cred = mService.getDownloadCredentials();
-                  if (url != null) {
-                     DownloadJob job = new DownloadJob();
-                     job.setUrl(url);
-                     job.setFileName(fileName);
-                     job.setDisplayName(mMovie.toString());
-                     job.setMediaType(MediaItemType.Video);
-                     if (info != null) {
-                        job.setLength(info.getLength());
-                     }
-                     if (cred.useAut()) {
-                        job.setAuth(cred.getUsername(), cred.getPassword());
-                     }
-
-                     Intent download = ItemDownloaderHelper.createDownloadIntent(
-                           _view.getContext(), job);
-                     startService(download);
-
-                  }
-               }
+               mService.playVideoFileOnClient(mMovie.getFilename(), 0);
             }
          });
 

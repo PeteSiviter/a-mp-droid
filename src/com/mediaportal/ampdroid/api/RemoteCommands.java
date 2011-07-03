@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api;
 
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
@@ -12,8 +22,8 @@ public class RemoteCommands {
    public static RemoteKey infoButton = new RemoteKey(5, "Info", "info", "");
    public static RemoteKey pauseButton = new RemoteKey(6, "Pause", "pause", "");
    public static RemoteKey stopButton = new RemoteKey(6, "Stop", "stop", "");
-   public static RemoteKey prevButton = new RemoteKey(7, "Prev", "rewind", "");
-   public static RemoteKey nextButton = new RemoteKey(8, "Next", "forward", "");
+   public static RemoteKey prevButton = new RemoteKey(7, "Prev", "replay", "");
+   public static RemoteKey nextButton = new RemoteKey(8, "Next", "skip", "");
    public static RemoteKey homeButton = new RemoteKey(9, "Home", "home", "");
    public static RemoteKey switchFullscreenButton = new RemoteKey(10, "Switch Fullscreen", "red", "");
    public static RemoteKey subtitlesButton = new RemoteKey(8, "Subtitles", "subtitles", "");

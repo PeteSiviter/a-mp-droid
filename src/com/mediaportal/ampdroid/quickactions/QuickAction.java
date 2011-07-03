@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.quickactions;
 
 
@@ -24,7 +34,7 @@ import com.mediaportal.ampdroid.R;
  * 
  * @author Lorensius. W. T
  */
-public class QuickAction extends CustomPopupWindow {
+public class QuickAction extends CustomPopupWindow implements IQuickActionContainer {
 	private final View mRoot;
 	private final ImageView mArrowUp;
 	private final ImageView mArrowDown;
@@ -204,7 +214,7 @@ public class QuickAction extends CustomPopupWindow {
 			view 		= getActionItem(title, icon, listener);
 		
 			view.setFocusable(true);
-			view.setClickable(true);
+			view.setClickable(mActionList.get(i).getEnabled());
 			 
 			mTrack.addView(view, index);
 			
@@ -221,7 +231,7 @@ public class QuickAction extends CustomPopupWindow {
 	 * @return action item {@link View}
 	 */
 	private View getActionItem(String _title, Drawable _icon, OnClickListener _listener) {
-		LinearLayout container	= (LinearLayout) mInflater.inflate(R.layout.action_item, null);
+		LinearLayout container	= (LinearLayout) mInflater.inflate(R.layout.quickaction_action_item, null);
 		ImageView img 			= (ImageView) container.findViewById(R.id.icon);
 		TextView text 			= (TextView) container.findViewById(R.id.title);
 		

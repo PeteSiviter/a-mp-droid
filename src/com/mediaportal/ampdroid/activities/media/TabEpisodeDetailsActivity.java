@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.media;
 
 import java.io.File;
@@ -8,39 +18,29 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
-import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesEpisodeFile;
-import com.mediaportal.ampdroid.data.FileInfo;
-import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
-import com.mediaportal.ampdroid.downloadservice.DownloadJob;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ImageHandler;
 import com.mediaportal.ampdroid.lists.LazyLoadingImage;
 import com.mediaportal.ampdroid.lists.Utils;
-import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.quickactions.QuickActionView;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
-import com.mediaportal.ampdroid.utils.Util;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 
 public class TabEpisodeDetailsActivity extends Activity {
    private BaseTabActivity mBaseActivity;
@@ -63,11 +63,9 @@ public class TabEpisodeDetailsActivity extends Activity {
    private int mEpisodeSeasonNr;
    private int mEpisodeNr;
    private TextView mTextViewRuntime;
-   private Button mButtonPlayPc;
-   private Button mButtonPlayMobile;
-   private Button mButtonDownload;
 
-   private class LoadEpisodeDetailsTask extends AsyncTask<Integer, List<Movie>, SeriesEpisodeDetails> {
+   private class LoadEpisodeDetailsTask extends
+         AsyncTask<Integer, List<Movie>, SeriesEpisodeDetails> {
       Activity mContext;
 
       private LoadEpisodeDetailsTask(Activity _context) {
@@ -131,6 +129,36 @@ public class TabEpisodeDetailsActivity extends Activity {
 
             mTextViewEpisodeOverview.setText(_result.getSummary());
 
+            QuickActionView view = (QuickActionView) findViewById(R.id.QuickActionViewItemActions);
+
+            String displayName = mSeriesName + ": " + mEpisodeName;
+            String itemId = String.valueOf(mEpisodeId);
+            if (epFile != null) {
+               String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, mEpisodeDetails);
+               String fileName = dirName
+                     + Utils.getFileNameWithExtension(epFile.getFileName(), "\\");
+
+               File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+               if (localFile.exists()) {
+                  QuickActionUtils.createPlayOnDeviceQuickAction(mContext, view, localFile,
+                        MediaItemType.Video);
+               } else {
+                  QuickActionUtils.createDownloadSdCardQuickAction(mContext, view, mService,
+                        itemId, epFile.getFileName(), DownloadItemType.TvSeriesItem,
+                        MediaItemType.Video, fileName, displayName);
+               }
+
+               if (Constants.ENABLE_STREAMING) {
+                  QuickActionUtils.createStreamOnClientQuickAction(mContext, view, mService,
+                        itemId, DownloadItemType.TvSeriesItem, fileName, displayName);
+
+               }
+
+               QuickActionUtils.createPlayOnClientQuickAction(mContext, view, mService,
+                     epFile.getFileName());
+            }
+            view.createActionList();
+
             mLoadingDialog.cancel();
          } else {
             mLoadingDialog.cancel();
@@ -154,7 +182,7 @@ public class TabEpisodeDetailsActivity extends Activity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabepisodedetailsactivity);
+      setContentView(R.layout.activity_tabepisodedetails);
 
       mTextViewEpisodeActors = (TextView) findViewById(R.id.TextViewEpisodeActors);
       mRatingBarEpisodeRating = (RatingBar) findViewById(R.id.RatingBarEpisodeRating);
@@ -163,10 +191,6 @@ public class TabEpisodeDetailsActivity extends Activity {
       mImageViewEpisodeImage = (ImageView) findViewById(R.id.ImageViewEpisodeBanner);
       mTextViewEpisodeOverview = (TextView) findViewById(R.id.TextViewEpisodeOverview);
       mTextViewEpisodename = (TextView) findViewById(R.id.TextViewEpisodeName);
-
-      mButtonPlayPc = (Button) findViewById(R.id.ButtonPlayPc);
-      mButtonPlayMobile = (Button) findViewById(R.id.ButtonPlayMobile);
-      mButtonDownload = (Button) findViewById(R.id.ButtonDownload);
 
       mService = DataHandler.getCurrentRemoteInstance();
       mImageHandler = new ImageHandler(this);
@@ -197,75 +221,5 @@ public class TabEpisodeDetailsActivity extends Activity {
                getString(R.string.info_loading_title), true);
          mLoadingDialog.setCancelable(true);
       }
-
-      mButtonPlayPc.setOnClickListener(new OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            if (mService.isClientControlConnected()) {
-               String epFile = mEpisodeDetails.getEpisodeFile().getFileName();
-               mService.playVideoFileOnClient(epFile);
-            } else {
-               Util.showToast(v.getContext(), getString(R.string.info_remote_notconnected));
-            }
-         }
-      });
-
-      mButtonPlayMobile.setOnClickListener(new OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            String epFile = mEpisodeDetails.getEpisodeFile().getFileName();
-            String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, mEpisodeDetails);
-            String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
-            File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
-            if (localFile.exists()) {
-               Intent playIntent = new Intent(Intent.ACTION_VIEW);
-               playIntent.setDataAndType(Uri.fromFile(localFile), "video/*");
-               startActivity(playIntent);
-            } else {
-               Util.showToast(v.getContext(), getString(R.string.info_file_not_found));
-            }
-         }
-      });
-
-      mButtonDownload.setOnClickListener(new OnClickListener() {
-         @Override
-         public void onClick(View _view) {
-            SeriesEpisodeFile epFile = mEpisodeDetails.getEpisodeFile();
-            if (epFile != null) {
-               String epFileName = epFile.getFileName();
-               if (epFileName != null) {
-                  String dirName = DownloaderUtils.getTvEpisodePath(mSeriesName, mEpisodeDetails);
-                  String fileName = dirName + Utils.getFileNameWithExtension(epFileName, "\\");
-                  File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
-                  if (!localFileName.exists()) {
-                     String url = mService.getDownloadUri(String.valueOf(mEpisodeDetails.getId()),
-                           DownloadItemType.TvSeriesItem);
-                     FileInfo info = mService.getFileInfo(epFileName);
-                     ApiCredentials cred = mService.getDownloadCredentials();
-                     if (url != null) {
-                        DownloadJob job = new DownloadJob();
-                        job.setUrl(url);
-                        job.setFileName(fileName);
-                        job.setDisplayName(mSeriesName + ": " + epFile.toString());
-                        job.setMediaType(MediaItemType.Video);
-                        if (info != null) {
-                           info.setLength(info.getLength());
-                        }
-                        if (cred.useAut()) {
-                           job.setAuth(cred.getUsername(), cred.getPassword());
-                        }
-
-                        Intent download = ItemDownloaderHelper.createDownloadIntent(
-                              _view.getContext(), job);
-                        startService(download);
-                     }
-                  }
-               } else {
-                  Util.showToast(_view.getContext(),
-                        getString(R.string.info_file_already_downloaded));
-               }
-            }
-         }
-      });
    }
 }

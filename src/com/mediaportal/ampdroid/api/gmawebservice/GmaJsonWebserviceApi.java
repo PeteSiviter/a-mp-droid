@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api.gmawebservice;
 
 import java.io.IOException;
@@ -40,7 +50,10 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.data.MediaInfo;
+import com.mediaportal.ampdroid.data.StreamProfile;
+import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.utils.Constants;
@@ -58,14 +71,23 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    private String mPass;
    private boolean mUseAuth;
 
-   private static final String GET_SUPPORTED_FUNCTIONS = "GetSupportedFunctions";
+   private static final String GET_WEBSERVICE_DESC = "GetServiceDescription";
    private static final String GET_VIDEO_SHARES = "GetVideoShares";
    private static final String GET_IMAGE = "GetImage";
    private static final String GET_MEDIA_ITEM = "GetMediaItem";
    private static final String GET_IMAGE_RESIZED = "GetImageResized";
    private static final String GET_DIRECTORY_LIST_BY_PATH = "GetDirectoryListByPath";
    private static final String GET_FILE_INFO = "GetFileInfo";
+   private static final String GET_STREAM_INFO = "GetMediaInfo";
    private static final String GET_FILES_FROM_DIRECTORY = "GetFilesFromDirectory";
+
+   private static final String INIT_STREAMING = "InitStream";
+   private static final String START_STREAMING = "StartStream";
+   private static final String RETRIEVE_STREAMING = "RetrieveStream";
+   private static final String STOP_STREAMING = "FinishStream";
+   private static final String GET_TRANSCODING_INFO = "GetTranscodingInfo";
+   private static final String GET_PROFILES = "GetTranscoderProfilesForTarget";
+   private static final String ANDROID_TARGET_NAME = "android";
 
    private static final String JSON_PREFIX = "http://";
    private static final String JSON_SUFFIX = "/GmaWebService/MediaAccessService/json";
@@ -76,7 +98,8 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    private String mMac;
 
    @SuppressWarnings("unchecked")
-   public GmaJsonWebserviceApi(String _server, int _port, String _mac, String _user, String _pass, boolean _auth) {
+   public GmaJsonWebserviceApi(String _server, int _port, String _mac, String _user, String _pass,
+         boolean _auth) {
       mServer = _server;
       mPort = _port;
       mMac = _mac;
@@ -130,7 +153,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    public boolean getUseAuth() {
       return mUseAuth;
    }
-   
+
    @Override
    public String getMac() {
       return mMac;
@@ -157,15 +180,15 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       return mServer;
    }
 
-   public SupportedFunctions getSupportedFunctions() {
-      String methodName = GET_SUPPORTED_FUNCTIONS;
+   public WebServiceDescription getSupportedFunctions() {
+      String methodName = GET_WEBSERVICE_DESC;
       String response = mJsonClient.Execute(methodName);
 
       Log.i(Constants.LOG_CONST, "Getting GmaWebservice functions: " + mServer + ":" + mPort + "@"
             + mUser + ":" + mPass);
       if (response != null) {
-         SupportedFunctions returnObject = (SupportedFunctions) getObjectsFromJson(response,
-               SupportedFunctions.class);
+         WebServiceDescription returnObject = (WebServiceDescription) getObjectsFromJson(response,
+               WebServiceDescription.class);
 
          if (returnObject != null) {
             Log.i(Constants.LOG_CONST, "Successfully connected to GmaWebservice");
@@ -218,12 +241,33 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
 
    @Override
-   public FileInfo getFileInfo(String _path) {
+   public FileInfo getFileInfo(String _itemId, DownloadItemType _itemType) {
       String methodName = GET_FILE_INFO;
-      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("filepath", _path));
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("itemId", _itemId),
+            JsonUtils.newPair("type", DownloadItemType.toInt(_itemType)));
 
       if (response != null) {
          FileInfo returnObject = (FileInfo) getObjectsFromJson(response, FileInfo.class);
+
+         if (returnObject != null) {
+            return returnObject;
+         } else {
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   @Override
+   public MediaInfo getMediaInfo(String _itemId, DownloadItemType _itemType) {
+      String methodName = GET_STREAM_INFO;
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("itemId", _itemId),
+            JsonUtils.newPair("type", DownloadItemType.toInt(_itemType)));
+
+      if (response != null) {
+         MediaInfo returnObject = (MediaInfo) getObjectsFromJson(response, MediaInfo.class);
 
          if (returnObject != null) {
             return returnObject;
@@ -386,6 +430,42 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
    }
 
    @Override
+   public Bitmap getBitmapFromMedia(DownloadItemType _itemType, String _itemId, int _position,
+         int _maxWidth, int _maxHeight) {
+      URL myFileUrl = null;
+      Bitmap bmImg = null;
+      try {
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
+               + "ExtractImageResized" + "?type=" + DownloadItemType.toInt(_itemType) + "&itemId="
+               + URLEncoder.encode(_itemId, "UTF-8") + "&position=" + _position + "&maxWidth="
+               + _maxWidth + "&maxHeight=" + _maxHeight);
+
+         if (mUseAuth) {
+            Authenticator.setDefault(new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(mUser, mPass.toCharArray());
+               }
+            });
+         }
+
+         HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
+         conn.setDoInput(true);
+         conn.connect();
+         InputStream is = conn.getInputStream();
+
+         bmImg = BitmapFactory.decodeStream(is);
+      } catch (MalformedURLException e) {
+         e.printStackTrace();
+      } catch (UnsupportedEncodingException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
+      return bmImg;
+   }
+
+   @Override
    public Bitmap getBitmap(String _url, int _maxWidth, int _maxHeight) {
       URL myFileUrl = null;
       Bitmap bmImg = null;
@@ -430,7 +510,79 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
          e.printStackTrace();
       }
       return fileUrl;
+   }
 
+   @Override
+   public void initStreaming(String _id, String _client, DownloadItemType _itemType,
+         String _itemId, String _profile) {
+      mJsonClient.Execute(INIT_STREAMING,
+            JsonUtils.newPair("type", DownloadItemType.toInt(_itemType)),
+            JsonUtils.newPair("itemId", _itemId), JsonUtils.newPair("profileName", _profile),
+            JsonUtils.newPair("clientDescription", _client), JsonUtils.newPair("identifier", _id));
+   }
+
+   @Override
+   public String startStreaming(String _id, long _position) {
+      mJsonClient.Execute(START_STREAMING, 40000,
+            JsonUtils.newPair("startPosition", String.valueOf(_position)),
+            JsonUtils.newPair("identifier", _id));
+
+      String fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
+            + RETRIEVE_STREAMING + "?identifier=" + _id;
+      return fileUrl;
+   }
+
+   @Override
+   public StreamTranscodingInfo getTransocdingInfo(String _id) {
+      String methodName = GET_TRANSCODING_INFO;
+      String response = mJsonClient.Execute(methodName, JsonUtils.newPair("identifier", _id));
+
+      if (response != null) {
+         StreamTranscodingInfo returnObject = (StreamTranscodingInfo) getObjectsFromJson(response,
+               StreamTranscodingInfo.class);
+
+         if (returnObject != null) {
+            return returnObject;
+         } else {
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   @Override
+   public List<StreamProfile> getTranscoderProfiles() {
+      String methodName = GET_PROFILES;
+      String response = mJsonClient.Execute(methodName,
+            JsonUtils.newPair("target", ANDROID_TARGET_NAME));
+
+      if (response != null) {
+         StreamProfile[] returnObject = (StreamProfile[]) getObjectsFromJson(response,
+               StreamProfile[].class);
+
+         if (returnObject != null) {
+            List<StreamProfile> retList = new ArrayList<StreamProfile>();
+
+            for (StreamProfile p : returnObject) {
+               retList.add(p);
+            }
+
+            return retList;
+         } else {
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   @Override
+   public void stopStreaming(String _id) {
+      String methodName = STOP_STREAMING;
+      mJsonClient.Execute(methodName, JsonUtils.newPair("identifier", _id));
    }
 
    @Override

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api;
 
 import java.util.List;
@@ -5,6 +15,7 @@ import java.util.List;
 import android.graphics.Bitmap;
 
 import com.mediaportal.ampdroid.data.FileInfo;
+import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
@@ -15,7 +26,9 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.data.StreamProfile;
+import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 
@@ -51,7 +64,7 @@ public interface IMediaAccessApi extends IApiInterface {
    
    int getEpisodesCountForSeason(int _seriesId, int _seasonNumber);
 
-   SupportedFunctions getSupportedFunctions();
+   WebServiceDescription getSupportedFunctions();
 
    String getDownloadUri(String _itemId, DownloadItemType _itemType);
 
@@ -71,7 +84,7 @@ public interface IMediaAccessApi extends IApiInterface {
 
    List<Movie> getVideos(int _start, int _end);
 
-   FileInfo getFileInfo(String _path);
+   FileInfo getFileInfo(String _itemId, DownloadItemType _itemType);
 
    int getAlbumsCount();
    
@@ -105,7 +118,18 @@ public interface IMediaAccessApi extends IApiInterface {
 
    List<MusicAlbum> getMusicAlbumsByArtist(String _artist);
 
-
-
+   void initStreaming(String _id, String _client, DownloadItemType _itemType, String _itemId, String _profile);
    
+   String startStreaming(String _id, long _position);
+
+   void stopStreaming(String _file);
+
+   MediaInfo getMediaInfo(String _itemId, DownloadItemType _itemType);
+
+   Bitmap getBitmapFromMedia(DownloadItemType _itemType, String _itemId, int _position, int _maxWidth, int _maxHeight);
+
+   StreamTranscodingInfo getTransocdingInfo(String _id);
+
+   List<StreamProfile> getTranscoderProfiles();
+
 }

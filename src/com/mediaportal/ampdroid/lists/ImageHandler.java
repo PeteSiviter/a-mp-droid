@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.lists;
 
 import java.io.File;
@@ -13,9 +23,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class ImageHandler {
    public static int ImagePrefferedWidth = 400;// width of loaded image ->
@@ -41,7 +53,8 @@ public class ImageHandler {
       // Find the dir to save cached images
       if (android.os.Environment.getExternalStorageState().equals(
             android.os.Environment.MEDIA_MOUNTED))
-         cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "aMPdroid/.Cache");
+         cacheDir = new File(android.os.Environment.getExternalStorageDirectory(),
+               "aMPdroid/.Cache");
       else
          cacheDir = context.getCacheDir();
       if (!cacheDir.exists())
@@ -237,11 +250,15 @@ public class ImageHandler {
                   // // cache.
                   // }
 
-                  if (((String) photoToLoad.imageView.getTag()).equals(photoToLoad.image
-                        .getImageUrl())) {
-                     BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad.imageView);
-                     Activity a = (Activity) photoToLoad.imageView.getContext();
-                     a.runOnUiThread(bd);
+                  try {
+                     if (((String) photoToLoad.imageView.getTag()).equals(photoToLoad.image
+                           .getImageUrl())) {
+                        BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad.imageView);
+                        Activity a = (Activity) photoToLoad.imageView.getContext();
+                        a.runOnUiThread(bd);
+                     }
+                  } catch (Exception ex) {
+                     Log.e(Constants.LOG_CONST, "Error on displaying image:" + ex.toString());
                   }
                }
                if (Thread.interrupted())

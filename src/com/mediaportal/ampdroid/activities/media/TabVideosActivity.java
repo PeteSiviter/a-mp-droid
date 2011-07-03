@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.media;
 
 import java.io.File;
@@ -45,7 +55,9 @@ import com.mediaportal.ampdroid.lists.views.ViewTypes;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabVideosActivity extends Activity implements ILoadingListener {
@@ -70,7 +82,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       protected Boolean doInBackground(Integer... _params) {
          int loadItems = mVideosLoaded + _params[0];
          int videosCount = mService.getVideosCount();
-         if(_params[0] == 0){
+         if (_params[0] == 0) {
             loadItems = videosCount;
          }
 
@@ -111,7 +123,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                         new MoviePosterViewAdapterItem(m));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(), new MovieThumbViewAdapterItem(m));
                }
-               
+
                if (mAdapter.fastScrollingInitialised()) {
                   mAdapter.resetFastScrolling(mListView);
                }
@@ -139,7 +151,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabmoviesactivity);
+      setContentView(R.layout.activity_tabmovies);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 
@@ -158,7 +170,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       mAdapter.setView(PreferencesManager.getDefaultView(MediaListType.Videos));
 
       mAdapter.setLoadingListener(this);
-      
+
       mPreloadItems = PreferencesManager.getNumItemsToLoad();
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
@@ -174,18 +186,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                loadFurtherMovieItems();
             } else {
                Movie selectedMovie = (Movie) item.getItem();
-               Intent myIntent = new Intent(v.getContext(), TabVideoDetailsActivity.class);
-               myIntent.putExtra("video_id", selectedMovie.getId());
-               myIntent.putExtra("video_name", selectedMovie.getName());
-
-               myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-               // Create the view using FirstGroup's LocalActivityManager
-               View view = TabVideosActivityGroup.getGroup().getLocalActivityManager()
-                     .startActivity("video_details", myIntent).getDecorView();
-
-               // Again, replace the view
-               TabVideosActivityGroup.getGroup().replaceView(view);
+               openDetails(selectedMovie);
             }
          }
       });
@@ -195,7 +196,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
          public boolean onItemLongClick(AdapterView<?> _item, View _view, final int _position,
                long _id) {
             try {
-               Movie selected = (Movie) ((ILoadingAdapterItem) _item.getItemAtPosition(_position))
+               final Movie selected = (Movie) ((ILoadingAdapterItem) _item.getItemAtPosition(_position))
                      .getItem();
                // EpisodeDetails details = mService.getEpisode(mSeriesId,
                // selected.getId());
@@ -211,74 +212,34 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
                         + fileName);
 
                   if (localFile.exists()) {
-                     ActionItem playItemAction = new ActionItem();
-
-                     playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-                     playItemAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.fromFile(localFile), "video/*");
-                           startActivity(playIntent);
-
-                           qa.dismiss();
-                        }
-                     });
-
-                     qa.addActionItem(playItemAction);
+                     QuickActionUtils.createPlayOnDeviceQuickAction(_view.getContext(), qa,
+                           localFile, MediaItemType.Video);
                   } else {
-                     ActionItem sdCardAction = new ActionItem();
-                     sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                     sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
-                     sdCardAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           String url = mService.getDownloadUri(itemId, DownloadItemType.VideoDatabaseItem);
-                           FileInfo info = mService.getFileInfo(movieFile);
-                           ApiCredentials cred = mService.getDownloadCredentials();
-                           if (url != null) {
-                              DownloadJob job = new DownloadJob();
-                              job.setUrl(url);
-                              job.setFileName(fileName);
-                              job.setDisplayName(displayName);
-                              job.setMediaType(MediaItemType.Video);
-                              if (info != null) {
-                                 job.setLength(info.getLength());
-                              }
-                              if (cred.useAut()) {
-                                 job.setAuth(cred.getUsername(), cred.getPassword());
-                              }
+                     QuickActionUtils.createDownloadSdCardQuickAction(_view.getContext(), qa,
+                           mService, itemId, movieFile, DownloadItemType.VideoDatabaseItem,
+                           MediaItemType.Video, fileName, displayName);
+                  }
 
-                              Intent download = ItemDownloaderHelper.createDownloadIntent(
-                                    _view.getContext(), job);
-                              startService(download);
+                  if (Constants.ENABLE_STREAMING) {
+                     // experimental support for streaming, disable for
+                     // releases
+                     QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
+                           mService, itemId, DownloadItemType.VideoDatabaseItem, fileName,
+                           displayName);
+
+                  }
+
+                  QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                        movieFile);
+                  
+                  QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
+                        new View.OnClickListener() {
+                           @Override
+                           public void onClick(View arg0) {
+                              openDetails(selected);
+                              qa.dismiss();
                            }
-
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(sdCardAction);
-                  }
-
-                  if (mService.isClientControlConnected()) {
-                     ActionItem playOnClientAction = new ActionItem();
-
-                     playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                     playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_device));
-                     playOnClientAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           mService.playVideoFileOnClient(movieFile);
-
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(playOnClientAction);
-                  }
+                        });
 
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
@@ -294,6 +255,21 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
       });
 
       loadFurtherMovieItems();
+   }
+
+   protected void openDetails(Movie selectedMovie) {
+      Intent myIntent = new Intent(this, TabVideoDetailsActivity.class);
+      myIntent.putExtra("video_id", selectedMovie.getId());
+      myIntent.putExtra("video_name", selectedMovie.getName());
+
+      myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+      // Create the view using FirstGroup's LocalActivityManager
+      View view = TabVideosActivityGroup.getGroup().getLocalActivityManager()
+            .startActivity("video_details", myIntent).getDecorView();
+
+      // Again, replace the view
+      TabVideosActivityGroup.getGroup().replaceView(view);
    }
 
    @Override
@@ -352,7 +328,7 @@ public class TabVideosActivity extends Activity implements ILoadingListener {
             return true;
          }
       });
-      
+
       MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.menu_set_default_view));
       setDefaultViewItem.setIcon(R.drawable.ic_menu_set_as);

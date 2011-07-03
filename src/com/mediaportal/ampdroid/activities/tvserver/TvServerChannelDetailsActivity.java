@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.tvserver;
 
 import java.util.Calendar;
@@ -27,12 +37,15 @@ import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.asynctasks.AddScheduleTask;
 import com.mediaportal.ampdroid.asynctasks.CancelScheduleTask;
 import com.mediaportal.ampdroid.data.TvProgramBase;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.views.TvServerProgramsDetailsViewItem;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.quickactions.QuickActionView;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TvServerChannelDetailsActivity extends BaseActivity {
@@ -149,7 +162,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
    public void onCreate(Bundle _savedInstanceState) {
       setTitle(R.string.title_tvserver_epg);
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tvserverchanneldetailsactivity);
+      setContentView(R.layout.activity_tvserverchanneldetails);
 
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
@@ -252,6 +265,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
 
                final QuickAction qa = new QuickAction(_view);
 
+               Date now = new Date();
                if (program.isIsScheduled()) {
                   ActionItem addScheduleAction = new ActionItem();
                   addScheduleAction.setTitle(getString(R.string.quickactions_cancel));
@@ -267,11 +281,10 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                      }
                   });
                   qa.addActionItem(addScheduleAction);
-               } else {
+               } else if(program.getEndTime().before(now)){
                   ActionItem addScheduleAction = new ActionItem();
                   addScheduleAction.setTitle(getString(R.string.quickactions_record));
-                  addScheduleAction.setIcon(getResources().getDrawable(
-                        R.drawable.quickaction_recording));
+                  addScheduleAction.setIcon(getResources().getDrawable(R.drawable.quickaction_add));
                   addScheduleAction.setOnClickListener(new OnClickListener() {
                      @Override
                      public void onClick(View _view) {
@@ -284,6 +297,13 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                   });
                   qa.addActionItem(addScheduleAction);
                }
+
+               if (now.after(program.getStartTime()) && now.before(program.getEndTime())) {
+                  QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
+                        mService, String.valueOf(mChannelId), DownloadItemType.LiveTv,
+                        mChannelName, mChannelName);
+               }
+
                qa.show();
                return true;
             }

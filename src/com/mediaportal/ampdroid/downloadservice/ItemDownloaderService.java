@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.downloadservice;
 
 import java.io.File;
@@ -11,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -137,7 +146,7 @@ public class ItemDownloaderService extends Service {
             // HomeActivity.class);
 
             // configure the notification
-            mNotification = new Notification(R.drawable.quickaction_sdcard, "Download",
+            mNotification = new Notification(R.drawable.quickaction_download, "Download",
                   System.currentTimeMillis());
             mNotification.flags = mNotification.flags | Notification.FLAG_ONGOING_EVENT;
             mNotification.contentView = new RemoteViews(getApplicationContext().getPackageName(),

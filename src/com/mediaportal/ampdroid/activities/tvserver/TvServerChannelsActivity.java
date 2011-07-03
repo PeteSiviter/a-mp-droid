@@ -1,6 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.tvserver;
 
 import java.util.List;
+
+import org.codehaus.jackson.map.ser.ArraySerializers.StringArraySerializer;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -21,13 +33,18 @@ import android.widget.Spinner;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Constants;
+import com.mediaportal.ampdroid.utils.IntentUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TvServerChannelsActivity extends BaseActivity {
@@ -57,9 +74,13 @@ public class TvServerChannelsActivity extends BaseActivity {
       protected void onPostExecute(List<TvChannelGroup> _result) {
          mGroupsItems.clear();
          if (_result != null) {
-            for (TvChannelGroup g : _result) {
-               if (mShowAllGroup || g.getIdGroup() != 1) {
-                  mGroupsItems.add(g);
+            if (_result.size() == 1 && !mShowAllGroup) {
+               Util.showToast(getBaseContext(), getString(R.string.info_no_groups_defined));
+            } else {
+               for (TvChannelGroup g : _result) {
+                  if (mShowAllGroup || g.getIdGroup() != 1) {
+                     mGroupsItems.add(g);
+                  }
                }
             }
          }
@@ -91,7 +112,7 @@ public class TvServerChannelsActivity extends BaseActivity {
       super.onCreate(_savedInstanceState);
       setTitle(R.string.title_tvserver_channels);
 
-      setContentView(R.layout.tvserverchannelsactivity);
+      setContentView(R.layout.activity_tvserverchannels);
       mListView = (ListView) findViewById(R.id.ListViewChannels);
       mChannelItems = new ArrayAdapter<TvChannel>(this, android.R.layout.simple_list_item_1);
       mListView.setAdapter(mChannelItems);
@@ -124,10 +145,7 @@ public class TvServerChannelsActivity extends BaseActivity {
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
             TvChannel channel = mChannelItems.getItem(_pos);
 
-            Intent myIntent = new Intent(_view.getContext(), TvServerChannelDetailsActivity.class);
-            myIntent.putExtra("channel_id", channel.getIdChannel());
-            myIntent.putExtra("channel_name", channel.getDisplayName());
-            startActivity(myIntent);
+openDetails(channel);
 
          }
       });
@@ -156,39 +174,48 @@ public class TvServerChannelsActivity extends BaseActivity {
              */
 
             ActionItem playOnDeviceAction = new ActionItem();
-            playOnDeviceAction.setTitle(getString(R.string.quickactions_playdevice));
-            playOnDeviceAction.setIcon(getResources().getDrawable(R.drawable.quickaction_play));
+            playOnDeviceAction.setTitle(getString(R.string.quickactions_streamdevice));
+            playOnDeviceAction.setIcon(getResources().getDrawable(R.drawable.quickaction_stream));
             playOnDeviceAction.setOnClickListener(new OnClickListener() {
                @Override
                public void onClick(View _view) {
                   TvChannel channel = mSelectedChannel;
-
-                  mPlayingUrl = mService.startTimeshift(channel.getIdChannel(),
-                        PreferencesManager.getTvClientName());
-
-                  if (mPlayingUrl != null) {
-                     try {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setDataAndType(Uri.parse(mPlayingUrl), "video/*");
-                        startActivityForResult(i, 1);
-                     } catch (Exception ex) {
-                        Log.e(Constants.LOG_CONST, ex.toString());
-                     }
-                  } else {
-                     Util.showToast(_view.getContext(), getString(R.string.tvserver_errorplaying));
-                  }
+                  startTvStreaming(channel);
 
                   qa.dismiss();
                }
+
             });
             qa.addActionItem(playOnDeviceAction);
+            
+            QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
+                  new View.OnClickListener() {
+                     @Override
+                     public void onClick(View arg0) {
+                        openDetails(mSelectedChannel);
+                        qa.dismiss();
+                     }
+                  });
 
             qa.show();
             return true;
          }
       });
 
+      mShowAllGroup = PreferencesManager.getShowAllChannelsGroup();
+
       refreshGroups();
+   }
+
+   protected void openDetails(TvChannel channel) {
+      Intent myIntent = new Intent(this, TvServerChannelDetailsActivity.class);
+      myIntent.putExtra("channel_id", channel.getIdChannel());
+      myIntent.putExtra("channel_name", channel.getDisplayName());
+      startActivity(myIntent);
+   }
+
+   private void startTvStreaming(TvChannel _channel) {
+      IntentUtils.startTvStreaming(this, mService, _channel);
    }
 
    private void refreshGroups() {
@@ -210,20 +237,4 @@ public class TvServerChannelsActivity extends BaseActivity {
       mChannelUpdater = new UpdateChannelsTask();
       mChannelUpdater.execute(_group);
    }
-
-   @Override
-   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-      if (requestCode == 1) {
-         if (resultCode < 0) {
-            Util.showToast(this, getString(R.string.tvserver_errorplaying) + mPlayingUrl
-                  + getString(R.string.tvserver_errorplaying_resultcode) + resultCode);
-         } else {
-            Util.showToast(this, getString(R.string.tvserver_finishedplaying) + mPlayingUrl);
-         }
-         mService.stopTimeshift(PreferencesManager.getTvClientName());
-      }
-
-      super.onActivityResult(requestCode, resultCode, data);
-   }
-
 }

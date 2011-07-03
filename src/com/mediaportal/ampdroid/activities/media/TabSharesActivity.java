@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.media;
 
 import java.io.File;
@@ -22,6 +32,7 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
@@ -29,11 +40,12 @@ import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.StringUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -99,7 +111,8 @@ public class TabSharesActivity extends Activity {
 
          if (_result != null) {
             for (FileInfo f : _result) {
-               if (f.isFolder() || StringUtils.containedInArray(f.getExtension(), mCurrentShare.Extensions)) {
+               if (f.isFolder()
+                     || StringUtils.containedInArray(f.getExtension(), mCurrentShare.Extensions)) {
                   mFileItems.add(f);
                }
             }
@@ -115,7 +128,7 @@ public class TabSharesActivity extends Activity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabsharesactivity);
+      setContentView(R.layout.activity_tabshares);
 
       mListView = (ListView) findViewById(R.id.ListViewShares);
       mListView.setFastScrollEnabled(true);
@@ -162,76 +175,54 @@ public class TabSharesActivity extends Activity {
                   final File localFile = new File(DownloaderUtils.getBaseDirectory() + "/"
                         + fileName);
 
-                  if (localFile.exists()) {
-                     ActionItem playItemAction = new ActionItem();
+                  if (!selected.isFolder()) {
+                     if (localFile.exists()) {
+                        QuickActionUtils.createPlayOnDeviceQuickAction(_view.getContext(), qa,
+                              localFile, MediaItemType.Video);
+                     } else {
+                        QuickActionUtils.createDownloadSdCardQuickAction(_view.getContext(), qa,
+                              mService, selected.getFullPath(), fileName,
+                              DownloadItemType.VideoShareItem, MediaItemType.Video, fileName,
+                              selected.getName());
+                     }
 
-                     playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-                     playItemAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.fromFile(localFile), "video/*");
-                           startActivity(playIntent);
+                     if (Constants.ENABLE_STREAMING) {
+                        // experimental support for streaming, disable for
+                        // releases
+                        QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
+                              mService, selected.getFullPath(), DownloadItemType.VideoShareItem,
+                              fileName, selected.getName());
 
-                           qa.dismiss();
-                        }
-                     });
+                     }
 
-                     qa.addActionItem(playItemAction);
+                     QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa,
+                           mService, selected.getFullPath());
                   } else {
-                     ActionItem sdCardAction = new ActionItem();
-                     sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                     sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
-                     sdCardAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           String url = mService.getDownloadUri(selected.getFullPath(),
-                                 DownloadItemType.VideoShareItem);
-                           FileInfo info = mService.getFileInfo(selected.getFullPath());
-                           ApiCredentials cred = mService.getDownloadCredentials();
-                           if (url != null) {
-                              DownloadJob job = new DownloadJob();
-                              job.setUrl(url);
-                              job.setFileName(fileName);
-                              job.setDisplayName(selected.getName());
-                              job.setMediaType(MediaItemType.Video);
-                              if (info != null) {
-                                 job.setLength(info.getLength());
+                     QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
+                           new View.OnClickListener() {
+                              @Override
+                              public void onClick(View arg0) {
+                                 loadFiles(selected.getFullPath());
                               }
-                              if (cred.useAut()) {
-                                 job.setAuth(cred.getUsername(), cred.getPassword());
-                              }
+                           });
+                  }
+                  qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
-                              Intent download = ItemDownloaderHelper.createDownloadIntent(
-                                    _view.getContext(), job);
-                              startService(download);
+                  qa.show();
+
+               }
+               else if (_adapter.getAdapter().equals(mListItems)) {
+                  final VideoShare selected = (VideoShare) mListView.getItemAtPosition(_pos);
+                  mCurrentShare = selected;
+                  final QuickAction qa = new QuickAction(_view);
+                  QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
+                        new View.OnClickListener() {
+                           @Override
+                           public void onClick(View arg0) {
+                              loadFiles(selected.Path);
                            }
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(sdCardAction);
-                  }
-
-                  if (mService.isClientControlConnected()) {
-                     ActionItem playOnClientAction = new ActionItem();
-
-                     playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                     playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_device));
-                     playOnClientAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           mService.playVideoFileOnClient(selected.getFullPath());
-
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(playOnClientAction);
-                  }
-
+                        });
+                  
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
                   qa.show();

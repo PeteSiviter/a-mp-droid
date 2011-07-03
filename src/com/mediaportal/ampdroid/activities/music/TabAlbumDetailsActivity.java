@@ -1,9 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.music;
 
 import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -62,6 +73,7 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
    private TextView mTextViewAlbumYear;
    private TextView mTextViewAlbumTracks;
    private TextView mTextViewAlbumLength;
+   public List<MusicTrack> mAlbumTracks;
 
    private class LoadAlbumTracksTask extends AsyncTask<Integer, List<Movie>, List<MusicTrack>> {
       Activity mContext;
@@ -72,8 +84,8 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
 
       @Override
       protected List<MusicTrack> doInBackground(Integer... _params) {
-         List<MusicTrack> items = mService.getSongsOfAlbum(mAlbumName, mAlbumArtistsString);
-         return items;
+         mAlbumTracks = mService.getSongsOfAlbum(mAlbumName, mAlbumArtistsString);
+         return mAlbumTracks;
       }
 
       @Override
@@ -87,6 +99,7 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                TextView text = (TextView) view.findViewById(R.id.TextViewTitle);
                ImageView image = (ImageView) view.findViewById(R.id.ImageViewEventImage);
                TextView subtext = (TextView) view.findViewById(R.id.TextViewText);
+               final int index = i;
 
                MusicTrack s = _result.get(i);
                // String seasonBanner = null;
@@ -167,13 +180,14 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                               ActionItem sdCardAction = new ActionItem();
                               sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
                               sdCardAction.setIcon(getResources().getDrawable(
-                                    R.drawable.quickaction_sdcard));
+                                    R.drawable.quickaction_download));
                               sdCardAction.setOnClickListener(new OnClickListener() {
                                  @Override
                                  public void onClick(View _view) {
                                     String url = mService.getDownloadUri(trackId,
                                           DownloadItemType.MusicTrackItem);
-                                    FileInfo info = mService.getFileInfo(trackPath);
+                                    FileInfo info = mService.getFileInfo(trackId,
+                                          DownloadItemType.MusicTrackItem);
                                     ApiCredentials cred = mService.getDownloadCredentials();
                                     if (url != null) {
                                        DownloadJob job = new DownloadJob();
@@ -201,15 +215,15 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                            if (mService.isClientControlConnected()) {
                               ActionItem playOnClientAction = new ActionItem();
 
-                              playOnClientAction
-                                    .setTitle(getString(R.string.quickactions_playclient));
+                              playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
                               playOnClientAction.setIcon(getResources().getDrawable(
-                                    R.drawable.quickaction_play_device));
+                                    R.drawable.quickaction_play_pc));
                               playOnClientAction.setOnClickListener(new OnClickListener() {
                                  @Override
                                  public void onClick(View _view) {
-                                    mService.playAudioFileOnClient(trackPath);
-
+                                    CreateAlbumPlaylistTask task = new CreateAlbumPlaylistTask(_view.getContext());
+                                    task.execute(index);
+                                    
                                     qa.dismiss();
                                  }
                               });
@@ -262,6 +276,40 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
       }
    }
 
+   private class CreateAlbumPlaylistTask extends AsyncTask<Integer, Intent, Boolean> {
+      private Context mContext;
+
+      private CreateAlbumPlaylistTask(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(Integer... _params) {
+         int index = _params[0];
+         List<MusicTrack> tracks = mAlbumTracks;
+
+         if(mService.isClientControlConnected()){
+            mService.createPlaylist(tracks, true, index );
+            return true;
+         }
+         else{
+            return false;
+         }
+      }
+
+      @Override
+      protected void onProgressUpdate(Intent... values) {
+         super.onProgressUpdate(values);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         if(!_result){
+            Util.showToast(mContext, getString(R.string.info_remote_notconnected));
+         }
+      }
+   }
+   
    @Override
    public void EndOfListReached() {
       loadFurtherItems();
@@ -271,7 +319,7 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabalbumdetailsactivity);
+      setContentView(R.layout.activity_tabalbumdetails);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 

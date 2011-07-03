@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.tvserver;
 
 import java.util.List;
@@ -28,10 +38,12 @@ import android.widget.Spinner;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.views.VirtualCardStateAdapterItem;
@@ -185,7 +197,7 @@ public class TvServerStateActivity extends BaseActivity {
    public void onCreate(Bundle _savedInstanceState) {
       setTitle(R.string.title_tvserver_state);
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tvserverstateactivity);
+      setContentView(R.layout.activity_tvserverstate);
       mListView = (ListView) findViewById(R.id.ListViewCards);
       mStartTimeshift = (Button) findViewById(R.id.ButtonStartTimeshift);
       mStartRecording = (Button) findViewById(R.id.ButtonStartRecording);

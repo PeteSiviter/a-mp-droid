@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import java.io.File;
@@ -104,7 +114,7 @@ public class DownloadsActivity extends Activity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.downloadsactivity);
+      setContentView(R.layout.activity_downloads);
       setTitle(getString(R.string.downloads_title));
 
       mListView = (ListView) findViewById(R.id.ListViewItems);
@@ -216,7 +226,7 @@ public class DownloadsActivity extends Activity {
                   // downloaded completely
                   QuickActionUtils.createQuickAction(_view.getContext(), qa,
                         R.string.quickactions_playdevice,
-                        R.drawable.quickaction_play_device,
+                        R.drawable.quickaction_play,
                         new OnClickListener() {
                            @Override
                            public void onClick(View _view) {
@@ -233,7 +243,7 @@ public class DownloadsActivity extends Activity {
                } else {
                   QuickActionUtils.createQuickAction(_view.getContext(), qa,
                         R.string.quickactions_redownload,
-                        R.drawable.quickaction_sdcard,
+                        R.drawable.quickaction_download,
                         new OnClickListener() {
                            @Override
                            public void onClick(View _view) {

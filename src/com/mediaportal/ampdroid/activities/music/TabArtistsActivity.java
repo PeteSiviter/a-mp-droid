@@ -1,5 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.music;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -13,15 +24,19 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.data.MusicAlbum;
 import com.mediaportal.ampdroid.data.MusicArtist;
+import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter.ILoadingListener;
@@ -30,6 +45,8 @@ import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicArtistTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicArtistThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
+import com.mediaportal.ampdroid.quickactions.ActionItem;
+import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Util;
 
@@ -123,7 +140,48 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
          mStatusBarHandler.setLoading(false);
          mMusicLoaderTask = null;
       }
+   }
 
+   private class CreateArtistPlaylistTask extends AsyncTask<MusicArtist, Intent, Boolean> {
+      private Context mContext;
+
+      private CreateArtistPlaylistTask(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(MusicArtist... _params) {
+         MusicArtist artist = _params[0];
+
+         List<MusicAlbum> albums = mService.getMusicAlbumsByArtist(artist.getTitle());
+         List<MusicTrack> tracks = new ArrayList<MusicTrack>();
+         for (MusicAlbum a : albums) {
+            List<MusicTrack> albumTracks = mService.getSongsOfAlbum(a.getTitle(),
+                  a.getAlbumArtistString());
+            if(albumTracks != null){
+               tracks.addAll(albumTracks);
+            }
+         }
+
+         if (mService.isClientControlConnected()) {
+            mService.createPlaylist(tracks, true, 0);
+            return true;
+         } else {
+            return false;
+         }
+      }
+
+      @Override
+      protected void onProgressUpdate(Intent... values) {
+         super.onProgressUpdate(values);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         if (!_result) {
+            Util.showToast(mContext, getString(R.string.info_remote_notconnected));
+         }
+      }
    }
 
    @Override
@@ -135,7 +193,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabseriesactivity);
+      setContentView(R.layout.activity_tabseries);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 
@@ -176,6 +234,41 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
                   // Again, replace the view
                   TabArtistsActivityGroup.getGroup().replaceView(view);
                }
+            }
+         }
+      });
+      
+      mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+         @Override
+         public boolean onItemLongClick(AdapterView<?> _item, View _view, final int _position,
+               long _id) {
+            try {
+               final MusicArtist selected = (MusicArtist) ((ILoadingAdapterItem) _item
+                     .getItemAtPosition(_position)).getItem();
+               final QuickAction qa = new QuickAction(_view);
+               if (mService.isClientControlConnected()) {
+                  ActionItem playOnClientAction = new ActionItem();
+
+                  playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
+                  playOnClientAction.setIcon(getResources().getDrawable(
+                        R.drawable.quickaction_play_pc));
+                  playOnClientAction.setOnClickListener(new OnClickListener() {
+                     @Override
+                     public void onClick(View _view) {
+                        CreateArtistPlaylistTask task = new CreateArtistPlaylistTask(_view.getContext());
+                        task.execute(selected);
+                        
+                        qa.dismiss();
+                     }
+                  });
+                  qa.addActionItem(playOnClientAction);
+               }
+
+               qa.setAnimStyle(QuickAction.ANIM_AUTO);
+               qa.show();
+               return true;
+            } catch (Exception ex) {
+               return false;
             }
          }
       });
@@ -222,7 +315,7 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
             return true;
          }
       });
-      
+
       MenuItem setDefaultViewItem = _menu.add(0, Menu.FIRST + 1, Menu.NONE,
             getString(R.string.menu_set_default_view));
       setDefaultViewItem.setIcon(R.drawable.ic_menu_set_as);

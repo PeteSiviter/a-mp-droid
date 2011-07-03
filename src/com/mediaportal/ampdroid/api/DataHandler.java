@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.api;
 
 import java.util.ArrayList;
@@ -9,6 +19,7 @@ import android.graphics.Bitmap;
 
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
 import com.mediaportal.ampdroid.data.FileInfo;
+import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
@@ -20,7 +31,8 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.data.StreamProfile;
+import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
 import com.mediaportal.ampdroid.data.TvCardDetails;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
@@ -30,8 +42,9 @@ import com.mediaportal.ampdroid.data.TvRecording;
 import com.mediaportal.ampdroid.data.TvSchedule;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
-import com.mediaportal.ampdroid.database.MediaAccessDatabaseHandler;
+import com.mediaportal.ampdroid.database.MediaDatabaseHandler;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 
 public class DataHandler {
@@ -40,19 +53,18 @@ public class DataHandler {
    private static List<RemoteClient> clientList = new ArrayList<RemoteClient>();
    private static DataHandler dataHandler;
    private IMediaAccessDatabase mediaDatabase;
-   
 
    private DataHandler(RemoteClient _client, Context _context) {
       client = _client;
 
-      mediaDatabase = new MediaAccessDatabaseHandler(_context, _client.getClientId());
+      mediaDatabase = new MediaDatabaseHandler(_context, _client.getClientId());
    }
 
    public static boolean setupRemoteHandler(RemoteClient _client, Context _context,
          boolean _checkConnection) {
       dataHandler = new DataHandler(_client, _context);
       setFunctions(_client, false);
-   
+
       return true;
    }
 
@@ -103,7 +115,7 @@ public class DataHandler {
    public static void addRemoteClient(RemoteClient _client) {
       clientList.add(_client);
    }
-   
+
    public static List<RemoteClient> getRemoteClients() {
       return clientList;
    }
@@ -135,8 +147,8 @@ public class DataHandler {
       return client.getRemoteAccessApi().getFoldersForFolder(_path);
    }
 
-   public FileInfo getFileInfo(String _path) {
-      return client.getRemoteAccessApi().getFileInfo(_path);
+   public FileInfo getFileInfo(String _itemId, DownloadItemType _itemType) {
+      return client.getRemoteAccessApi().getFileInfo(_itemId, _itemType);
    }
 
    public Date getMovieDatabaseLastUpdated() {
@@ -456,10 +468,10 @@ public class DataHandler {
       return episode;
    }
 
-   public SupportedFunctions getSupportedFunctions() {
+   public WebServiceDescription getSupportedFunctions() {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       mediaDatabase.open();
-      SupportedFunctions supported = mediaDatabase.getSupportedFunctions();
+      WebServiceDescription supported = mediaDatabase.getSupportedFunctions();
 
       if (supported == null) {
          supported = remoteAccess.getSupportedFunctions();
@@ -522,12 +534,12 @@ public class DataHandler {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       return remoteAccess.getAllMusicTracks();
    }
-   
+
    public List<MusicAlbum> getMusicAlbumsByArtist(String _artist) {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       return remoteAccess.getMusicAlbumsByArtist(_artist);
    }
-   
+
    public List<MusicTrack> getSongsOfAlbum(String albumName, String albumArtistName) {
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       return remoteAccess.getSongsOfAlbum(albumName, albumArtistName);
@@ -675,8 +687,8 @@ public class DataHandler {
    public String getDownloadUri(String _itemId, DownloadItemType _itemType) {
       return client.getRemoteAccessApi().getDownloadUri(_itemId, _itemType);
    }
-   
-   public ApiCredentials getDownloadCredentials(){
+
+   public ApiCredentials getDownloadCredentials() {
       ApiCredentials cred = new ApiCredentials();
       cred.setUseAut(client.getRemoteAccessApi().getUseAuth());
       cred.setUsername(client.getRemoteAccessApi().getUserName());
@@ -684,12 +696,12 @@ public class DataHandler {
       return cred;
    }
 
-   public void playVideoFileOnClient(String _fileName) {
-      client.getClientControlApi().startVideo(_fileName);
+   public void playVideoFileOnClient(String _fileName, int _pos) {
+      client.getClientControlApi().startVideo(_fileName, _pos);
    }
-   
-   public void playAudioFileOnClient(String _fileName) {
-      client.getClientControlApi().startAudio(_fileName);
+
+   public void playAudioFileOnClient(String _fileName, int _pos) {
+      client.getClientControlApi().startAudio(_fileName, _pos);
    }
 
    public void sendRemoteButtonDown(RemoteKey _remoteKey, int _pause) {
@@ -736,10 +748,98 @@ public class DataHandler {
    public IApiInterface getRemoteControlApi() {
       return client.getClientControlApi();
    }
-   
+
    public IApiInterface getTvApi() {
       return client.getTvControlApi();
    }
+   
+   public String startTvStreaming(String _id, long _position) {
+      return client.getTvControlApi().startTvStreaming(_id, _position);
+      }
 
+   public boolean initTvStreaming(String _id, String _client, int _channel,
+         String _profile) {
+      return client.getTvControlApi().initTvStreaming(_id, _client, _channel, _profile);
+         
+   }
+   
+   public void stopTvStreaming(String _file) {
+      client.getTvControlApi().stopTvStreaming(_file);
+   }
+   
+   public List<StreamProfile> getTvTranscoderProfiles() {
+      return client.getTvControlApi().getTvTranscoderProfiles();
+   }
 
+   public String startStreaming(String _id, long _position) {
+      return client.getRemoteAccessApi().startStreaming(_id, _position);
+   }
+
+   public void initStreaming(String _id, String _client, DownloadItemType _itemType,
+         String _itemId, String _profile) {
+      client.getRemoteAccessApi().initStreaming(_id, _client, _itemType, _itemId, _profile);
+   }
+
+   public StreamTranscodingInfo getTransocdingInfo(String _id) {
+      return client.getRemoteAccessApi().getTransocdingInfo(_id);
+   }
+
+   public void stopStreaming(String _file) {
+      client.getRemoteAccessApi().stopStreaming(_file);
+   }
+   
+   
+
+   public MediaInfo getMediaInfo(String _itemId, DownloadItemType _itemType) {
+      return client.getRemoteAccessApi().getMediaInfo(_itemId, _itemType);
+   }
+
+   public Bitmap getBitmapFromMedia(DownloadItemType _itemType, String _itemId, int _position, int _maxWidth, int _maxHeight) {
+      return client.getRemoteAccessApi().getBitmapFromMedia(_itemType, _itemId, _position, _maxWidth, _maxHeight);
+   }
+
+   public List<StreamProfile> getTranscoderProfiles() {
+      return client.getRemoteAccessApi().getTranscoderProfiles();
+   }
+
+   public void createPlaylist(List<MusicTrack> _tracks, boolean _autoPlay, int _startPos) {
+      client.getClientControlApi().createPlaylistWithSongs(_tracks, _autoPlay, _startPos);
+   }
+   
+   public void createPlaylistWithEpisodes(List<SeriesEpisode> episodes, boolean _autoPlay, int _startPos) {
+      client.getClientControlApi().createPlaylistWithEpisodes(episodes, _autoPlay, _startPos);
+   }
+
+   public void requestPlaylist(String _type) {
+      client.getClientControlApi().requestPlaylist(_type);
+   }
+
+   public void movePlaylistItem(String _type, int _oldIndex, int _newIndex) {
+      client.getClientControlApi().movePlaylistItem(_type, _oldIndex, _newIndex);
+   }
+
+   public void playPlaylistItem(String _type, int _index) {
+      client.getClientControlApi().playPlaylistItem(_type, _index);
+   }
+
+   public void clearPlaylistItems(String _type) {
+      client.getClientControlApi().clearPlaylistItems(_type);
+   }
+
+   public void removePlaylistItem(String _type, int _index) {
+      client.getClientControlApi().removePlaylistItem(_type, _index);
+   }
+
+   public boolean initRecordingStreaming(String _id, String _client, int _recordingId, String _profile, int _startPosition) {
+      return client.getTvControlApi().initRecordingStreaming(_id, _client, _recordingId, _profile, _startPosition);
+   }
+   
+   public String startRecordingStreaming(String _id)
+   {
+      return client.getTvControlApi().startRecordingStreaming(_id);
+   }
+   
+   void stopRecordingStreaming(String _id){
+      client.getTvControlApi().stopRecordingStreaming(_id);
+   }
 }

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import android.app.Activity;
@@ -100,27 +110,29 @@ public class StatusBarActivityHandler {
       mLayoutControls = (LinearLayout) mParent.findViewById(R.id.LinearLayoutControls);
 
       mPositionSlider = (SeekBar) mParent.findViewById(R.id.SeekBarSliderPosition);
-      mPositionSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-         @Override
-         public void onStopTrackingTouch(SeekBar _seekBar) {
-            int seekValue = _seekBar.getProgress();// between 0 - 100
-            if (mRemote.isClientControlConnected()) {
-               mRemote.sendClientPosition(seekValue);
-               mIgnoreProgressChangedCounter = 3;
+      if (mPositionSlider != null) {
+         mPositionSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar _seekBar) {
+               int seekValue = _seekBar.getProgress();// between 0 - 100
+               if (mRemote.isClientControlConnected()) {
+                  mRemote.sendClientPosition(seekValue);
+                  mIgnoreProgressChangedCounter = 3;
+               }
+
+               mProgressSeekBarChanging = false;
             }
 
-            mProgressSeekBarChanging = false;
-         }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+               mProgressSeekBarChanging = true;
+            }
 
-         @Override
-         public void onStartTrackingTouch(SeekBar seekBar) {
-            mProgressSeekBarChanging = true;
-         }
-
-         @Override
-         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-         }
-      });
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+         });
+      }
 
       if (mPauseButton != null) {
          mPauseButton.setOnClickListener(new OnClickListener() {
@@ -298,12 +310,12 @@ public class StatusBarActivityHandler {
       } else {
          setNowPlayingInfoVisible(false);
       }
-      if (currentTitle != null) {
+      if (currentTitle != null && mStatusText != null && mSliderTitleText != null) {
          mStatusText.setText(currentTitle);
          mSliderTitleText.setText(currentTitle);
       }
 
-      if (currentDesc != null) {
+      if (currentDesc != null && mSliderTextDetails != null) {
          mSliderTextDetails.setText(currentDesc);
       }
 
@@ -342,10 +354,12 @@ public class StatusBarActivityHandler {
    }
 
    public void setConnected(boolean _connected) {
-      if (_connected) {
-         mRemoteButton.setBackgroundResource(R.drawable.home_mepo_connected);
-      } else {
-         mRemoteButton.setBackgroundResource(R.drawable.home_mepo);
+      if (mRemoteButton != null) {
+         if (_connected) {
+            mRemoteButton.setBackgroundResource(R.drawable.home_mepo_connected);
+         } else {
+            mRemoteButton.setBackgroundResource(R.drawable.home_mepo);
+         }
       }
    }
 
@@ -358,11 +372,17 @@ public class StatusBarActivityHandler {
    }
 
    public boolean getLoading() {
-      return actionBar.getLoading();
+      if (actionBar != null) {
+         return actionBar.getLoading();
+      } else {
+         return false;
+      }
    }
 
    public void setLoading(boolean _loading) {
-      actionBar.setLoading(_loading);
+      if (actionBar != null) {
+         actionBar.setLoading(_loading);
+      }
    }
 
    private void sendRemoteKey(RemoteKey _button) {
@@ -535,41 +555,57 @@ public class StatusBarActivityHandler {
          }
       }
    }
+   
+   public boolean isVisible(){
+      if(mStatusBar != null){
+         return mStatusBar.getVisibility() == View.VISIBLE;
+      }
+      return false;
+   }
 
    public void hide() {
-      mSlider.setVisibility(View.GONE);
-      mStatusBar.setVisibility(View.GONE);
-      if (mBottomMarginLayout != null) {
-         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
-               LayoutParams.FILL_PARENT);
-         lp.gravity = Gravity.TOP;
-         lp.setMargins(0, DpiUtils.getPxFromDpi(mParent, 50), 0, 0);
-         mBottomMarginLayout.setLayoutParams(lp);
+      if (mSlider != null && mStatusBar != null) {
+         mSlider.setVisibility(View.GONE);
+         mStatusBar.setVisibility(View.GONE);
+         if (mBottomMarginLayout != null) {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
+                  LayoutParams.FILL_PARENT);
+            lp.gravity = Gravity.TOP;
+            lp.setMargins(0, DpiUtils.getPxFromDpi(mParent, 50), 0, 0);
+            mBottomMarginLayout.setLayoutParams(lp);
+         }
       }
    }
 
    public void show() {
-      mSlider.setVisibility(View.VISIBLE);
-      mStatusBar.setVisibility(View.VISIBLE);
+      if (mSlider != null && mStatusBar != null) {
+         mSlider.setVisibility(View.VISIBLE);
+         mStatusBar.setVisibility(View.VISIBLE);
 
-      if (mBottomMarginLayout != null) {
-         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
-               LayoutParams.FILL_PARENT);
-         lp.gravity = Gravity.TOP;
-         lp.setMargins(0, DpiUtils.getPxFromDpi(mParent, 50), 0, DpiUtils.getPxFromDpi(mParent, 90));
-         mBottomMarginLayout.setLayoutParams(lp);
+         if (mBottomMarginLayout != null) {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
+                  LayoutParams.FILL_PARENT);
+            lp.gravity = Gravity.TOP;
+            lp.setMargins(0, DpiUtils.getPxFromDpi(mParent, 50), 0,
+                  DpiUtils.getPxFromDpi(mParent, 90));
+            mBottomMarginLayout.setLayoutParams(lp);
+         }
       }
    }
 
    public void setImage(RemoteImageMessage _img) {
       if (_img == null) {
          StatusBarActivityHandler.currentImagePath = null;
-         mImage.setImageBitmap(null);
+         if (mImage != null) {
+            mImage.setImageBitmap(null);
+         }
       } else {
          StatusBarActivityHandler.currentImagePath = _img.getImagePath();
          byte[] bytes = _img.getImage();
-         mImage.setAlpha(50);
-         mImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+         if (mImage != null) {
+            mImage.setAlpha(50);
+            mImage.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+         }
       }
    }
 

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 /*
  *       Copyright (C) 2010-2011  Benjamin Gmeiner 
  *       mail.bgmeiner@gmail.com
@@ -105,7 +115,8 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
             String url = mService.getDownloadUri(String.valueOf(track.getTrackId()),
                   DownloadItemType.MusicTrackItem);
-            FileInfo info = mService.getFileInfo(track.getFilePath());
+            FileInfo info = mService.getFileInfo(String.valueOf(track.getTrackId()),
+                  DownloadItemType.MusicTrackItem);
             String dirName = DownloaderUtils.getMusicTrackPath(album.getAlbumArtists()[0],
                   album.getTitle());
             final String fileName = dirName
@@ -148,6 +159,41 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
       @Override
       protected void onPostExecute(Boolean _result) {
 
+      }
+   }
+   
+   private class CreateAlbumPlaylistTask extends AsyncTask<MusicAlbum, Intent, Boolean> {
+      private Context mContext;
+
+      private CreateAlbumPlaylistTask(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(MusicAlbum... _params) {
+         MusicAlbum album = _params[0];
+         List<MusicTrack> tracks = mService.getSongsOfAlbum(album.getTitle(),
+               album.getAlbumArtistString());
+
+         if(mService.isClientControlConnected()){
+            mService.createPlaylist(tracks, true, 0);
+            return true;
+         }
+         else{
+            return false;
+         }
+      }
+
+      @Override
+      protected void onProgressUpdate(Intent... values) {
+         super.onProgressUpdate(values);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         if(!_result){
+            Util.showToast(mContext, getString(R.string.info_remote_notconnected));
+         }
       }
    }
 
@@ -252,7 +298,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabseriesactivity);
+      setContentView(R.layout.activity_tabseries);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 
@@ -360,7 +406,7 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                      ActionItem sdCardAction = new ActionItem();
                      sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
                      sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
+                           .setIcon(getResources().getDrawable(R.drawable.quickaction_download));
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
@@ -377,13 +423,13 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
 
                      playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
                      playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_device));
+                           R.drawable.quickaction_play_pc));
                      playOnClientAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           // TODO: Play complete album on client
-                           Util.showToast(_view.getContext(),
-                                 getString(R.string.info_not_implemented));
+                           CreateAlbumPlaylistTask task = new CreateAlbumPlaylistTask(_view.getContext());
+                           task.execute(selected);
+                           
                            qa.dismiss();
                         }
                      });

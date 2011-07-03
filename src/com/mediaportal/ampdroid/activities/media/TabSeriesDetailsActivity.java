@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.media;
 
 import java.io.File;
@@ -37,6 +47,7 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.controls.ListViewItemOnTouchListener;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
@@ -54,6 +65,7 @@ import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabSeriesDetailsActivity extends Activity {
@@ -75,6 +87,7 @@ public class TabSeriesDetailsActivity extends Activity {
    private LoadSeriesDetailsTask mLoadSeriesTask;
    private LoadSeasonsDetailsTask mLoadSeasonTask;
    private DownloadSeasonTask mSeasonDownloaderTask;
+   private PlaySeasonTask mSeasonPlayTask;
    private DataHandler mService;
    private ProgressDialog mLoadingDialog;
    private BaseTabActivity mBaseActivity;
@@ -101,7 +114,8 @@ public class TabSeriesDetailsActivity extends Activity {
 
             String url = mService.getDownloadUri(String.valueOf(ep.getId()),
                   DownloadItemType.TvSeriesItem);
-            FileInfo info = mService.getFileInfo(epFile);
+            FileInfo info = mService.getFileInfo(String.valueOf(ep.getId()),
+                  DownloadItemType.TvSeriesItem);
             String dirName = DownloaderUtils.getTvEpisodePath(mSeries.getPrettyName(), ep);
             final String fileName = dirName + Utils.getFileNameWithExtension(epFile, "\\");
 
@@ -113,8 +127,8 @@ public class TabSeriesDetailsActivity extends Activity {
                job.setDisplayName(mSeriesName + ": " + ep.toString());
                job.setMediaType(MediaItemType.Video);
                job.setGroupName(mSeriesName + ", "
-                     + mContext.getString(R.string.media_series_season) + " " + season.getSeasonNumber()
-                     + " (" + (i + 1) + "/" + epCount + ")");
+                     + mContext.getString(R.string.media_series_season) + " "
+                     + season.getSeasonNumber() + " (" + (i + 1) + "/" + epCount + ")");
                job.setGroupPart(i);
                job.setGroupSize(epCount);
                if (info != null) {
@@ -144,6 +158,34 @@ public class TabSeriesDetailsActivity extends Activity {
       @Override
       protected void onPostExecute(Boolean _result) {
 
+      }
+   }
+
+   private class PlaySeasonTask extends AsyncTask<SeriesSeason, Intent, Boolean> {
+      private Context mContext;
+
+      private PlaySeasonTask(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(SeriesSeason... _params) {
+         SeriesSeason season = _params[0];
+         List<SeriesEpisode> episodes = mService.getAllEpisodesForSeason(mSeriesId,
+               season.getSeasonNumber());
+
+         mService.createPlaylistWithEpisodes(episodes, true, 0);
+         return true;
+      }
+
+      @Override
+      protected void onProgressUpdate(Intent... values) {
+         super.onProgressUpdate(values);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         mSeasonPlayTask = null;
       }
    }
 
@@ -267,43 +309,13 @@ public class TabSeriesDetailsActivity extends Activity {
                            R.drawable.listview_imageloading_poster, mContext, image);
                   }
 
-                  view.setOnTouchListener(new OnTouchListener() {
-
-                     @Override
-                     public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                           v.setBackgroundResource(android.R.drawable.list_selector_background);
-                        } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-                           v.setBackgroundColor(Color.TRANSPARENT);
-                        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-
-                        } else {
-                           v.setBackgroundColor(Color.TRANSPARENT);
-                        }
-
-                        return false;
-                     }
-                  });
-
+                  view.setOnTouchListener(new ListViewItemOnTouchListener());
                   view.setOnClickListener(new OnClickListener() {
-
                      @Override
                      public void onClick(View _view) {
-                        Intent myIntent = new Intent(_view.getContext(), TabEpisodesActivity.class);
                         SeriesSeason s = (SeriesSeason) _view.getTag();
-                        myIntent.putExtra("series_id", s.getSeriesId());
-                        myIntent.putExtra("season_number", s.getSeasonNumber());
-                        myIntent.putExtra("series_name", mSeries.getPrettyName());
 
-                        myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                        // Create the view using FirstGroup's
-                        // LocalActivityManager
-                        View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
-                              .startActivity("season_episodes", myIntent).getDecorView();
-
-                        // Again, replace the view
-                        TabSeriesActivityGroup.getGroup().replaceView(view);
+                        openDetails(s);
                      }
                   });
 
@@ -319,7 +331,7 @@ public class TabSeriesDetailsActivity extends Activity {
                               ActionItem sdCardAction = new ActionItem();
                               sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
                               sdCardAction.setIcon(getResources().getDrawable(
-                                    R.drawable.quickaction_sdcard));
+                                    R.drawable.quickaction_download));
                               sdCardAction.setOnClickListener(new OnClickListener() {
                                  @Override
                                  public void onClick(final View _view) {
@@ -354,29 +366,30 @@ public class TabSeriesDetailsActivity extends Activity {
                                  }
                               });
                               qa.addActionItem(sdCardAction);
+                              
+                              QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                                    new OnClickListener() {
+                                 @Override
+                                 public void onClick(View _view) {
+                                    mSeasonPlayTask = new PlaySeasonTask(_view.getContext());
+                                    mSeasonPlayTask.execute(s);
 
-                              if (mService.isClientControlConnected()) {
-                                 ActionItem playOnClientAction = new ActionItem();
+                                    Util.showToast(_view.getContext(),
+                                          getString(R.string.info_not_implemented));
+                                    // mService.playFileOnClient(epFile);
 
-                                 playOnClientAction
-                                       .setTitle(getString(R.string.quickactions_playclient));
-                                 playOnClientAction.setIcon(getResources().getDrawable(
-                                       R.drawable.quickaction_play_device));
-                                 playOnClientAction.setOnClickListener(new OnClickListener() {
-                                    @Override
-                                    public void onClick(View _view) {
-                                       // TODO: Add all files to playlist and
-                                       // start
-                                       // playback
-                                       Util.showToast(_view.getContext(),
-                                             getString(R.string.info_not_implemented));
-                                       // mService.playFileOnClient(epFile);
+                                    qa.dismiss();
+                                 }
+                              });
 
-                                       qa.dismiss();
-                                    }
-                                 });
-                                 qa.addActionItem(playOnClientAction);
-                              }
+                              QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
+                                    new View.OnClickListener() {
+                                       @Override
+                                       public void onClick(View arg0) {
+                                          openDetails(s);
+                                          qa.dismiss();
+                                       }
+                                    });
 
                               qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
@@ -402,10 +415,27 @@ public class TabSeriesDetailsActivity extends Activity {
       }
    }
 
+   private void openDetails(SeriesSeason s) {
+      Intent myIntent = new Intent(this, TabEpisodesActivity.class);
+      myIntent.putExtra("series_id", s.getSeriesId());
+      myIntent.putExtra("season_number", s.getSeasonNumber());
+      myIntent.putExtra("series_name", mSeries.getPrettyName());
+
+      myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+      // Create the view using FirstGroup's
+      // LocalActivityManager
+      View view = TabSeriesActivityGroup.getGroup().getLocalActivityManager()
+            .startActivity("season_episodes", myIntent).getDecorView();
+
+      // Again, replace the view
+      TabSeriesActivityGroup.getGroup().replaceView(view);
+   }
+
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabseriesdetailsactivity);
+      setContentView(R.layout.activity_tabseriesdetails);
       mSeasonLayout = (LinearLayout) findViewById(R.id.LinearLayoutSeasons);
       mSeriesPoster = (ImageView) findViewById(R.id.ImageViewSeriesPoster);
       mTextViewSeriesName = (TextView) findViewById(R.id.TextViewSeriesName);

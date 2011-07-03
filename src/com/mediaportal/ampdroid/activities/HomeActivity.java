@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import android.app.AlertDialog;
@@ -6,15 +16,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.activities.settings.ClientPreference;
-import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.api.ConnectionState;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
-import com.mediaportal.ampdroid.utils.Constants;
+import com.mediaportal.ampdroid.utils.AdUtils;
+import com.mediaportal.ampdroid.utils.DpiUtils;
 import com.mediaportal.ampdroid.utils.Util;
 import com.mediaportal.ampdroid.utils.WakeOnLan;
 
@@ -33,7 +49,7 @@ public class HomeActivity extends BaseActivity {
          String loader = _params[0];
 
          if (loader.equals("media")) {
-            SupportedFunctions functions = mService.getSupportedFunctions();
+            WebServiceDescription functions = mService.getSupportedFunctions();
             if (functions != null) {
 
                Intent myIntent = new Intent(mContext, MediaActivity.class);
@@ -42,36 +58,31 @@ public class HomeActivity extends BaseActivity {
 
                myIntent.putExtra("supports_video", functions.supportsVideo());
                myIntent.putExtra("supports_series", functions.supportsTvSeries());
-               myIntent.putExtra("supports_movies", functions.supportsMovies());
+               myIntent.putExtra("supports_movingpictures", functions.supportsMovingPictures());
                return myIntent;
-            }
-            else{
+            } else {
                publishProgress(loader);
             }
 
          } else if (loader.equals("music")) {
-            SupportedFunctions functions = mService.getSupportedFunctions();
+            WebServiceDescription functions = mService.getSupportedFunctions();
             if (functions != null) {
                Intent myIntent = new Intent(mContext, MusicActivity.class);
                return myIntent;
-            }
-            else{
+            } else {
                publishProgress(loader);
             }
          } else if (loader.equals("tvservice")) {
             if (mService.isTvServiceActive()) {
                Intent myIntent = new Intent(mContext, TvServerOverviewActivity.class);
                return myIntent;
-            }
-            else{
+            } else {
                publishProgress(loader);
             }
          }
 
          return null;
       }
-
-
 
       @Override
       protected void onProgressUpdate(String... _params) {
@@ -88,11 +99,10 @@ public class HomeActivity extends BaseActivity {
             ip = mService.getTvApi().getServer();
             port = mService.getTvApi().getPort();
          }
-         
-         final String macString = mac;//we need a final for the dialog
-         
+
+         final String macString = mac;// we need a final for the dialog
+
          boolean autoConnect = PreferencesManager.isWolAutoConnect();
-         
 
          if (autoConnect) {
             if (mac != null && !mac.equals("")) {
@@ -114,7 +124,7 @@ public class HomeActivity extends BaseActivity {
                builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
                      new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                           //user wants to send WOL
+                           // user wants to send WOL
                            Util.showToast(mContext, getString(R.string.home_wol_running));
                            WakeOnLan.sendMagicPacket(macString);
                         }
@@ -127,14 +137,12 @@ public class HomeActivity extends BaseActivity {
                         }
                      });
                builder.create().show();
-               
-            }
-            else{
+
+            } else {
                Util.showToast(mContext, getString(R.string.info_no_connection));
             }
          }
-         
-         
+
          super.onProgressUpdate(_params);
       }
 
@@ -143,7 +151,7 @@ public class HomeActivity extends BaseActivity {
          if (_intent != null) {
             startActivity(_intent);
          } else {
-            
+
          }
          mStatusBarHandler.setLoading(false);
          mServiceLoaderTask = null;
@@ -154,7 +162,7 @@ public class HomeActivity extends BaseActivity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.homescreen);
+      setContentView(R.layout.activity_homescreen);
 
       final ImageButton buttonRemote = (ImageButton) findViewById(R.id.ImageButtonRemote);
       buttonRemote.setOnClickListener(new View.OnClickListener() {
@@ -213,13 +221,93 @@ public class HomeActivity extends BaseActivity {
       buttonPlugins.setOnClickListener(new View.OnClickListener() {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
+            /*
+            if (mService.isClientControlConnected()) {
+               mService.removePlaylistItem("music", 0);
 
-            Intent myIntent = new Intent(_view.getContext(), DownloadsActivity.class);
-            startActivity(myIntent);
+               mService.movePlaylistItem("music", 0, 5);
+
+               mService.requestPlaylist("music");
+
+               mService.clearPlaylistItems("music");
+            }
+
+            /*
+             * Intent download = new Intent(_view.getContext(),
+             * StreamingDetailsActivity.class); download.putExtra("video_id",
+             * "1084101"); download.putExtra("video_type", 2);
+             * download.putExtra("video_name",
+             * "Community: Introduction to Film"); startActivity(download);
+             */
+
+            // Intent myIntent = new Intent(_view.getContext(),
+            // VideoPlayerActivity.class);
+            // startActivity(myIntent);
             // Util.showToast(_view.getContext(),
             // getString(R.string.info_not_implemented));
+
+            // DownloadJob job = new DownloadJob();
+            // job.setUrl("http://10.0.0.14:44321/GmaWebService/MediaAccessService/stream/StartStreaming?source=c:\\got.avi&profileName=android");
+            // job.setFileName("got.mpeg");
+            // job.setDisplayName("Streaming");
+            // job.setMediaType(MediaItemType.Video);
+            //
+            // job.setAuth("admin", "admin");
+            //
+            // Intent download =
+            // ItemDownloaderHelper.createDownloadIntent(_view.getContext(),
+            // job);
+            // startService(download);
+
+            // try {
+            // PackageManager mgr = getPackageManager();
+            //
+            // Intent intent = new Intent(Intent.ACTION_RUN);
+            // intent.setClassName("com.quoord.tapatalkpro.activity",
+            // "com.quoord.tapatalkpro.activity.ForumNavigationActivity");
+            // intent.putExtra("url", "http://forum.team-mediaportal.com");
+            // intent.putExtra("forumName", "MediaPortal");
+            // intent.putExtra("forumId", "4549");
+            // startActivity(intent);
+            // } catch (Exception ex) {
+            // Log.e(Constants.LOG_CONST, ex.toString());
+            // }
+
+            // List list = mgr.queryIntentActivities(intent,
+            // PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
+            //
+            // if (list.size() > 0) {
+            // Log.i("Log", "Have application" + list.size());
+            // intent.putExtra("url", "http://forum.team-mediaportal.com");
+            // intent.putExtra("forumName", "MediaPortal");
+            // intent.putExtra("forumId", "4549");
+            // startActivity(intent);
+            // } else {
+            // Log.i("Log", "None application");
+            // }
          }
       });
+
+      
+      setAdPosition();
+
+      AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
+
+   }
+
+   private void setAdPosition() {
+      LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLayoutAdMob);
+      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.FILL_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+      lp.gravity = Gravity.BOTTOM;
+
+      if (mStatusBarHandler != null && mStatusBarHandler.isVisible()) {
+         lp.setMargins(0, 0, 0, DpiUtils.getPxFromDpi(this, 90));
+      } else {
+         lp.setMargins(0, 0, 0, 0);
+      }
+
+      layout.setLayoutParams(lp);
    }
 
    @Override
@@ -227,4 +315,31 @@ public class HomeActivity extends BaseActivity {
       super.onStart();
    }
 
+   @Override
+   public void stateChanged(final ConnectionState _state) {
+      super.stateChanged(_state);
+      runOnUiThread(new Runnable() {
+         @Override
+         public void run() {
+            setAdPosition();
+         }
+      });
+   }
+   
+   @Override
+   public boolean onCreateOptionsMenu(Menu _menu) {
+      super.onCreateOptionsMenu(_menu);
+      MenuItem logoutItem = _menu.add(0, Menu.FIRST, Menu.NONE,
+            getString(R.string.menu_quit_client));
+      logoutItem.setIcon(R.drawable.ic_menu_exit);
+      logoutItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+         @Override
+         public boolean onMenuItemClick(MenuItem item) {
+            finish();
+            return true;
+         }
+      });
+      
+      return true;
+   }
 }

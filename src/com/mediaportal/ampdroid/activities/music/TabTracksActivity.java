@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.music;
 
 import java.io.File;
@@ -147,7 +157,7 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabseriesactivity);
+      setContentView(R.layout.activity_tabseries);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 
@@ -223,13 +233,14 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
                      ActionItem sdCardAction = new ActionItem();
                      sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
                      sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
+                           .setIcon(getResources().getDrawable(R.drawable.quickaction_download));
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(trackId,
                                  DownloadItemType.MusicTrackItem);
-                           FileInfo info = mService.getFileInfo(trackPath);
+                           FileInfo info = mService.getFileInfo(trackId,
+                                 DownloadItemType.MusicTrackItem);
                            ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
                               DownloadJob job = new DownloadJob();
@@ -259,11 +270,11 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
 
                      playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
                      playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_device));
+                           R.drawable.quickaction_play_pc));
                      playOnClientAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
-                           mService.playAudioFileOnClient(trackPath);
+                           mService.playAudioFileOnClient(trackPath, 0);
 
                            qa.dismiss();
                         }

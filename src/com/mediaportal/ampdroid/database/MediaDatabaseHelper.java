@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.database;
 
 import android.content.Context;
@@ -13,7 +23,7 @@ import com.mediaportal.ampdroid.data.Series;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.data.SupportedFunctions;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 
 public class MediaDatabaseHelper extends SQLiteOpenHelper {
@@ -53,8 +63,8 @@ public class MediaDatabaseHelper extends SQLiteOpenHelper {
       mCacheSettingsString = SqliteAnnotationsHelper.getCreateTableStringFromClass(CacheItemsSetting.TABLE_NAME, 
             CacheItemsSetting.class, true);
       
-      mSupportedFunctionsString = SqliteAnnotationsHelper.getCreateTableStringFromClass(SupportedFunctions.TABLE_NAME, 
-            SupportedFunctions.class, true);
+      mSupportedFunctionsString = SqliteAnnotationsHelper.getCreateTableStringFromClass(WebServiceDescription.TABLE_NAME, 
+            WebServiceDescription.class, true);
       
    }
 

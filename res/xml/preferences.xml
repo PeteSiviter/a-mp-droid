@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2011 Benjamin Gmeiner.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Benjamin Gmeiner - Project Owner
+-->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/settings_categories_clients"
 		android:key="cat_clients" android:summary="@string/settings_categories_clients_desc">
@@ -11,16 +21,14 @@
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_general"
 		android:key="cat_general">
-		<CheckBoxPreference android:summary="@string/settings_preference_vibrate_desc"
+		<EditTextPreference android:defaultValue="aMPdroid" android:key="general_clientname" android:dialogTitle="@string/settings_general_clientname_title" android:summary="@string/settings_general_clientname_desc" android:title="@string/settings_general_clientname_title"></EditTextPreference><CheckBoxPreference android:summary="@string/settings_preference_vibrate_desc"
 			android:title="@string/settings_preference_vibrate_title"
 			android:key="general_vibrate"></CheckBoxPreference>
 		<CheckBoxPreference android:key="general_fullscreen"
 			android:summary="@string/settings_general_fullscreen_desc"
 			android:title="@string/settings_general_fullscreen" android:enabled="true"
-			android:defaultValue="true"></CheckBoxPreference>
-		<CheckBoxPreference android:key="auto_connect"
-			android:title="@string/settings_general_autoconnect_title"
-			android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
+			android:defaultValue="true"></CheckBoxPreference><CheckBoxPreference android:key="auto_connect" android:title="@string/settings_general_autoconnect_title" android:summary="@string/settings_general_autoconnect_desc"></CheckBoxPreference>
+		<CheckBoxPreference android:title="@string/settings_general_autoreconnect_title" android:summary="@string/settings_general_autoreconnect_desc" android:key="auto_reconnect"></CheckBoxPreference>
 		<CheckBoxPreference android:key="auto_wol"
 			android:title="@string/settings_general_autowol_title"
 			android:summary="@string/settings_general_autowol_desc"></CheckBoxPreference>
@@ -34,10 +42,6 @@
 		android:key="cat_tvserver">
 		<CheckBoxPreference android:summary="@string/settings_tvserver_showall_desc"
 			android:title="@string/settings_tvserver_showall_title" android:key="tvserver_showall"></CheckBoxPreference>
-		<EditTextPreference android:title="@string/settings_tvserver_clientname_title"
-			android:key="tvserver_clientname" android:summary="@string/settings_tvserver_clientname_desc"
-			android:dialogTitle="@string/settings_tvserver_clientname_title"
-			android:defaultValue="aMPdroid"></EditTextPreference>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/settings_category_media"
 		android:key="cat_media" android:enabled="true">
@@ -97,5 +101,9 @@
 			android:title="@string/settings_media_preload_items_title"
 			android:summary="@string/settings_media_preload_items_desc"
 			android:enabled="true"></ListPreference>
+	</PreferenceCategory>
+	<PreferenceCategory android:key="cat_streaming" android:title="@string/settings_category_streaming">
+		<ListPreference android:entries="@array/settings_streaming_startsettings_text" android:entryValues="@array/settings_streaming_startsettings_values" android:key="streaming_buffer" android:summary="@string/settings_streaming_buffering_desc" android:title="@string/settings_streaming_buffering_title" android:dialogTitle="@string/settings_streaming_buffering_title"></ListPreference>
+		<CheckBoxPreference android:key="streaming_use_external" android:title="@string/settings_streaming_useexternal_title" android:summary="@string/settings_streaming_useexternal_desc"></CheckBoxPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

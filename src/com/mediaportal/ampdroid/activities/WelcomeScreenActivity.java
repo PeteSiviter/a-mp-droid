@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
 import java.util.List;
@@ -8,6 +18,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -16,15 +27,24 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest;
+import com.google.ads.AdRequest.ErrorCode;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.settings.SettingsActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.RemoteClient;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.AdUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class WelcomeScreenActivity extends Activity {
@@ -74,7 +94,12 @@ public class WelcomeScreenActivity extends Activity {
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.welcomescreen);
+      setContentView(R.layout.activity_welcomescreen);
+      
+      //AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
+
+      
+
    }
 
    @Override
@@ -92,7 +117,7 @@ public class WelcomeScreenActivity extends Activity {
 
       final Spinner spinner = (Spinner) findViewById(R.id.SpinnerSelectClients);
 
-      RemoteClientsDatabaseHandler remoteClientsDb = new RemoteClientsDatabaseHandler(this);
+      SettingsDatabaseHandler remoteClientsDb = new SettingsDatabaseHandler(this);
       remoteClientsDb.open();
       List<RemoteClient> clients = remoteClientsDb.getClients();
       remoteClientsDb.close();
@@ -149,7 +174,7 @@ public class WelcomeScreenActivity extends Activity {
          }
 
       });
-
+      
       return true;
    }
 

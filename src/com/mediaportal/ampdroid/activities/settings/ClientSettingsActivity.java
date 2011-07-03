@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.settings;
 
 import java.io.IOException;
@@ -20,14 +30,14 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.barcodes.IntentIntegrator;
 import com.mediaportal.ampdroid.barcodes.IntentResult;
 import com.mediaportal.ampdroid.data.RemoteClient;
-import com.mediaportal.ampdroid.database.RemoteClientsDatabaseHandler;
+import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class ClientSettingsActivity extends PreferenceActivity {
    public static final int MENU_ADD_HOST = 1;
    public static final int MENU_EXIT = 2;
    public static final int MENU_ADD_HOST_SCAN = 3;
-   private RemoteClientsDatabaseHandler mDbHandler;
+   private SettingsDatabaseHandler mDbHandler;
    private PreferenceManager mPrefsManager;
    private PreferenceScreen mRoot;
    private QRClientDescription mQrDescription = null;
@@ -44,7 +54,7 @@ public class ClientSettingsActivity extends PreferenceActivity {
       mPrefsManager = getPreferenceManager();
       mRoot = mPrefsManager.createPreferenceScreen(this);
 
-      mDbHandler = new RemoteClientsDatabaseHandler(this);
+      mDbHandler = new SettingsDatabaseHandler(this);
       mDbHandler.open();
       List<RemoteClient> clients = mDbHandler.getClients();
 

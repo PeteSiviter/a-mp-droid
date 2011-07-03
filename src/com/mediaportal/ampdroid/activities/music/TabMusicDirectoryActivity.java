@@ -1,6 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Benjamin Gmeiner.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     Benjamin Gmeiner - Project Owner
+ ******************************************************************************/
 package com.mediaportal.ampdroid.activities.music;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -27,10 +38,10 @@ import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
+import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
 import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderService;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -115,6 +126,48 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
 
    }
 
+   private class CreateDirectoryPlaylistTask extends AsyncTask<String, Intent, Boolean> {
+      private Context mContext;
+
+      private CreateDirectoryPlaylistTask(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(String... _params) {
+         String dir = _params[0];
+         List<FileInfo> files = mService.getFilesForFolder(dir);
+
+         if (mService.isClientControlConnected()) {
+            List<MusicTrack> tracks = new ArrayList<MusicTrack>();
+            for(FileInfo f : files){
+               MusicTrack track = new MusicTrack();
+               track.setTitle(f.getName());
+               track.setFilePath(f.getFullPath());
+               tracks.add(track);
+            }
+            
+            mService.createPlaylist(tracks, true, 0);
+            return true;
+         }
+         else{
+            return false;
+         }
+      }
+
+      @Override
+      protected void onProgressUpdate(Intent... values) {
+         super.onProgressUpdate(values);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         if(!_result){
+            Util.showToast(mContext, getString(R.string.info_remote_notconnected));
+         }
+      }
+   }
+
    @Override
    public void EndOfListReached() {
       loadFurtherItems();
@@ -124,7 +177,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.tabseriesactivity);
+      setContentView(R.layout.activity_tabseries);
 
       mBaseActivity = (BaseTabActivity) getParent().getParent();
 
@@ -193,8 +246,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                            @Override
                            public void onClick(View _view) {
                               Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                              playIntent.setDataAndType(Uri.fromFile(localFile),
-                                    "audio/*");
+                              playIntent.setDataAndType(Uri.fromFile(localFile), "audio/*");
                               startActivity(playIntent);
 
                               qa.dismiss();
@@ -207,13 +259,14 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                      ActionItem sdCardAction = new ActionItem();
                      sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
                      sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_sdcard));
+                           .setIcon(getResources().getDrawable(R.drawable.quickaction_download));
                      sdCardAction.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View _view) {
                            String url = mService.getDownloadUri(trackPath,
                                  DownloadItemType.MusicShareItem);
-                           FileInfo info = mService.getFileInfo(trackPath);
+                           FileInfo info = mService.getFileInfo(trackPath,
+                                 DownloadItemType.MusicShareItem);
 
                            ApiCredentials cred = mService.getDownloadCredentials();
                            if (url != null) {
@@ -241,20 +294,39 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
                   }
 
                   if (mService.isClientControlConnected()) {
-                     ActionItem playOnClientAction = new ActionItem();
+                     if (selected.isFolder()) {
+                        ActionItem playOnClientAction = new ActionItem();
 
-                     playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                     playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_device));
-                     playOnClientAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           mService.playAudioFileOnClient(trackPath);
+                        playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
+                        playOnClientAction.setIcon(getResources().getDrawable(
+                              R.drawable.quickaction_play_pc));
+                        playOnClientAction.setOnClickListener(new OnClickListener() {
+                           @Override
+                           public void onClick(View _view) {
+                              CreateDirectoryPlaylistTask task = new CreateDirectoryPlaylistTask(_view
+                                    .getContext());
+                              task.execute(trackPath);
 
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(playOnClientAction);
+                              qa.dismiss();
+                           }
+                        });
+                        qa.addActionItem(playOnClientAction);
+                     } else {
+                        ActionItem playOnClientAction = new ActionItem();
+
+                        playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
+                        playOnClientAction.setIcon(getResources().getDrawable(
+                              R.drawable.quickaction_play_pc));
+                        playOnClientAction.setOnClickListener(new OnClickListener() {
+                           @Override
+                           public void onClick(View _view) {
+                              mService.playAudioFileOnClient(trackPath, 0);
+
+                              qa.dismiss();
+                           }
+                        });
+                        qa.addActionItem(playOnClientAction);
+                     }
                   }
 
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);

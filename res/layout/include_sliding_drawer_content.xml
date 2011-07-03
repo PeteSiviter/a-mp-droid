@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2011 Benjamin Gmeiner.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v2.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+  
+  Contributors:
+      Benjamin Gmeiner - Project Owner
+-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 	<FrameLayout android:id="@id/content" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:clickable="true" android:orientation="vertical" android:background="@drawable/background">
@@ -12,8 +22,8 @@
 			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:layout_marginBottom="100dip" android:id="@+id/LinearLayoutContent">
 			<TextView android:id="@+id/TextViewSliderTitle"
 				android:textStyle="bold" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_height="wrap_content" android:textSize="18dip" android:layout_marginLeft="20dip" android:layout_marginRight="20dip"></TextView>
-			<ScrollView android:layout_width="fill_parent" android:id="@+id/scrollView1" android:layout_marginTop="20dip" android:layout_height="fill_parent" android:paddingLeft="10dip" android:paddingRight="10dip">
-				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip"></TextView>
+			<ScrollView android:layout_width="fill_parent" android:id="@+id/scrollView1" android:layout_marginTop="20dip" android:layout_height="fill_parent">
+				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:paddingLeft="5dip" android:paddingRight="5dip"></TextView>
 			</ScrollView>
 		</LinearLayout>
 		<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
@@ -34,11 +44,9 @@
 				<LinearLayout android:id="@+id/linearLayout2"
 					android:layout_width="fill_parent" android:layout_height="wrap_content">
 					<SeekBar android:max="100" android:progress="100"
-						android:layout_gravity="bottom" android:thumb="@drawable/media_button_background"
-						android:paddingBottom="5dip" android:paddingLeft="10dip"
-						android:paddingRight="10dip" android:id="@+id/SeekBarSliderPosition"
+						android:layout_gravity="bottom" android:paddingBottom="5dip" android:id="@+id/SeekBarSliderPosition"
 						android:layout_width="fill_parent" android:layout_height="wrap_content"
-						android:paddingTop="5dip" android:progressDrawable="@drawable/progressbar_background"></SeekBar>
+						android:paddingTop="5dip" android:progressDrawable="@drawable/progressbar_background" android:thumb="@drawable/seekbar_thumb" android:paddingLeft="15dip" android:paddingRight="15dip"></SeekBar>
 				</LinearLayout>
 			</LinearLayout>
 		</LinearLayout>
