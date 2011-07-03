@@ -32,6 +32,7 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
+import com.mediaportal.ampdroid.activities.videoplayback.StreamingDetailsActivity;
 import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
@@ -132,14 +133,6 @@ public class TabSharesActivity extends Activity {
 
       mListView = (ListView) findViewById(R.id.ListViewShares);
       mListView.setFastScrollEnabled(true);
-      mListView.setOnItemClickListener(new OnItemClickListener() {
-         @Override
-         public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
-            VideoShare selected = (VideoShare) mListView.getItemAtPosition(_pos);
-            Util.showToast(_view.getContext(), selected.Path);
-            // handleListClick(v, position, selected);
-         }
-      });
 
       mFileItems = new ArrayAdapter<FileInfo>(this, android.R.layout.simple_list_item_1);
 
@@ -156,6 +149,13 @@ public class TabSharesActivity extends Activity {
                FileInfo selected = (FileInfo) mListView.getItemAtPosition(_pos);
                if (selected.isFolder()) {
                   loadFiles(selected.getFullPath());
+               }
+               else{
+                  Intent download = new Intent(_view.getContext(), StreamingDetailsActivity.class);
+                  download.putExtra("video_id", selected.getFullPath());
+                  download.putExtra("video_type", DownloadItemType.VideoShareItem);
+                  download.putExtra("video_name", selected.getName());
+                  startActivity(download);
                }
             }
          }

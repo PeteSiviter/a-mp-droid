@@ -70,7 +70,7 @@ public class PlaybackDatabaseHandler {
       try {
          int videoType = DownloadItemType.toInt(_type);
          Cursor result = mDatabase.query(PlaybackSession.TABLE_NAME, null, "VideoType=" + videoType
-               + " AND VideoId=" + _itemId, null, null, null, null);
+               + " AND VideoId LIKE\"" + _itemId + "\"", null, null, null, null);
 
          PlaybackSession item = null;
          if (result.getCount() == 1) {
@@ -95,7 +95,7 @@ public class PlaybackDatabaseHandler {
                PlaybackSession.class);
 
          int rows = mDatabase.update(PlaybackSession.TABLE_NAME, dbValues, "VideoType=" + videoType
-               + " AND VideoId=" + videoId, null);
+               + " AND VideoId LIKE\"" + videoId + "\"", null);
 
          if (rows != 1) {
             mDatabase.insert(PlaybackSession.TABLE_NAME, null, dbValues);
