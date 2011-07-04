@@ -47,6 +47,11 @@ public class DownloaderUtils {
       return dirName;
    }
    
+   public static String getMusicSharesPath(){
+      String dirName = "Music/Shares/";
+      return dirName;
+   }
+   
    public static String getMusicTrackPath(){
       return getMusicTrackPath(null, null);
    }

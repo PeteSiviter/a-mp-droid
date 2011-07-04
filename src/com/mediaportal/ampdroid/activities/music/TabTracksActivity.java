@@ -34,13 +34,9 @@ import android.widget.ListView;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MusicTrack;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
-import com.mediaportal.ampdroid.downloadservice.DownloadJob;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
@@ -51,10 +47,10 @@ import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicTrackTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicTrackThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabTracksActivity extends Activity implements ILoadingListener {
@@ -209,79 +205,36 @@ public class TabTracksActivity extends Activity implements ILoadingListener {
 
                   final File localFile = new File(DownloaderUtils.getBaseDirectory() + "/"
                         + fileName);
-
+                  
                   if (localFile.exists()) {
-                     ActionItem playItemAction = new ActionItem();
+                     QuickActionUtils.createPlayOnDeviceQuickAction(_view.getContext(), qa,
+                           new OnClickListener() {
+                              @Override
+                              public void onClick(View _view) {
+                                 Intent playIntent = new Intent(Intent.ACTION_VIEW);
+                                 playIntent.setDataAndType(Uri.fromFile(localFile),
+                                       "audio/*");
+                                 startActivity(playIntent);
 
-                     playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-                     playItemAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.fromFile(localFile),
-                                 "audio/*");
-                           startActivity(playIntent);
-
-                           qa.dismiss();
-                        }
-                     });
-
-                     qa.addActionItem(playItemAction);
+                                 qa.dismiss();
+                              }
+                           });
                   } else {
-                     ActionItem sdCardAction = new ActionItem();
-                     sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                     sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_download));
-                     sdCardAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           String url = mService.getDownloadUri(trackId,
-                                 DownloadItemType.MusicTrackItem);
-                           FileInfo info = mService.getFileInfo(trackId,
-                                 DownloadItemType.MusicTrackItem);
-                           ApiCredentials cred = mService.getDownloadCredentials();
-                           if (url != null) {
-                              DownloadJob job = new DownloadJob();
-                              job.setUrl(url);
-                              job.setFileName(fileName);
-                              job.setDisplayName(displayName);
-                              job.setMediaType(MediaItemType.Music);
-                              if (info != null) {
-                                 job.setLength(info.getLength());
-                              }
-                              if (cred.useAut()) {
-                                 job.setAuth(cred.getUsername(), cred.getPassword());
-                              }
+                     QuickActionUtils.createDownloadSdCardQuickAction(_view.getContext(), qa,
+                           mService, trackId, trackId, DownloadItemType.MusicTrackItem,
+                           MediaItemType.Music, fileName, displayName);
+                  }
 
-                              Intent download = ItemDownloaderHelper.createDownloadIntent(
-                                    _view.getContext(), job);
-                              startService(download);
+                  QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa,
+                        mService, new OnClickListener() {
+                           @Override
+                           public void onClick(View _view) {
+                              mService.playAudioFileOnClient(trackPath, 0);
+
+                              qa.dismiss();
                            }
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(sdCardAction);
-                  }
-
-                  if (mService.isClientControlConnected()) {
-                     ActionItem playOnClientAction = new ActionItem();
-
-                     playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                     playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_pc));
-                     playOnClientAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           mService.playAudioFileOnClient(trackPath, 0);
-
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(playOnClientAction);
-                  }
-
+                        });
+                  
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
                   qa.show();

@@ -45,9 +45,9 @@ import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicArtistTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicArtistThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabArtistsActivity extends Activity implements ILoadingListener {
@@ -246,23 +246,17 @@ public class TabArtistsActivity extends Activity implements ILoadingListener {
                final MusicArtist selected = (MusicArtist) ((ILoadingAdapterItem) _item
                      .getItemAtPosition(_position)).getItem();
                final QuickAction qa = new QuickAction(_view);
-               if (mService.isClientControlConnected()) {
-                  ActionItem playOnClientAction = new ActionItem();
-
-                  playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                  playOnClientAction.setIcon(getResources().getDrawable(
-                        R.drawable.quickaction_play_pc));
-                  playOnClientAction.setOnClickListener(new OnClickListener() {
-                     @Override
-                     public void onClick(View _view) {
-                        CreateArtistPlaylistTask task = new CreateArtistPlaylistTask(_view.getContext());
-                        task.execute(selected);
-                        
-                        qa.dismiss();
-                     }
-                  });
-                  qa.addActionItem(playOnClientAction);
-               }
+               
+               QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa,
+                     mService, new OnClickListener() {
+                        @Override
+                        public void onClick(View _view) {
+                           CreateArtistPlaylistTask task = new CreateArtistPlaylistTask(_view.getContext());
+                           task.execute(selected);
+                           
+                           qa.dismiss();
+                        }
+                     });
 
                qa.setAnimStyle(QuickAction.ANIM_AUTO);
                qa.show();

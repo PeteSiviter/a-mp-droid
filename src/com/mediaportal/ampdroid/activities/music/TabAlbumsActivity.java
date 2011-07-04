@@ -77,11 +77,11 @@ import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.MusicAlbumThumbViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.PlaylistUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class TabAlbumsActivity extends Activity implements ILoadingListener {
@@ -360,82 +360,69 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                final MusicAlbum selected = (MusicAlbum) ((ILoadingAdapterItem) _item
                      .getItemAtPosition(_position)).getItem();
                final String trackTitle = selected.getTitle();
+              
                if (trackTitle != null) {
                   String dirName = DownloaderUtils.getMusicTrackPath(selected.getAlbumArtists()[0],
                         selected.getTitle());
                   final QuickAction qa = new QuickAction(_view);
 
-                  final File localFileName = new File(DownloaderUtils.getBaseDirectory() + "/"
+                  final File localFile = new File(DownloaderUtils.getBaseDirectory() + "/"
                         + dirName);
 
-                  if (localFileName.exists()) {
-                     ActionItem playItemAction = new ActionItem();
+                  if (localFile.exists()) {
+                     QuickActionUtils.createPlayOnDeviceQuickAction(_view.getContext(), qa,
+                           new OnClickListener() {
+                              @Override
+                              public void onClick(View _view) {
+                                 // TODO: play complete album with music
+                                 // player
+                                 // TODO: where do I get a list of valid
+                                 // extensions?
+                                 String m3u = PlaylistUtils.createM3UPlaylistFromFolder(
+                                       localFile, new String[] { "mp3" });
+                                 File playlistFile = new File(localFile.getAbsolutePath() + "/"
+                                       + trackTitle + ".m3u");
+                                 FileWriter w;
+                                 try {
+                                    w = new FileWriter(playlistFile);
+                                    w.write(m3u);
+                                    w.flush();
+                                    w.close();
+                                 } catch (IOException e) {
+                                    e.printStackTrace();
+                                 }
 
-                     playItemAction.setTitle(getString(R.string.quickactions_playdevice));
-                     playItemAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-                     playItemAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           // TODO: play complete album with music player
-                           // TODO: where do I get a list of valid extensions?
-                           String m3u = PlaylistUtils.createM3UPlaylistFromFolder(localFileName,
-                                 new String[] { "mp3" });
-                           File playlistFile = new File(localFileName.getAbsolutePath() + "/" + trackTitle + ".m3u");
-                           FileWriter w;
-                           try {
-                              w = new FileWriter(playlistFile);
-                              w.write(m3u);
-                              w.flush();
-                              w.close();
-                           } catch (IOException e) {
-                              e.printStackTrace();
-                           }
-                           
-                           Intent playIntent = new Intent(Intent.ACTION_VIEW);
-                           playIntent.setDataAndType(Uri.fromFile(playlistFile),
-                                 "audio/*");
-                           startActivity(playIntent);
+                                 Intent playIntent = new Intent(Intent.ACTION_VIEW);
+                                 playIntent.setDataAndType(Uri.fromFile(playlistFile), "audio/*");
+                                 startActivity(playIntent);
 
-                           qa.dismiss();
-                        }
-                     });
-
-                     qa.addActionItem(playItemAction);
+                                 qa.dismiss();
+                              }
+                           });
                   } else {
-                     ActionItem sdCardAction = new ActionItem();
-                     sdCardAction.setTitle(getString(R.string.quickactions_downloadsd));
-                     sdCardAction
-                           .setIcon(getResources().getDrawable(R.drawable.quickaction_download));
-                     sdCardAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           DownloadAlbumTask task = new DownloadAlbumTask(_view.getContext());
-                           task.execute(selected);
-
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(sdCardAction);
+                     QuickActionUtils.createDownloadSdCardQuickAction(_view.getContext(), qa,
+                           mService, new View.OnClickListener() {
+                              @Override
+                              public void onClick(View _view) {
+                                 DownloadAlbumTask task = new DownloadAlbumTask(_view.getContext());
+                                 task.execute(selected);
+                                 
+                                 qa.dismiss();
+                              }
+                           });
                   }
-                  if (mService.isClientControlConnected()) {
-                     ActionItem playOnClientAction = new ActionItem();
-
-                     playOnClientAction.setTitle(getString(R.string.quickactions_playclient));
-                     playOnClientAction.setIcon(getResources().getDrawable(
-                           R.drawable.quickaction_play_pc));
-                     playOnClientAction.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View _view) {
-                           CreateAlbumPlaylistTask task = new CreateAlbumPlaylistTask(_view.getContext());
-                           task.execute(selected);
-                           
-                           qa.dismiss();
-                        }
-                     });
-                     qa.addActionItem(playOnClientAction);
-                  }
-
+                  
+                  QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa,
+                        mService, new OnClickListener() {
+                           @Override
+                           public void onClick(View _view) {
+                              CreateAlbumPlaylistTask task = new CreateAlbumPlaylistTask(_view.getContext());
+                              task.execute(selected);
+                              
+                              qa.dismiss();
+                           }
+                        });
+                
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);
                   qa.show();
                } else {

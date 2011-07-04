@@ -108,11 +108,13 @@ public class TabMusicSharesActivity extends Activity implements ILoadingListener
          public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
             ILoadingAdapterItem selectedItem = (ILoadingAdapterItem) mListView
                   .getItemAtPosition(_position);
-            VideoShare selectedFileInfo = (VideoShare) selectedItem.getItem();
-            if (selectedFileInfo != null) {
+            VideoShare selectedShareInfo = (VideoShare) selectedItem.getItem();
+            if (selectedShareInfo != null) {
                Intent myIntent = new Intent(_view.getContext(), TabMusicDirectoryActivity.class);
-               myIntent.putExtra("directory", selectedFileInfo.getPath());
-               myIntent.putExtra("extensions", selectedFileInfo.getExtensions());
+               myIntent.putExtra("directory", selectedShareInfo.getPath());
+               myIntent.putExtra("extensions", selectedShareInfo.getExtensions());
+               myIntent.putExtra("share_name", selectedShareInfo.getName());
+               myIntent.putExtra("share_dir", selectedShareInfo.getPath());
                myIntent.putExtra("activity_group", mActivityGroup);
                myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

@@ -86,6 +86,16 @@ public class QuickActionUtils {
 
       _parent.addActionItem(actionItem);
    }
+   
+   public static void createDownloadSdCardQuickAction(final Context _context, IQuickActionContainer _parent,
+         DataHandler _service, View.OnClickListener _onClickListener){
+      ActionItem actionItem = new ActionItem();
+      actionItem.setTitle(_context.getString(R.string.quickactions_downloadsd));
+      actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_download));
+      actionItem.setOnClickListener(_onClickListener);
+
+      _parent.addActionItem(actionItem);
+   }
 
    public static void createDownloadSdCardQuickAction(final Context _context, IQuickActionContainer _parent,
          DataHandler _service, String _itemId, String _epFile, DownloadItemType _itemType,
@@ -100,6 +110,8 @@ public class QuickActionUtils {
       final MediaItemType mediaType = _mediaType;
       final String fileName = _fileName;
       final String displayName = _displayName;
+      
+      
 
       ActionItem actionItem = new ActionItem();
       actionItem.setTitle(_context.getString(R.string.quickactions_downloadsd));
@@ -156,6 +168,16 @@ public class QuickActionUtils {
             parent.dismiss();
          }
       });
+
+      _parent.addActionItem(actionItem);
+   }
+   
+   public static void createPlayOnDeviceQuickAction(Context _context, IQuickActionContainer _parent,
+         OnClickListener _onClickListener) {
+      ActionItem actionItem = new ActionItem();
+      actionItem.setTitle(_context.getString(R.string.quickactions_playdevice));
+      actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play));
+      actionItem.setOnClickListener(_onClickListener);
 
       _parent.addActionItem(actionItem);
    }
