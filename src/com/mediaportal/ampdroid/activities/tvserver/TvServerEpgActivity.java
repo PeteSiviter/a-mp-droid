@@ -41,6 +41,7 @@ import com.mediaportal.ampdroid.asynctasks.CancelScheduleTask;
 import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
 import com.mediaportal.ampdroid.data.TvProgramBase;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.views.TvServerChannelAdapterItem;
@@ -119,6 +120,7 @@ public class TvServerEpgActivity extends BaseActivity {
                // ILoadingAdapterItem[programs.size() + 1];
                publishProgress(new TvServerChannelAdapterItem(c));
                for (TvProgramBase p : programs) {
+                  p.setTag(c);
                   publishProgress(new TvServerProgramsBaseViewItem(p));
                }
             }
@@ -239,6 +241,13 @@ public class TvServerEpgActivity extends BaseActivity {
                      }
                   });
                   qa.addActionItem(addScheduleAction);
+                  Date now = new Date();
+                  if (now.after(program.getStartTime()) && now.before(program.getEndTime())) {
+                     TvChannel channel = (TvChannel)program.getTag();
+                     QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
+                           mService, String.valueOf(channel.getIdChannel()), DownloadItemType.LiveTv,
+                           channel.getDisplayName(), channel.getDisplayName());
+                  }
                   
                   QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                         new View.OnClickListener() {
@@ -273,6 +282,8 @@ public class TvServerEpgActivity extends BaseActivity {
                            showChannelDetails(channel);
                         }
                      });
+               
+               
                qa.show();
             }
             return true;

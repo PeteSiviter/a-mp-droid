@@ -125,13 +125,13 @@ public class TabVideoDetailsActivity extends Activity {
                         MediaItemType.Video);
                } else {
                   QuickActionUtils.createDownloadSdCardQuickAction(mContext, view, mService,
-                        itemId, movieFile, DownloadItemType.TvSeriesItem, MediaItemType.Video,
+                        itemId, movieFile, DownloadItemType.VideoDatabaseItem, MediaItemType.Video,
                         fileName, displayName);
                }
 
                if (Constants.ENABLE_STREAMING) {
                   QuickActionUtils.createStreamOnClientQuickAction(mContext, view, mService,
-                        itemId, DownloadItemType.TvSeriesItem, fileName, displayName);
+                        itemId, DownloadItemType.VideoDatabaseItem, fileName, displayName);
 
                }
 

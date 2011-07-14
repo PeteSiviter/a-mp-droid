@@ -19,8 +19,12 @@ import com.mediaportal.ampdroid.data.VideoShare;
 
 public class DownloaderUtils {
    public static String getTvEpisodePath(String _seriesName, SeriesEpisode _episode) {
+      return getTvEpisodePath(_seriesName, _episode.getSeasonNumber());
+   }
+   
+   public static String getTvEpisodePath(String _seriesName, int _seasonNumber) {
       String dirName = "Series/" + _seriesName + "/Season."
-            + getNumberWithTrailingZero(_episode.getSeasonNumber()) + "/";
+            + getNumberWithTrailingZero(_seasonNumber) + "/";
       
       return dirName;
    }
@@ -43,7 +47,11 @@ public class DownloaderUtils {
    }
 
    public static String getMoviePath(Movie _movie) {
-      String dirName = "Movies/" + _movie.getName() + "/";
+      return getMoviePath(_movie.getName());
+   }
+   
+   public static String getMoviePath(String _movieName) {
+      String dirName = "Movies/" + _movieName + "/";
       return dirName;
    }
    

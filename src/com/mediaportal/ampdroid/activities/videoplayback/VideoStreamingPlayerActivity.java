@@ -18,31 +18,39 @@ import java.util.Date;
 import java.util.Random;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,6 +64,7 @@ import com.mediaportal.ampdroid.activities.BaseActivity;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.PlaybackSession;
+import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
 import com.mediaportal.ampdroid.database.PlaybackDatabaseHandler;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
@@ -66,18 +75,16 @@ import com.mediaportal.ampdroid.videoplayer.TappableSurfaceView;
 
 public class VideoStreamingPlayerActivity extends BaseActivity implements OnCompletionListener,
       MediaPlayer.OnPreparedListener, SurfaceHolder.Callback {
-   private class StartStreamingTask extends AsyncTask<Boolean, Void, Boolean> {
+   private class StartStreamingTask extends AsyncTask<Boolean, Integer, Boolean> {
       protected Boolean doInBackground(Boolean... _params) {
          boolean init = _params[0];
 
          if (mIsTv) {
-            if (init) {
-               Log.i(Constants.LOG_CONST, "Initialising Tv Stream");
-               boolean success = mService.initTvStreaming(mIdentifier, mClientName,
-                     Integer.parseInt(mStreamingFile), mProfile);
-               if (!success) {
-                  return false;
-               }
+            Log.i(Constants.LOG_CONST, "Initialising Tv Stream");
+            boolean success = mService.initTvStreaming(mIdentifier, mClientName,
+                  Integer.parseInt(mStreamingFile), mProfile);
+            if (!success) {
+               return false;
             }
             mStreamingUrl = mService.startTvStreaming(mIdentifier, mStartPosition / 1000);
 
@@ -85,7 +92,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             Log.i(Constants.LOG_CONST, "Initialising Recording Stream");
             boolean success = mService.initRecordingStreaming(mIdentifier, mClientName,
                   Integer.parseInt(mStreamingFile), mProfile, (int) (mStartPosition / 1000));
-            
+
             if (!success) {
                return false;
             }
@@ -93,10 +100,18 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          } else {
             if (init) {
                Log.i(Constants.LOG_CONST, "Initialising Media Stream");
-               mService.initStreaming(mIdentifier, mClientName, mStreamingType, mStreamingFile,
-                     mProfile);
+               mService.initStreaming(mIdentifier, mClientName, mStreamingType, mStreamingFile);
             }
-            mStreamingUrl = mService.startStreaming(mIdentifier, mStartPosition / 1000);
+
+            if (mStartPosition > 0 && mVideoNeedsPreconversion && !mSeekingAllowedOnVideo) {
+               // the video needs pre-conversion before we can seek -> ask user
+               // if he want's to to start from 0 instead
+               mJumpToPositionWhenAvailable = mStartPosition;
+               mStreamingUrl = null;
+            } else {
+               mStreamingUrl = mService
+                     .startStreaming(mIdentifier, mProfile, mStartPosition / 1000);
+            }
          }
 
          Log.i(Constants.LOG_CONST, "New Streaming url: " + mStreamingUrl);
@@ -106,25 +121,110 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       @Override
       protected void onPostExecute(Boolean _result) {
          if (_result) {
-            if (mUseInternalPlayer) {
-               playVideo(USE_AUTOSTART);
+            if (mStreamingUrl != null) {
+               if (mUseInternalPlayer) {
+                  playVideo(USE_AUTOSTART);
+               } else {
+                  showExternalPlayerStartOverlay(true);
+                  setSeeking(false);
+               }
             } else {
-               showExternalPlayerStartOverlay(true);
-               setSeekingIndicatorEnabled(false);
+               showStartFromBeginningDialog();
             }
          } else {
-            showInitError();
+            showInitError(mContext);
          }
          super.onPostExecute(_result);
       }
 
       @Override
-      protected void onProgressUpdate(Void... values) {
-         // TODO Auto-generated method stub
+      protected void onProgressUpdate(Integer... values) {
+         if (values[0] == 0) {
+
+         }
          super.onProgressUpdate(values);
       }
    }
 
+   public StreamTranscodingInfo mLatestTranscodingInfo;
+
+   private class CheckTranscodingTask extends AsyncTask<Boolean, StreamTranscodingInfo, Boolean> {
+      private boolean mChecking;
+      private boolean mSeekPreparing;
+
+      protected void stopChecking() {
+         mChecking = false;
+      }
+
+      protected Boolean doInBackground(Boolean... _params) {
+         mChecking = true;
+         while (mChecking) {
+            if (mIdentifier != null) {
+               StreamTranscodingInfo info = mService.getTransocdingInfo(mIdentifier);
+               if (info != null) {
+                  publishProgress(info);
+               }
+
+               try {
+                  Thread.sleep(4000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+
+         Log.i(Constants.LOG_CONST, "New Streaming url: " + mStreamingUrl);
+         return true;
+      }
+
+      @Override
+      protected void onPostExecute(Boolean _result) {
+         if (_result) {
+         }
+         super.onPostExecute(_result);
+      }
+
+      @Override
+      protected void onProgressUpdate(StreamTranscodingInfo... values) {
+         StreamTranscodingInfo info = values[0];
+
+         if (mLatestTranscodingInfo == null || (mSeekingAllowedOnVideo && !info.isSeekAvailable())) {
+            setTranscodingStatus(getString(R.string.streaming_seeking_preparing), true);
+
+         }
+
+         if (!mSeekingAllowedOnVideo && info.isSeekAvailable()) {
+            // seeking on video just became available
+            showToast(getString(R.string.streaming_seeking_available));
+            setTranscodingStatus(null, false);
+
+            if (mJumpToPositionWhenAvailable > 0) {
+               mStartPosition = mJumpToPositionWhenAvailable;
+               mJumpToPositionWhenAvailable = 0;
+
+               mStartStreamingTask = new StartStreamingTask();
+               mStartStreamingTask.execute(false);
+            }
+            // mTextViewTranscodingStatus.setAnimation(outToLeftAnimation());
+         }
+
+         if (mSeekPreparing && !info.isSeekPreparing() && !info.isSeekAvailable()) {
+            // preparing of seek failed
+            showToast(getString(R.string.streaming_seeking_preparefailed));
+            setTranscodingStatus(null, false);
+         }
+
+         mSeekingAllowedOnVideo = info.isSeekAvailable();
+         mSeekPreparing = info.isSeekPreparing();
+
+         mLatestTranscodingInfo = info;
+         Log.d(Constants.LOG_CONST, "Transcoding info: " + info.toString());
+
+         super.onProgressUpdate(values);
+      }
+   }
+
+   private long mJumpToPositionWhenAvailable;
    private int mVideoWidth = 0;
    private int mVideoHeight = 0;
    private MediaPlayer mMediaPlayer;
@@ -142,14 +242,15 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    private long mStartPosition;
    private Date mStartSeek;
    private ProgressBar mProgressbarSeeking;
+   private Context mContext;
 
    private String mStreamingFile;
-   protected int mProgressLoaded;
+   private int mProgressLoaded;
    private DownloadItemType mStreamingType;
    private String mStreamingUrl;
    private FileInfo mFileInfo;
    private MediaInfo mMediaInfo;
-   protected boolean mUserTracking;
+   private boolean mUserTracking;
    private boolean mSurfaceCreated;
    private String mIdentifier;
    private String mProfile;
@@ -164,11 +265,19 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    private ImageView mImageViewOverlay;
    private String mClientName;
    private LinearLayout mStartExternalPlayerOverlay;
-   protected boolean mUseInternalPlayer;
+   private boolean mUseInternalPlayer;
    private boolean mIsTv = false;
    private String[] mStreamingProfiles;
-   protected StartStreamingTask mStartStreamingTask;
-   public boolean mIsRecording = false;
+   private StartStreamingTask mStartStreamingTask;
+   private boolean mIsRecording = false;
+   private boolean mSeekingAllowedOnVideo;
+   private CheckTranscodingTask mCheckTranscodingStateTask;
+   private TextView mTextViewTranscodingStatus;
+   private LinearLayout mLinearLayoutTranscodingStatus;
+   private ProgressBar mProgressBarTranscodingStatus;
+   private boolean mIsSeeking;
+   private boolean mVideoNeedsPreconversion;
+   private boolean mActivityActive;
 
    private static boolean USE_AUTOSTART = true;
 
@@ -194,6 +303,12 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       mProgressbarSeeking = (ProgressBar) findViewById(R.id.progressBarSeeking);
       mTextViewVideoName = (TextView) findViewById(R.id.TextViewVideoName);
       mTextViewVideoPosition = (TextView) findViewById(R.id.TextViewVideoPosition);
+
+      mTextViewTranscodingStatus = (TextView) findViewById(R.id.TextViewCurrentServerState);
+      mLinearLayoutTranscodingStatus = (LinearLayout) findViewById(R.id.LinearLayoutTranscodingStatus);
+      mLinearLayoutTranscodingStatus.setVisibility(View.INVISIBLE);
+      mProgressBarTranscodingStatus = (ProgressBar) findViewById(R.id.ProgressBarTranscodingStatus);
+
       mImageViewOverlay = (ImageView) findViewById(R.id.ImageViewVideoOverlay);
       mStartExternalPlayerOverlay = (LinearLayout) findViewById(R.id.LinearLayoutStartExternalPlayer);
       showExternalPlayerStartOverlay(false);
@@ -218,28 +333,25 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
                switch (_error1) {
                case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                  /*try {
-                     Thread.sleep(10000);
-                  } catch (InterruptedException e) {
-                     // TODO Auto-generated catch block
-                     e.printStackTrace();
-                  }
-                  if (mUseInternalPlayer) {
-                     mMediaPlayer.stop();
-                     mMediaPlayer.reset();
-                  }
-                  
-                  playVideo(USE_AUTOSTART);*/
+                  /*
+                   * try { Thread.sleep(10000); } catch (InterruptedException e)
+                   * { // TODO Auto-generated catch block e.printStackTrace(); }
+                   * if (mUseInternalPlayer) { mMediaPlayer.stop();
+                   * mMediaPlayer.reset(); }
+                   * 
+                   * playVideo(USE_AUTOSTART);
+                   */
                   showMediaDiedError();
-                  showToast("MEDIA_ERROR_SERVER_DIED", _error2);
+                  // showErrorToast("MEDIA_ERROR_SERVER_DIED", _error2);
                   break;
                case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                  showToast("MEDIA_ERROR_UNKNOWN", _error2);
+                  showErrorToast("MEDIA_ERROR_UNKNOWN", _error2);
                   break;
                case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                  showToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
+                  showErrorToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
                   break;
                default:
+                  showErrorToast(String.valueOf(_error1), _error2);
                   Log.w(Constants.LOG_CONST, "Media Error: " + String.valueOf(_error1) + " | "
                         + String.valueOf(_error2));
                }
@@ -247,6 +359,14 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
                return false;
             }
          });
+
+         mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+            @Override
+            public void onBufferingUpdate(MediaPlayer _player, int _buffer) {
+               // Log.d(Constants.LOG_CONST, "Buffering: " + _buffer);
+            }
+         });
+
          mMediaPlayer.setOnCompletionListener(this);
       }
 
@@ -258,10 +378,12 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          mTimeline.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar _seekbar) {
+               setSeeking(true);
                mStartSeek = new Date();
                mUserTracking = false;
 
                mStartPosition = mVideoLength * _seekbar.getProgress() / 1000;
+               mTimeline.setEnabled(false);
 
                downloadAndShowOverlayImage((int) (mStartPosition / 1000));
 
@@ -277,7 +399,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             @Override
             public void onStartTrackingTouch(SeekBar _seekbar) {
                mUserTracking = true;
-               setSeekingIndicatorEnabled(true);
+
                if (mUseInternalPlayer) {
                   mMediaPlayer.pause();
                }
@@ -287,14 +409,15 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             @Override
             public void onProgressChanged(SeekBar _seekbar, int _progress, boolean _fromUser) {
                if (_fromUser) {
-
+                  long pos = (long) (mVideoLength * _seekbar.getProgress() / 1000);
+                  mTextViewVideoPosition.setText(DateTimeHelper.getTimeStringFromMs(pos));
                }
             }
          });
       }
 
       mTimeline.setMax(1000);
-      setSeekingIndicatorEnabled(true);
+      setSeeking(true);
 
       mButtonPlayPause = (ImageButton) findViewById(R.id.media);
       mButtonPlayPause.setOnClickListener(onMedia);
@@ -303,6 +426,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       final Object retainData = getLastNonConfigurationInstance();
 
       mClientName = PreferencesManager.getTvClientName();
+
+      mContext = this;
 
       if (retainData != null) {
          Log.d(Constants.LOG_CONST, "MediaPlayer: start from retained state");
@@ -336,6 +461,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             mVideoLength = extras.getLong("video_length");
          }
 
+         mVideoNeedsPreconversion = extras.getBoolean("video_needs_preconversion");
+
          mStreamingProfiles = extras.getStringArray("streaming_profiles");
 
          mIsTv = (mStreamingType == DownloadItemType.LiveTv);
@@ -347,6 +474,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             public void run() {
                if (mIsTv) {
 
+               } else if (mIsRecording) {
+                  mMediaInfo = mService.getRecordingMediaInfo(Integer.parseInt(mStreamingFile));
                } else {
                   mFileInfo = mService.getFileInfo(mStreamingFile, mStreamingType);
                   mMediaInfo = mService.getMediaInfo(mStreamingFile, mStreamingType);
@@ -367,65 +496,132 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
 
       mTextViewVideoName.setText(mDisplayName);
+   }
 
+   public void showStartFromBeginningDialog() {
+      AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+      builder.setTitle("Seeking not available");
+      builder.setMessage("Seeking not available fo this video, start from pos 0 while waiting");
+      builder.setCancelable(false);
+      builder.setPositiveButton(getString(R.string.dialog_yes),
+            new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                  mStartPosition = 0;
+                  mStartStreamingTask = new StartStreamingTask();
+                  mStartStreamingTask.execute(false);
+               }
+            });
+
+      builder.setNegativeButton(getString(R.string.dialog_no),
+            new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                  // show progress dialog
+               }
+            });
+
+      AlertDialog alert = builder.create();
+      alert.show();
+   }
+
+   public void setTranscodingStatus(String _text, boolean _progress) {
+      if (_progress) {
+         mProgressBarTranscodingStatus.setVisibility(View.VISIBLE);
+      } else {
+         mProgressBarTranscodingStatus.setVisibility(View.GONE);
+      }
+
+      if (_text != null) {
+         mLinearLayoutTranscodingStatus.setVisibility(View.VISIBLE);
+         mTextViewVideoName.setGravity(Gravity.RIGHT);
+         mTextViewTranscodingStatus.setText(_text);
+         mLinearLayoutTranscodingStatus.startAnimation(inFromLeftAnimation());
+      } else {
+         mTextViewVideoName.setGravity(Gravity.CENTER_HORIZONTAL);
+         mLinearLayoutTranscodingStatus.startAnimation(outToLeftAnimation());
+      }
+   }
+
+   private Animation inFromLeftAnimation() {
+      Animation inFromLeft = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, -1.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f);
+      inFromLeft.setDuration(500);
+      inFromLeft.setInterpolator(new AccelerateInterpolator());
+      inFromLeft.setFillAfter(true);
+      return inFromLeft;
+   }
+
+   private Animation outToLeftAnimation() {
+      Animation outtoLeft = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, -1.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f);
+      outtoLeft.setDuration(500);
+      outtoLeft.setInterpolator(new AccelerateInterpolator());
+      outtoLeft.setFillAfter(true);
+      return outtoLeft;
    }
 
    private String createIdentifier() {
       return "aMPdroid." + new Random().nextInt() + ".mpeg";
    }
 
-   public void showInitError() {
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setTitle(getString(R.string.streaming_initfailed_title));
-      builder.setMessage(getString(R.string.streaming_initfailed_text));
-      builder.setCancelable(false);
-      builder.setPositiveButton(getString(R.string.dialog_ok),
-            new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-                  finish();
-               }
-            });
+   public void showInitError(Context _context) {
+      if (mActivityActive) {
+         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
+         builder.setTitle(getString(R.string.streaming_initfailed_title));
+         builder.setMessage(getString(R.string.streaming_initfailed_text));
+         builder.setCancelable(false);
+         builder.setPositiveButton(getString(R.string.dialog_ok),
+               new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                     finish();
+                  }
+               });
 
-      AlertDialog alert = builder.create();
-      alert.show();
+         AlertDialog alert = builder.create();
+         alert.show();
+      }
    }
 
    public void showMediaDiedError() {
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setTitle("MEDIA_ERROR_SERVER_DIED");
-      builder.setMessage("Media-Died-Error, retry?");
-      builder.setCancelable(false);
-      builder.setPositiveButton(getString(R.string.dialog_yes),
-            new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-                  mStartSeek = new Date();
-                  stopStreamingAsync(mIdentifier);
-                  mIdentifier = createIdentifier();
+      if (mActivityActive) {
+         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+         builder.setTitle(getString(R.string.streaming_media_died_title));
+         builder.setMessage(getString(R.string.streaming_media_died_text));
+         builder.setCancelable(false);
+         builder.setPositiveButton(getString(R.string.dialog_yes),
+               new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                     mStartSeek = new Date();
+                     // String oldIdentifier = mIdentifier;
+                     // stopStreamingAsync(oldIdentifier);
+                     // mIdentifier = createIdentifier();
 
-                  //mStartPosition = mStartPosition + mMediaPlayer.getCurrentPosition();
-                  //downloadAndShowOverlayImage((int) (mStartPosition / 1000));
+                     mStartPosition = mStartPosition + mMediaPlayer.getCurrentPosition();
+                     downloadAndShowOverlayImage((int) (mStartPosition / 1000));
 
-                  setSeekingIndicatorEnabled(true);
-                  if (mUseInternalPlayer) {
-                     mMediaPlayer.stop();
-                     mMediaPlayer.reset();
+                     setSeeking(true);
+                     if (mUseInternalPlayer) {
+                        mMediaPlayer.stop();
+                        mMediaPlayer.reset();
+                     }
+                     showExternalPlayerStartOverlay(false);
+
+                     mStartStreamingTask = new StartStreamingTask();
+                     mStartStreamingTask.execute(false);
                   }
-                  showExternalPlayerStartOverlay(false);
+               });
 
-                  mStartStreamingTask = new StartStreamingTask();
-                  mStartStreamingTask.execute(true);
-               }
-            });
-      
-      builder.setNegativeButton(getString(R.string.dialog_no),
-            new DialogInterface.OnClickListener() {
-               public void onClick(DialogInterface dialog, int id) {
-                  finish();
-               }
-            });
+         builder.setNegativeButton(getString(R.string.dialog_no),
+               new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                     // finish();
+                  }
+               });
 
-      AlertDialog alert = builder.create();
-      alert.show();
+         AlertDialog alert = builder.create();
+         alert.show();
+      }
    }
 
    protected void showExternalPlayerStartOverlay(boolean _visible) {
@@ -442,7 +638,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       if (!mIsTv) {
          new Thread(new Runnable() {
             public void run() {
-               Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+               Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                     .getDefaultDisplay();
                final Bitmap bm = mService.getBitmapFromMedia(mStreamingType, mStreamingFile,
                      _position, display.getWidth(), display.getHeight());
                mImageViewOverlay.post(new Runnable() {
@@ -455,8 +652,9 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
    }
 
-   protected void setSeekingIndicatorEnabled(boolean _enabled) {
-      if (_enabled) {
+   protected void setSeeking(boolean _seeking) {
+      mIsSeeking = _seeking;
+      if (_seeking) {
          mProgressbarSeeking.setVisibility(View.VISIBLE);
          mTextViewVideoPosition.setVisibility(View.INVISIBLE);
       } else {
@@ -465,8 +663,12 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
    }
 
-   protected void showToast(String _error1, int _error2) {
+   protected void showErrorToast(String _error1, int _error2) {
       Util.showToast(this, "Error: " + _error1 + ", " + String.valueOf(_error2));
+   }
+
+   protected void showToast(String _msg2) {
+      Util.showToast(this, _msg2);
    }
 
    @Override
@@ -495,8 +697,13 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    @Override
    protected void onStop() {
       Log.d(Constants.LOG_CONST, "MediaPlayer onStop");
+      mActivityActive = false;
       if (mMediaPlayer != null) {
          mMediaPlayer.stop();
+      }
+
+      if (mCheckTranscodingStateTask != null) {
+         mCheckTranscodingStateTask.stopChecking();
       }
 
       super.onStop();
@@ -507,8 +714,18 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       Log.d(Constants.LOG_CONST, "MediaPlayer onResume");
       super.onResume();
 
+      mActivityActive = true;
       mIsPaused = false;
       mSurface.postDelayed(onEverySecond, 1000);
+
+      if (!mIsTv && !mIsRecording) {
+         mCheckTranscodingStateTask = new CheckTranscodingTask();
+         mCheckTranscodingStateTask.execute(true);
+      } else if (mIsRecording) {
+         mSeekingAllowedOnVideo = true;
+      } else if (mIsTv) {
+         mSeekingAllowedOnVideo = false;
+      }
    }
 
    @Override
@@ -599,6 +816,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
 
    public void onCompletion(MediaPlayer arg0) {
       Log.d(Constants.LOG_CONST, "MediaPlayer onCompletion");
+      mStartPosition = 0;
       // finish();
       // media.setEnabled(false);
    }
@@ -675,7 +893,13 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          } else {
             Util.showToast(this, getString(R.string.tvserver_finishedplaying) + mStreamingUrl);
          }
-         mService.stopTimeshift(PreferencesManager.getTvClientName());
+         if (mIsTv) {
+            mService.stopTimeshift(PreferencesManager.getTvClientName());
+         } else {
+            showExternalPlayerStartOverlay(false);
+            mStartStreamingTask = new StartStreamingTask();
+            mStartStreamingTask.execute(false);
+         }
       }
 
       super.onActivityResult(requestCode, resultCode, data);
@@ -750,7 +974,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             setOverlayImage(null);
          }
          mBottomPanel.setVisibility(View.VISIBLE);
-         setSeekingIndicatorEnabled(false);
+         setSeeking(false);
 
          mMediaPlayerPrepared = true;
          mSurface.postDelayed(onEverySecond, 1000);
@@ -768,35 +992,48 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    };
 
    private Runnable onEverySecond = new Runnable() {
+      private long mCurrentPos;
+
       public void run() {
          try {
-            if (mUseInternalPlayer) {
-               if (mLastActionTime > 0 && SystemClock.elapsedRealtime() - mLastActionTime > 3000) {
-                  mLastActionTime = 0;
+            if (mLastActionTime > 0 && SystemClock.elapsedRealtime() - mLastActionTime > 3000) {
+               mLastActionTime = 0;
 
-                  if (mMediaPlayer.isPlaying()) {
-                     setPanelsVisible(false);
-                  }
+               if (mMediaPlayer.isPlaying()) {
+                  setPanelsVisible(false);
                }
+            }
 
-               if (!mUserTracking && mMediaPlayer != null) {
-                  if (mMediaPlayerPrepared && mVideoLength > 0) {
+            if (!mUserTracking) {
+               if (mVideoLength > 0 && (!mUseInternalPlayer || mMediaPlayerPrepared)) {
+                  if (mSeekingAllowedOnVideo && !mIsSeeking) {
                      mTimeline.setEnabled(true);
-                     long pos = (mStartPosition + mMediaPlayer.getCurrentPosition()) * 1000
+                  } else {
+                     mTimeline.setEnabled(false);
+                  }
+
+                  if (mMediaPlayer != null) {
+                     // internal player
+                     mCurrentPos = (mStartPosition + mMediaPlayer.getCurrentPosition()) * 1000
                            / mVideoLength;
                      mTextViewVideoPosition
                            .setText(DateTimeHelper.getTimeStringFromMs(mStartPosition
                                  + mMediaPlayer.getCurrentPosition()));
+                     Log.d(Constants.LOG_CONST + "_VIDEO",
+                           "Pos: " + (mMediaPlayer.getCurrentPosition() / 1000));
                      // mTextViewVideoPosition.setText(String.valueOf(mMediaPlayer.getCurrentPosition()));
-                     mTimeline.setProgress((int) pos);
-                  } else {
-                     mTimeline.setEnabled(false);
-                  }
-               }
 
-               if (!mIsPaused) {
-                  mSurface.postDelayed(onEverySecond, 1000);
+                     if (!mUserTracking) {
+                        mTimeline.setProgress((int) mCurrentPos);
+                     }
+                  }
+               } else {
+                  mTimeline.setEnabled(false);
                }
+            }
+
+            if (!mIsPaused) {
+               mSurface.postDelayed(onEverySecond, 1000);
             }
          } catch (Exception ex) {
             Log.e(Constants.LOG_CONST, "Error on runnable: " + ex.toString());
@@ -900,14 +1137,14 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       if (mProfile != _profile) {
          mProfile = _profile;
          mStartSeek = new Date();
-         String oldIdentifier = mIdentifier;
-         stopStreamingAsync(oldIdentifier);
-         mIdentifier = createIdentifier();
+         // String oldIdentifier = mIdentifier;
+         // stopStreamingAsync(oldIdentifier);
+         // mIdentifier = createIdentifier();
 
          mStartPosition = mStartPosition + mMediaPlayer.getCurrentPosition();
          downloadAndShowOverlayImage((int) (mStartPosition / 1000));
 
-         setSeekingIndicatorEnabled(true);
+         setSeeking(true);
          if (mUseInternalPlayer) {
             mMediaPlayer.stop();
             mMediaPlayer.reset();
@@ -915,7 +1152,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          showExternalPlayerStartOverlay(false);
 
          mStartStreamingTask = new StartStreamingTask();
-         mStartStreamingTask.execute(true);
+         mStartStreamingTask.execute(false);
       }
    }
 

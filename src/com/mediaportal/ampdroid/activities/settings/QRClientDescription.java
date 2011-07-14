@@ -20,6 +20,7 @@ public class QRClientDescription {
    private String mPasscode;
    private int mAuthOptions;
    private String mName;
+   private String mHardwareAddresses;
 
    @JsonProperty("Address")
    public String getAddress() {
@@ -89,6 +90,16 @@ public class QRClientDescription {
    @JsonProperty("Name")
    public void setName(String name) {
       mName = name;
+   }
+
+   @JsonProperty("HardwareAddresses")
+   public void setHardwareAddresses(String hardwareAddresses) {
+      mHardwareAddresses = hardwareAddresses;
+   }
+
+   @JsonProperty("HardwareAddresses")
+   public String getHardwareAddresses() {
+      return mHardwareAddresses;
    }
 
 }

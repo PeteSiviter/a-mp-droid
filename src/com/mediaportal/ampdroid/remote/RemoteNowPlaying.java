@@ -12,11 +12,14 @@ package com.mediaportal.ampdroid.remote;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.mediaportal.ampdroid.api.wifiremote.WifiRemoteNowPlayingMediaInfo;
+
 public class RemoteNowPlaying {
    private int mDuration;
    private String mFile;
    private int mPosition;
    private boolean mIsTv;
+   private WifiRemoteNowPlayingMediaInfo mMediaInfo;
 
    @JsonProperty("Duration")
    public int getDuration() {
@@ -47,7 +50,7 @@ public class RemoteNowPlaying {
    public void setPosition(int position) {
       mPosition = position;
    }
-   
+
    @JsonProperty("IsTv")
    public void setIsTv(boolean isTv) {
       mIsTv = isTv;
@@ -56,6 +59,16 @@ public class RemoteNowPlaying {
    @JsonProperty("IsTv")
    public boolean isTv() {
       return mIsTv;
+   }
+
+   @JsonProperty("MediaInfo")
+   public void setMediaInfo(WifiRemoteNowPlayingMediaInfo mediaInfo) {
+      mMediaInfo = mediaInfo;
+   }
+
+   @JsonProperty("MediaInfo")
+   public WifiRemoteNowPlayingMediaInfo getMediaInfo() {
+      return mMediaInfo;
    }
 
 }

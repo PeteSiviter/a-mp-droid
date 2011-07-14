@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.mediaportal.ampdroid.activities;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -37,13 +39,20 @@ import com.mediaportal.ampdroid.activities.actionbar.ActionBar;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.api.RemoteCommands;
 import com.mediaportal.ampdroid.data.commands.RemoteKey;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
+import com.mediaportal.ampdroid.lists.Utils;
+import com.mediaportal.ampdroid.quickactions.QuickActionView;
 import com.mediaportal.ampdroid.remote.RemoteImageMessage;
 import com.mediaportal.ampdroid.remote.RemoteNowPlaying;
 import com.mediaportal.ampdroid.remote.RemoteNowPlayingUpdate;
 import com.mediaportal.ampdroid.remote.RemotePropertiesUpdate;
 import com.mediaportal.ampdroid.remote.RemoteStatusMessage;
 import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
+import com.mediaportal.ampdroid.utils.Constants;
+import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.DpiUtils;
+import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class StatusBarActivityHandler {
@@ -74,6 +83,7 @@ public class StatusBarActivityHandler {
    private LinearLayout mLayoutContent;
    private LinearLayout mLayoutControls;
    private ImageButton mSwitchClientButton;
+   private QuickActionView mQuickActionView;
 
    private static String currentStatusString;
    private static RemoteNowPlaying currentNowPlayingMessage;
@@ -229,6 +239,11 @@ public class StatusBarActivityHandler {
       mSliderTextDetails = (TextView) mParent.findViewById(R.id.TextViewSliderTextDetail);
 
       mSeekBar = (SeekBar) mParent.findViewById(R.id.SeekBarBottomVolume);
+      mQuickActionView = (QuickActionView) mParent.findViewById(R.id.QuickActionNowPlaying);
+      if (mQuickActionView != null && StatusBarActivityHandler.currentNowPlayingMessage != null) {
+         updateQuickActionView(StatusBarActivityHandler.currentNowPlayingMessage);
+      }
+
       mVolumeSeekBarChanging = false;
 
       if (mSeekBar != null) {
@@ -278,6 +293,7 @@ public class StatusBarActivityHandler {
             });
             final ProgressBar progress = (ProgressBar) actionBar.getProgressBar();
             final ImageButton searchButton = (ImageButton) actionBar.getSearchButton();
+            final ImageButton logoutButton = (ImageButton)actionBar.getLogoutButton();
             searchButton.setOnClickListener(new OnClickListener() {
                @Override
                public void onClick(View v) {
@@ -290,6 +306,15 @@ public class StatusBarActivityHandler {
                @Override
                public void onClick(View v) {
                   Intent intent = new Intent(mParent, HomeActivity.class);
+                  intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                  mParent.startActivity(intent);
+               }
+            });
+            
+            logoutButton.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View arg0) {
+                  Intent intent = new Intent(mParent, WelcomeScreenActivity.class);
                   intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                   mParent.startActivity(intent);
                }
@@ -442,6 +467,99 @@ public class StatusBarActivityHandler {
             mPositionSlider.setProgress(duration * 100 / position);
          }
       }
+
+      updateQuickActionView(_nowPlayingMessage);
+   }
+
+   private void updateQuickActionView(RemoteNowPlaying _nowPlaying) {
+   // TODO: Needs better nowplaying info from WifiRemote
+      if (false && mQuickActionView != null) {
+         mQuickActionView.clearActionList();
+         if (_nowPlaying.getMediaInfo() != null) {
+            String filePath = _nowPlaying.getFile();
+            String title = _nowPlaying.getMediaInfo().getTitle();
+            String type = _nowPlaying.getMediaInfo().getMediaType();
+
+            if (type != null) {
+               if (type.equals("series")) {
+                  String displayName = _nowPlaying.getMediaInfo().getSeriesName() + ": " + title;
+                  String itemId = _nowPlaying.getMediaInfo().getItemId();
+                  String dirName = DownloaderUtils.getTvEpisodePath(_nowPlaying.getMediaInfo()
+                        .getSeriesName(), Integer.parseInt(_nowPlaying.getMediaInfo().getSeason()));
+                  String fileName = dirName + Utils.getFileNameWithExtension(filePath, "\\");
+
+                  File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+                  if (localFile.exists()) {
+                     QuickActionUtils.createPlayOnDeviceQuickAction(mParent, mQuickActionView,
+                           localFile, MediaItemType.Video);
+                  } else {
+                     QuickActionUtils.createDownloadSdCardQuickAction(mParent, mQuickActionView,
+                           mRemote, itemId, filePath, DownloadItemType.TvSeriesItem,
+                           MediaItemType.Video, fileName, displayName);
+                  }
+
+                  if (Constants.ENABLE_STREAMING) {
+                     QuickActionUtils.createStreamOnClientQuickAction(mParent, mQuickActionView,
+                           mRemote, itemId, DownloadItemType.TvSeriesItem, fileName, displayName);
+
+                  }
+               } else if (type.equals("movie")) {
+                  String movieFile = filePath;
+                  if (movieFile != null) {
+                     String dirName = "Movies/" + title + "/";
+                     String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+
+                     File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+
+                     String displayName = title;
+                     String itemId = String.valueOf(_nowPlaying.getMediaInfo().getItemId());
+
+                     if (localFile.exists()) {
+                        QuickActionUtils.createPlayOnDeviceQuickAction(mParent, mQuickActionView,
+                              localFile, MediaItemType.Video);
+                     } else {
+                        QuickActionUtils.createDownloadSdCardQuickAction(mParent, mQuickActionView,
+                              mRemote, itemId, movieFile, DownloadItemType.MovieItem,
+                              MediaItemType.Video, fileName, displayName);
+                     }
+
+                     if (Constants.ENABLE_STREAMING) {
+                        QuickActionUtils.createStreamOnClientQuickAction(mParent, mQuickActionView,
+                              mRemote, itemId, DownloadItemType.MovieItem, fileName, displayName);
+
+                     }
+
+                     mQuickActionView.createActionList();
+                  }
+               } else if (type.equals("video")) {
+                  String movieFile = filePath;
+                  String dirName = DownloaderUtils.getMoviePath(title);
+                  String fileName = dirName + Utils.getFileNameWithExtension(movieFile, "\\");
+
+                  File localFile = new File(DownloaderUtils.getBaseDirectory() + "/" + fileName);
+
+                  String displayName = title;
+                  String itemId = filePath;
+
+                  if (localFile.exists()) {
+                     QuickActionUtils.createPlayOnDeviceQuickAction(mParent, mQuickActionView,
+                           localFile, MediaItemType.Video);
+                  } else {
+                     QuickActionUtils.createDownloadSdCardQuickAction(mParent, mQuickActionView,
+                           mRemote, itemId, movieFile, DownloadItemType.VideoShareItem,
+                           MediaItemType.Video, fileName, displayName);
+                  }
+
+                  if (Constants.ENABLE_STREAMING) {
+                     QuickActionUtils.createStreamOnClientQuickAction(mParent, mQuickActionView,
+                           mRemote, itemId, DownloadItemType.VideoShareItem, fileName, displayName);
+                  }
+               }
+
+               mQuickActionView.createActionList();
+            }
+         }
+      }
    }
 
    public void setNowPlaying(RemoteNowPlayingUpdate _nowPlayingMessage) {
@@ -555,9 +673,9 @@ public class StatusBarActivityHandler {
          }
       }
    }
-   
-   public boolean isVisible(){
-      if(mStatusBar != null){
+
+   public boolean isVisible() {
+      if (mStatusBar != null) {
          return mStatusBar.getVisibility() == View.VISIBLE;
       }
       return false;

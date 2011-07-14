@@ -99,6 +99,29 @@ public class ClientPreference extends DialogPreference {
       mQrDescription = _desc;
       // set defaults:
       if (mQrDescription != null) {
+
+         if (mQrDescription.getHardwareAddresses() != null) {
+            String addr = mQrDescription.getHardwareAddresses();
+            if (addr.contains(";")) {
+               final String[] items = addr.split(";");
+               if (items.length == 0) {
+
+               }
+               AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+               builder.setTitle(mContext.getString(R.string.settings_clients_clientmac));
+               builder.setItems(items, new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int item) {
+                     setHardwareAddress(items[item]);
+                  }
+               });
+               AlertDialog alert = builder.create();
+
+               alert.show();
+            } else {
+               setHardwareAddress(addr);
+            }
+         }
+
          if (mQrDescription.getAuthOptions() != 0) {
             mUseAuthView.setChecked(true);
          } else {
@@ -121,6 +144,25 @@ public class ClientPreference extends DialogPreference {
             mHostView.setText(mQrDescription.getAddress());
          }
       }
+   }
+
+   private void setHardwareAddress(String addr) {
+      if(mEditTextMac != null){
+         if(addr.contains(":") || addr.contains("-")){
+            mEditTextMac.setText(addr);
+         }
+         else{
+            StringBuilder newMac = new StringBuilder();
+            for(int i = 0; i < addr.length(); i++){
+               newMac.append(addr.charAt(i));
+               if(i%2 == 1 && i < addr.length() -1){
+                  newMac.append(":");
+               }
+            }
+            mEditTextMac.setText(newMac.toString());
+         }
+      }
+      
    }
 
    public void create(PreferenceManager preferenceManager, PreferenceScreen _root) {
@@ -188,11 +230,11 @@ public class ClientPreference extends DialogPreference {
       mHostView = (EditText) parent.findViewById(R.id.pref_host);
       mUserView = (EditText) parent.findViewById(R.id.pref_user);
       mEditTextMac = (EditText) parent.findViewById(R.id.pref_mac);
-      mUserView.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_USERNAME);
+      // mUserView.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_USERNAME);
       mPassView = (EditText) parent.findViewById(R.id.pref_pass);
-      mPassView.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_PASSWORD);
+      // mPassView.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_PASSWORD);
       mUseAuthView = (CheckBox) parent.findViewById(R.id.pref_use_auth);
       mUseAuthView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
@@ -210,11 +252,11 @@ public class ClientPreference extends DialogPreference {
       mUseGma = (CheckBox) parent.findViewById(R.id.pref_gma_use_service);
       mUseGmaAuth = (CheckBox) parent.findViewById(R.id.pref_gma_use_auth);
       mUserViewGma = (EditText) parent.findViewById(R.id.pref_gma_user);
-      mUserViewGma.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_USERNAME);
+      // mUserViewGma.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_USERNAME);
       mPassViewGma = (EditText) parent.findViewById(R.id.pref_gma_pass);
-      mPassViewGma.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_PASSWORD);
+      // mPassViewGma.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_PASSWORD);
       mUseGmaAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -230,11 +272,11 @@ public class ClientPreference extends DialogPreference {
       mUseTv4Home = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_service);
       mUseTv4HomeAuth = (CheckBox) parent.findViewById(R.id.pref_tv4home_use_auth);
       mUserViewTv4Home = (EditText) parent.findViewById(R.id.pref_tv4home_user);
-      mUserViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_USERNAME);
+      // mUserViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_USERNAME);
       mPassViewTv4Home = (EditText) parent.findViewById(R.id.pref_tv4home_pass);
-      mPassViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_PASSWORD);
+      // mPassViewTv4Home.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_PASSWORD);
       mUseTv4HomeAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -250,11 +292,11 @@ public class ClientPreference extends DialogPreference {
       mUseWifiRemote = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_service);
       mUseWifiRemoteAuth = (CheckBox) parent.findViewById(R.id.pref_wifiremote_use_auth);
       mUserViewWifiRemote = (EditText) parent.findViewById(R.id.pref_wifiremote_user);
-      mUserViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_USERNAME);
+      // mUserViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_USERNAME);
       mPassViewWifiRemote = (EditText) parent.findViewById(R.id.pref_wifiremote_pass);
-      mPassViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
-            + Constants.DEFAULT_PASSWORD);
+      // mPassViewWifiRemote.setHint(mContext.getString(R.string.settings_clients_default)
+      // + Constants.DEFAULT_PASSWORD);
       mUseWifiRemoteAuth.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          @Override
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -304,7 +346,7 @@ public class ClientPreference extends DialogPreference {
             .toString(), mEditTextWifiRemoteHost.getText().toString())) {
          return true;
       }
-      
+
       if (!Util.compare(mEditTextTv4HomeMac.getText().toString(), mEditTextGmaMac.getText()
             .toString(), mEditTextWifiRemoteMac.getText().toString())) {
          return true;
@@ -348,9 +390,9 @@ public class ClientPreference extends DialogPreference {
          } else {
             mHostView.setText("");
          }
-         
-         if (Util.compare(mEditTextTv4HomeMac.getText().toString(), mEditTextGmaMac.getText().toString(),
-               mEditTextWifiRemoteMac.getText().toString())) {
+
+         if (Util.compare(mEditTextTv4HomeMac.getText().toString(), mEditTextGmaMac.getText()
+               .toString(), mEditTextWifiRemoteMac.getText().toString())) {
             mEditTextMac.setText(mEditTextTv4HomeMac.getText().toString());
          } else {
             mEditTextMac.setText("");
@@ -490,8 +532,8 @@ public class ClientPreference extends DialogPreference {
                   Constants.DEFAULT_REMOTEACCESS_PORT, mac, user, pass, auth);
             mClient.setRemoteAccessApi(api);
 
-            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, Constants.DEFAULT_TV_PORT, mac, user, pass,
-                  auth);
+            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(addr, Constants.DEFAULT_TV_PORT, mac, user,
+                  pass, auth);
             mClient.setTvControlApi(tvApi);
 
             WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, addr,

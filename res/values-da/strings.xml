@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (c) 2011 Benjamin Gmeiner.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the GNU Public License v2.0
-  which accompanies this distribution, and is available at
-  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-  
-  Contributors:
-      Benjamin Gmeiner - Project Owner
--->
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">Kontroller MP fra din Android mobil</string>
@@ -16,8 +6,23 @@
 	<string name="welcome_choose_client">Vælg klient:</string>
 	<string name="welcome_auto_connect">Forbind ved opstart</string>
 	<string name="welcome_no_client">Vælg venligst klient...</string>
-	<string name="welcome_connect">Forbind</string>
+	<string name="welcome_connect">Vælg</string>
 	<string name="welcome_no_clients">Ingen klienter defineret, vælg indstillinger til at tilføje klienter</string>
+	<string name="home_wol_confirmation_title">Ingen Forbindelse</string>
+	<string name="home_wol_confirmation_text">Ingen forbindelse til servicen, væk pc\'en via WOL?</string>
+	<string name="home_wol_running">Sender WOL pakker til pc\'en</string>
+	<string name="home_wol_nomac">Ingen forbindelse og WOL pakker kan ikke sendes med mindre MAC adressen er defineret i indstillinger</string>
+	<string name="downloads_title">aMPdroid Downloads</string>
+	<string name="downloads_delete_file_success">Fil slettet</string>
+	<string name="downloads_delete_file_failed">Kunne ikke slette fil</string>
+	<string name="downloads_also_remove_queued_title">Fjern Kø</string>
+	<string name="downloads_also_remove_queued_text">Fjern objekter som venter på at blive downloaded?</string>
+	<string name="downloads_state_queued">Sat i kø</string>
+	<string name="downloads_state_running">Kører</string>
+	<string name="downloads_state_paused">Pauset</string>
+	<string name="downloads_state_stopped">Stoppet</string>
+	<string name="downloads_state_finished">Afsluttet</string>
+	<string name="downloads_state_failed">Fejlet</string>
 	<string name="series_actors">Skuespillere</string>
 	<string name="series_seasons">Sæsoner</string>
 	<string name="series_release">Udgivelsesdato</string>
@@ -156,10 +161,10 @@
 	<string name="settings_preference_vibrate_desc">Skærmen vibrere ved bruger aktivitet</string>
 	<string name="settings_tvserver_showall_title">Vis \"Alle Kanaler\" gruppe</string>
 	<string name="settings_tvserver_showall_desc">Vis \"Alle Kanaler\" gruppe som indeholder alle kanaler på tv serveren</string>
-	<string name="settings_tvserver_clientname_title">Klient Navn</string>
-	<string name="settings_tvserver_clientname_desc">Navnet på klienten som kommunikere med MediaPortal Tv Server</string>
+	<string name="settings_general_clientname_title">Klient Navn</string>
+	<string name="settings_general_clientname_desc">Navnet på klienten der skal kommunikere med MediaPortal</string>
 	<string name="settings_media_cachemedia_title">Cache infomationer lokalt</string>
-	<string name="settings_media_cachemedia_desc">Cache medie infomationer ()</string>
+	<string name="settings_media_cachemedia_desc">Cache medie infomationer</string>
 	<string name="settings_media_loaddetails_title">Indlæs detaljer automatisk</string>
 	<string name="settings_media_loaddetails_desc">Indlæs mediedetaljer automatisk eller kun når et element er valgt</string>
 	<string name="settings_media_cachevalid_title">Cache valideret</string>
@@ -177,6 +182,8 @@ klienter. Hvis du skifter til enkel tilstand disse vil blive overskrevet.</strin
 nået</string>
 	<string name="settings_general_autoconnect_title">Auto Forbind</string>
 	<string name="settings_general_autoconnect_desc">Forbind automatisk til MediaPortal klienten ved opstart</string>
+	<string name="settings_general_autoreconnect_title">Genforbind</string>
+	<string name="settings_general_autoreconnect_desc">Genforbind automatisk  til MediaPortal klienten hvis forbindelsen mistes</string>
 	<string name="settings_general_autowol_title">WOL on connect</string>
 	<string name="settings_general_autowol_desc">Væk Pc\'en automatisk ved forbindelse</string>
 	<string name="settings_general_statusbar_hide_title">Skjul statusbar</string>
@@ -185,6 +192,8 @@ nået</string>
 	<string name="settings_clients_noclients">Brug menuen til at tilføje en vært</string>
 	<string name="settings_clients_clientname">Navnet på denne instans</string>
 	<string name="settings_clients_clienthost">Vært eller IP Adresse:</string>
+	<string name="settings_clients_clientmac">Mac Adresse:</string>
+	<string name="settings_clients_clientmac_hint">Brug : eller - som seperatorer</string>
 	<string name="settings_clients_clientport">Port:</string>
 	<string name="settings_clients_clientusername">Brugernavn:</string>
 	<string name="settings_clients_default">Standard:\u0020</string>
@@ -195,8 +204,8 @@ nået</string>
 	<string name="settings_clients_tv4home">Tv4Home</string>
 	<string name="settings_clients_wifiremote">WifiRemote</string>
 	<string name="settings_delete_client_title">Slet Klient?</string>
-	<string name="settings_delete_client_start">Er du sikker på at du vil slette klienten \\"</string>
-	<string name="settings_delete_client_end">\\"?</string>
+	<string name="settings_delete_client_start">Er du sikker på at du vil slette klienten \"</string>
+	<string name="settings_delete_client_end">\"?</string>
 	<string name="settings_media_preload_items_title">Forhåndsindlæs elementer</string>
 	<string name="settings_media_preload_items_desc">Hvor mange elementer skel der indlæses når slutningen af listen er nået.</string>
 	<string name="settings_media_defaultview_series_title">Standard Visning Serier</string>
@@ -215,6 +224,17 @@ nået</string>
 	<string name="settings_media_defaultview_musicartists_desc">Standard Visning for listning af dine Musik Kunstnere</string>
 	<string name="settings_media_defaultview_musictracks_title">Standard Visning for Musik Numre</string>
 	<string name="settings_media_defaultview_musictracks_desc">Standard Visning for listning af dine Musik Kunstnere</string>
+	<string name="settings_streaming_buffering_title">Buffering Mode</string>
+	<string name="settings_streaming_buffering_desc">Vælg buffering mode for video afspilning</string>
+	<string name="settings_streaming_quality_title">Streaming kvalitet</string>
+	<string name="settings_streaming_quality_desc">Vælge kvaliteten af ​​video streamen. Bemærk, at
+Denne indstilling vil blive ugyldig, hvis streaming profiler er ændret
+på backend</string>
+	<string name="settings_streaming_useexternal_title">Brug ekstern afspiller</string>
+	<string name="settings_streaming_useexternal_desc">Hvis markeret, i stedet for at bruge den interne
+MediaPlayer (kun tilgængelig for> 2,3) streamen startes med en
+installeret ekstern afspiller. Brug kun dette hvis du har problemer med
+indbyggede videoafspiller.</string>
 	<string name="info_not_implemented">Er ikke implementeret</string>
 	<string name="info_no_connection">Ingen forbindelse til tjenesten</string>
 	<string name="info_remote_notconnected">Fjernbetjening er ikke forbundet</string>
@@ -222,6 +242,7 @@ nået</string>
 	<string name="info_loading_failed">Indlæsningsfejl, check din forbindelse</string>
 	<string name="info_file_not_found">Filen skal først downloades</string>
 	<string name="info_file_already_downloaded">Filen er allerede downloadet</string>
+	<string name="info_no_groups_defined">Der er ingen grupper defineret i MediaPortal\'s Tv Server</string>
 	<string name="menu_clients">Klienter</string>
 	<string name="menu_settings">Indstillinger</string>
 	<string name="menu_refresh">Opdater</string>
@@ -230,6 +251,11 @@ nået</string>
 	<string name="menu_connect">Forbind</string>
 	<string name="menu_disconnect">Afbryd</string>
 	<string name="menu_set_default_view">Set som Standard</string>
+	<string name="menu_clear_downloads">Ryd</string>
+	<string name="menu_downloads">Downloads</string>
+	<string name="menu_beam_to_pc">Send til HTPC</string>
+	<string name="menu_select_stream_quality">Stream kvalitet</string>
+	<string name="menu_quit_client">Afslut klient</string>
 	<string name="remote_menu_keyboard">Tastatur</string>
 	<string name="dialog_ok">Ok</string>
 	<string name="dialog_yes">Ja</string>
@@ -238,11 +264,17 @@ nået</string>
 	<string name="dialog_title_addhost">Tilføj ny vært</string>
 	<string name="quickactions_playclient">Afspil på PC</string>
 	<string name="quickactions_playdevice">Afspil lokalt</string>
+	<string name="quickactions_streamdevice">Stream</string>
+	<string name="quickactions_streamdevice_details">Stream (avanceret)</string>
+	<string name="quickactions_details">Detaljer</string>
 	<string name="quickactions_downloadsd">Download</string>
-	<string name="quickactions_starttimeshift">Annuller</string>
-	<string name="quickactions_stoptimeshift">Annuller</string>
+	<string name="quickactions_start">Start</string>
+	<string name="quickactions_stop">Stop</string>
 	<string name="quickactions_record">Optag</string>
-	<string name="quickactions_cancelrecord">Annuller Optagelse</string>
+	<string name="quickactions_cancel">Annulere</string>
+	<string name="quickactions_delete">Slet</string>
+	<string name="quickactions_remove">Fjern</string>
+	<string name="quickactions_redownload">Download igen</string>
 	<string name="connection_successful">Forbindelse til din fjernbetjening er opnået</string>
 	<string name="connection_failed">Forbindelse til fjernbetjening kunne ikke opnås</string>
 	<string name="connection_closed">Forbindelse til fjernbetjening er afsluttet</string>
@@ -250,9 +282,27 @@ nået</string>
 	<string name="remote_button_info">Info</string>
 	<string name="remote_button_subtitle">Undertekster</string>
 	<string name="remote_button_menu">Menu</string>
-	<string name="notification_download_failed">Download fejlede</string>
-	<string name="notification_download_succeeded">Download færdig</string>
+	<string name="notification_download_failed">\u0020Download fejlede</string>
+	<string name="notification_download_succeeded">\u0020Download færdig</string>
 	<string name="notification_title">aMPdroid</string>
-	<string name="settings_media_defaultview_shares_title">Standard Visning Delinger</string>
-	<string name="settings_media_defaultview_shares_desc">Standard Visning for listning af dine Delinger</string>
+	<string name="settings_category_streaming">Streaming</string>
+	<string name="streaming_playfromstart_title">Afspil</string>
+	<string name="streaming_playfromstart_text">brug profil ved afspilning\u0020</string>
+	<string name="streaming_resumefrompos_title">Fortsæt</string>
+	<string name="streaming_resumefrompos_text">Fortsæt fra\u0020</string>
+	<string name="streaming_quality_title">Streaming kvalitet</string>
+	<string name="streaming_quality_text">Vælg video streaming kvalitet</string>
+	<string name="streaming_tvserver_use_rtsp_title">Se RTSP stream
+</string>
+	<string name="streaming_tvserver_use_rtsp_text">Se den orginale RTSP stream fra Mediaportal 
+(beste kvalitet men kræver ekstern afspiller)</string>
+	<string name="streaming_remember_settings_title">Gem</string>
+	<string name="streaming_remember_settings_text">Gem disse stream indstillinger</string>
+	<string name="streaming_initfailed_title">Kunne ikke starte stream</string>
+	<string name="streaming_initfailed_text">fejl ved start af TV, kan skyldes at der ikke er flere ledige TV kort</string>
+	<string name="streaming_media_died_title"></string>
+	<string name="streaming_media_died_text"></string>
+	<string name="streaming_seeking_available"></string>
+	<string name="streaming_seeking_preparing"></string>
+	<string name="streaming_seeking_preparefailed"></string>
 </resources>

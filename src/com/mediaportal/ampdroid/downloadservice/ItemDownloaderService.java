@@ -42,6 +42,7 @@ import com.mediaportal.ampdroid.database.DownloadsDatabaseHandler;
 import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
+import com.mediaportal.ampdroid.utils.StringUtils;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class ItemDownloaderService extends Service {
@@ -85,8 +86,8 @@ public class ItemDownloaderService extends Service {
 
             if (topmostTask.getGroupId() == 0
                   || topmostTask.getGroupPart() == topmostTask.getGroupSize() - 1) {
-               //either not part of a group or the last part of the group
-               //TODO: what if only part of the group fails?
+               // either not part of a group or the last part of the group
+               // TODO: what if only part of the group fails?
                if (downloadResult.containsKey(state)) {
                   int num = downloadResult.get(state);
                   downloadResult.put(state, num + 1);
@@ -104,7 +105,7 @@ public class ItemDownloaderService extends Service {
          mToastMessage = null;
          long lastUpdated = new Date().getTime();
          boolean cancelRequested = false;
-         
+
          mDownloadDatabase.open();
          DownloadJob downloadJob = mDownloadDatabase.getDownload(_job.getId());
          DownloadGroup group = null;
@@ -114,12 +115,12 @@ public class ItemDownloaderService extends Service {
             // creation and start)
             return DownloadState.Stopped;
          }
-         
+
          if (downloadJob.getGroupId() != 0 && mDownloadGroups.containsKey(downloadJob.getGroupId())) {
             group = mDownloadGroups.get(downloadJob.getGroupId());
          }
-         
-         if(group == null || downloadJob.getGroupPart() == 0){
+
+         if (group == null || downloadJob.getGroupPart() == 0) {
             mNumberOfJobsDone++;
          }
 
@@ -155,9 +156,9 @@ public class ItemDownloaderService extends Service {
             mNotification.contentView.setImageViewResource(R.id.status_icon, R.drawable.icon);
 
             if (group == null) {
-               createNotificationText(0);
+               createNotificationText(1, 0);
             } else {
-               createNotificationText(group.getPercentageDone());
+               createNotificationText(1, group.getPercentageDone());
             }
 
             mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(
@@ -216,32 +217,36 @@ public class ItemDownloaderService extends Service {
                long curTime = new Date().getTime();
                if (curTime > lastUpdated + UPDATE_INTERVAL) {
                   int progress = 0;
-                  if (group == null) {
-                     if (fileSize == 0) {
-                        progress = -99;
-                     } else {
-                        progress = (int) (read * 100 / fileSize);
-                     }
+                  if (fileSize == -99 || fileSize == -1 || fileSize == 0) {
+                     // we don't know the filesize
+                     publishProgress(0, (int) read);
                   } else {
-                     long totalLength = group.getGroupContentSize();
-                     long totalDone = group.getTotalDone();
-                     if (totalLength == 0) {
-                        progress = -99;
+                     if (group == null) {
+                        if (fileSize == 0) {
+                           progress = -99;
+                        } else {
+                           progress = (int) (read * 100 / fileSize);
+                        }
                      } else {
-                        progress = (int) (totalDone * 100 / totalLength);
+                        long totalLength = group.getGroupContentSize();
+                        long totalDone = group.getTotalDone();
+                        if (totalLength == 0) {
+                           progress = -99;
+                        } else {
+                           progress = (int) (totalDone * 100 / totalLength);
+                        }
+                        group.setPercentageDone(progress);
                      }
-                     group.setPercentageDone(progress);
+
+                     currentProgress = progress;
+
+                     downloadJob.setProgress(currentProgress);
+
+                     mDownloadDatabase.updateDownloads(downloadJob);
+
+                     publishProgress(1, progress);
                   }
-
-                  currentProgress = progress;
-
-                  downloadJob.setProgress(currentProgress);
                   cancelRequested = mDownloadDatabase.getCancelRequest(downloadJob);
-
-                  mDownloadDatabase.updateDownloads(downloadJob);
-
-                  publishProgress(progress);
-
                   lastUpdated = curTime;
                }
             }
@@ -302,14 +307,16 @@ public class ItemDownloaderService extends Service {
 
       private void deleteFile(File _file) {
          try {
-            _file.delete();
+            if (!_file.getPath().endsWith("_debug.ts")) {
+               _file.delete();
+            }
          } catch (Exception ex) {
             Log.e(Constants.LOG_CONST_ITEMDOWNLOADER, ex.toString());
          }
 
       }
 
-      private void createNotificationText(int _progress) {
+      private void createNotificationText(int _type, int _progress) {
          int totalDownloads = mNumberOfJobsDone + getNumberOfTotalDownloads();
          String filename = null;
          if (mCurrentGroup == null) {
@@ -319,8 +326,14 @@ public class ItemDownloaderService extends Service {
          }
 
          String overview = (totalDownloads > 0 ? mNumberOfJobsDone + "/" + totalDownloads : "");
-         String progressText = _progress + " %";
-         
+
+         String progressText = "";
+         if (_type == 0) {
+            progressText = StringUtils.formatFileSize(_progress);
+         } else if (_type == 1) {
+            progressText = _progress + " %";
+         }
+
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationFileName, filename);
          mNotification.contentView.setTextViewText(R.id.TextViewNotificationOverview, overview);
 
@@ -410,9 +423,10 @@ public class ItemDownloaderService extends Service {
 
       @Override
       protected void onProgressUpdate(Integer... values) {
-         int progress = values[0];
-         if (progress != -1) {
-            createNotificationText(progress);
+         int type = values[0];
+         int progress = values[1];
+         if (type != -1) {
+            createNotificationText(type, progress);
             // inform the progress bar of updates in progress
             mNotificationManager.notify(NOTIFICATION_ID, mNotification);
          } else {

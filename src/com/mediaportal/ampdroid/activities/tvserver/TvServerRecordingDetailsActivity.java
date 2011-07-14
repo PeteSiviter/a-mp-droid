@@ -49,6 +49,7 @@ public class TvServerRecordingDetailsActivity extends BaseActivity {
    private String mRecordingChannel;
    private String mRecordingOverview;
    private String mRecordingFilename;
+   private TextView mTextViewRecordingChannel;
    
    @Override
    public void onCreate(Bundle _savedInstanceState) {
@@ -65,6 +66,7 @@ public class TvServerRecordingDetailsActivity extends BaseActivity {
       mTextViewStart = (TextView) findViewById(R.id.TextViewRecordingStarttime);
       mTextViewEnd = (TextView) findViewById(R.id.TextViewRecordingEndtime);
       mTextViewDuration = (TextView) findViewById(R.id.TextViewRecordingRuntime);
+      mTextViewRecordingChannel = (TextView)findViewById(R.id.TextViewRecordingChannel);
 
       Bundle extras = getIntent().getExtras();
       if (extras != null) {
@@ -95,6 +97,10 @@ public class TvServerRecordingDetailsActivity extends BaseActivity {
          if(mTextViewDuration != null){
             long ms = mRecordingEnd.getTime() - mRecordingStart.getTime();
             mTextViewDuration.setText(DateTimeHelper.getTimeStringFromMs(ms));
+         }
+         
+         if(mTextViewRecordingChannel != null){
+            mTextViewRecordingChannel.setText(mRecordingChannel);
          }
          
          QuickActionView view = (QuickActionView) findViewById(R.id.QuickActionViewItemActions);

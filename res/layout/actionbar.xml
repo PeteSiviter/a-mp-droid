@@ -81,8 +81,7 @@
     		android:layout_marginLeft="1px"
     		android:layout_centerVertical="true"
     		android:singleLine="true"
-    		android:visibility="visible"
-    	android:src="@drawable/actionbar_remote"/>
+    		android:src="@drawable/actionbar_remote" android:visibility="gone"/>
     	<ImageButton
     		android:id="@+id/actionbar_item_search"
     		android:layout_width="@dimen/actionbar_item_width"
@@ -92,8 +91,8 @@
     		android:layout_marginLeft="1px"
     		android:layout_centerVertical="true"
     		android:singleLine="true"
-    		android:visibility="visible"
-    	android:src="@drawable/actionbar_search"/>
+    		android:src="@drawable/actionbar_search" android:visibility="gone"/>
+    	<ImageButton android:layout_width="@dimen/actionbar_item_width" android:layout_height="@dimen/actionbar_item_height" android:visibility="visible" android:background="@drawable/actionbar_btn" android:layout_marginLeft="1px" android:padding="5dip" android:id="@+id/actionbar_item_logout" android:src="@drawable/actionbar_logout"></ImageButton>
     
 </LinearLayout>
 <ImageButton android:id="@+id/actionbar_home_btn" android:padding="5dip" android:layout_marginRight="1px" android:layout_width="45dip" android:layout_height="45dip" android:background="@drawable/actionbar_btn" android:src="@drawable/actionbar_home" android:layout_alignParentLeft="true"></ImageButton>

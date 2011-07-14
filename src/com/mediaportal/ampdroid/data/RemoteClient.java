@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.mediaportal.ampdroid.data;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.api.IApiInterface;
 import com.mediaportal.ampdroid.api.IClientControlApi;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;

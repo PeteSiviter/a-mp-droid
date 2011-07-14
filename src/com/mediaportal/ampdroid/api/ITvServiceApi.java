@@ -15,7 +15,9 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.List;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.data.ChannelState;
+import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
 import com.mediaportal.ampdroid.data.TvCardDetails;
@@ -31,7 +33,7 @@ import com.mediaportal.ampdroid.data.TvUser;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
 
 public interface ITvServiceApi extends IApiInterface {
-   boolean TestConnectionToTVService();
+   boolean TestConnectionToTVService() throws WebServiceLoginException;
 
    void AddSchedule(int _channelId, String _title, Date _startTime, Date _endTime, int _scheduleType);
 
@@ -109,5 +111,7 @@ public interface ITvServiceApi extends IApiInterface {
    List<ChannelState> getAllChannelStatesForGroup(int _groupId, String _userName);
 
    ChannelState getChannelState(int _channelId, String _userName);
+
+   MediaInfo getRecordingMediaInfo(int _recordingId);
 
 }

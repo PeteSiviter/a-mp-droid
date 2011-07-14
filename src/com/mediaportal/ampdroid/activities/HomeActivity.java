@@ -16,20 +16,23 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
+import com.mediaportal.ampdroid.api.exceptions.WebServiceException;
 import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.AdUtils;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DpiUtils;
 import com.mediaportal.ampdroid.utils.Util;
 import com.mediaportal.ampdroid.utils.WakeOnLan;
@@ -37,7 +40,7 @@ import com.mediaportal.ampdroid.utils.WakeOnLan;
 public class HomeActivity extends BaseActivity {
    private LoadServiceTask mServiceLoaderTask = null;
 
-   private class LoadServiceTask extends AsyncTask<String, String, Intent> {
+   private class LoadServiceTask extends AsyncTask<String, String, Object> {
       Context mContext;
 
       private LoadServiceTask(Context _context) {
@@ -45,39 +48,67 @@ public class HomeActivity extends BaseActivity {
       }
 
       @Override
-      protected Intent doInBackground(String... _params) {
+      protected Object doInBackground(String... _params) {
          String loader = _params[0];
 
          if (loader.equals("media")) {
-            WebServiceDescription functions = mService.getSupportedFunctions();
-            if (functions != null) {
+            try {
+               WebServiceDescription functions = mService.getServiceDescription();
 
-               Intent myIntent = new Intent(mContext, MediaActivity.class);
+               if (functions != null) {
+                  Log.d(Constants.LOG_CONST,
+                        "Connected to WebService version " + functions.getServiceVersion());
+                  if (functions.getMovingPicturesApiVersion() == 1
+                        && functions.getTvSeriesApiVersion() == 1
+                        && functions.getVideoApiVersion() == 1) {
+                     Intent myIntent = new Intent(mContext, MediaActivity.class);
 
-               myIntent.putExtra("service_connected", true);
+                     myIntent.putExtra("service_connected", true);
 
-               myIntent.putExtra("supports_video", functions.supportsVideo());
-               myIntent.putExtra("supports_series", functions.supportsTvSeries());
-               myIntent.putExtra("supports_movingpictures", functions.supportsMovingPictures());
-               return myIntent;
-            } else {
-               publishProgress(loader);
+                     myIntent.putExtra("supports_video", functions.supportsVideo());
+                     myIntent.putExtra("supports_series", functions.supportsTvSeries());
+                     myIntent.putExtra("supports_movingpictures",
+                           functions.supportsMovingPictures());
+                     return myIntent;
+                  } else {
+                     Util.showToast(mContext, "Wrong service version");
+                  }
+               } else {
+                  publishProgress(loader);
+               }
+            } catch (WebServiceLoginException ex) {
+               return ex;
             }
 
          } else if (loader.equals("music")) {
-            WebServiceDescription functions = mService.getSupportedFunctions();
-            if (functions != null) {
-               Intent myIntent = new Intent(mContext, MusicActivity.class);
-               return myIntent;
-            } else {
-               publishProgress(loader);
+            try {
+               WebServiceDescription functions = mService.getServiceDescription();
+
+               if (functions != null) {
+                  Log.d(Constants.LOG_CONST,
+                        "Connected to WebService version " + functions.getServiceVersion());
+                  if (functions.getMusicApiVersion() == 1) {
+                     Intent myIntent = new Intent(mContext, MusicActivity.class);
+                     return myIntent;
+                  } else {
+                     Util.showToast(mContext, "Wrong service version");
+                  }
+               } else {
+                  publishProgress(loader);
+               }
+            } catch (WebServiceLoginException ex) {
+               return ex;
             }
          } else if (loader.equals("tvservice")) {
-            if (mService.isTvServiceActive()) {
-               Intent myIntent = new Intent(mContext, TvServerOverviewActivity.class);
-               return myIntent;
-            } else {
-               publishProgress(loader);
+            try {
+               if (mService.isTvServiceActive()) {
+                  Intent myIntent = new Intent(mContext, TvServerOverviewActivity.class);
+                  return myIntent;
+               } else {
+                  publishProgress(loader);
+               }
+            } catch (WebServiceLoginException ex) {
+               return ex;
             }
          }
 
@@ -147,9 +178,15 @@ public class HomeActivity extends BaseActivity {
       }
 
       @Override
-      protected void onPostExecute(Intent _intent) {
-         if (_intent != null) {
-            startActivity(_intent);
+      protected void onPostExecute(Object _result) {
+         if (_result != null) {
+            if (_result.getClass() == Intent.class) {
+               startActivity((Intent) _result);
+            } else if (_result.getClass() == WebServiceLoginException.class) {
+               WebServiceLoginException ex = (WebServiceLoginException) _result;
+               Util.showToast(mContext, getString(R.string.info_wrong_username_password));
+               Log.d(Constants.LOG_CONST, ex.toString());
+            }
          } else {
 
          }
@@ -222,18 +259,16 @@ public class HomeActivity extends BaseActivity {
          public void onClick(View _view) {
             Util.Vibrate(_view.getContext(), 50);
             /*
-            if (mService.isClientControlConnected()) {
-               mService.removePlaylistItem("music", 0);
-
-               mService.movePlaylistItem("music", 0, 5);
-
-               mService.requestPlaylist("music");
-
-               mService.clearPlaylistItems("music");
-            }
-
-            /*
-             * Intent download = new Intent(_view.getContext(),
+             * if (mService.isClientControlConnected()) {
+             * mService.removePlaylistItem("music", 0);
+             * 
+             * mService.movePlaylistItem("music", 0, 5);
+             * 
+             * mService.requestPlaylist("music");
+             * 
+             * mService.clearPlaylistItems("music"); }
+             * 
+             * /* Intent download = new Intent(_view.getContext(),
              * StreamingDetailsActivity.class); download.putExtra("video_id",
              * "1084101"); download.putExtra("video_type", 2);
              * download.putExtra("video_name",
@@ -288,7 +323,6 @@ public class HomeActivity extends BaseActivity {
          }
       });
 
-      
       setAdPosition();
 
       AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
@@ -325,7 +359,7 @@ public class HomeActivity extends BaseActivity {
          }
       });
    }
-   
+
    @Override
    public boolean onCreateOptionsMenu(Menu _menu) {
       super.onCreateOptionsMenu(_menu);
@@ -339,7 +373,7 @@ public class HomeActivity extends BaseActivity {
             return true;
          }
       });
-      
+
       return true;
    }
 }

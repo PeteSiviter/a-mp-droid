@@ -17,6 +17,7 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.data.CacheItemsSetting;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MediaInfo;
@@ -75,7 +76,11 @@ public class DataHandler {
       if (tvApi != null) {
          dataHandler.functions.setTvEnabled(true);
          if (_checkConnection) {
-            dataHandler.functions.setTvAvailable(tvApi.TestConnectionToTVService());
+            try {
+               dataHandler.functions.setTvAvailable(tvApi.TestConnectionToTVService());
+            } catch (WebServiceLoginException e) {
+               e.printStackTrace();
+            }
          }
       } else {
          dataHandler.functions.setTvEnabled(false);
@@ -468,15 +473,15 @@ public class DataHandler {
       return episode;
    }
 
-   public WebServiceDescription getSupportedFunctions() {
+   public WebServiceDescription getServiceDescription() throws WebServiceLoginException{
       IMediaAccessApi remoteAccess = client.getRemoteAccessApi();
       mediaDatabase.open();
-      WebServiceDescription supported = mediaDatabase.getSupportedFunctions();
+      WebServiceDescription supported = mediaDatabase.getServiceDescription();
 
       if (supported == null) {
-         supported = remoteAccess.getSupportedFunctions();
+         supported = remoteAccess.getServiceDescription();
          if (supported != null) {
-            mediaDatabase.setSupportedFunctions(supported);
+            mediaDatabase.setServiceDescription(supported);
          }
       }
 
@@ -595,7 +600,7 @@ public class DataHandler {
       return tvApi.SwitchTVServerToChannelAndGetStreamingUrl(_clientName, _channelId);
    }
 
-   public boolean isTvServiceActive() {
+   public boolean isTvServiceActive() throws WebServiceLoginException {
       ITvServiceApi tvApi = client.getTvControlApi();
       return tvApi.TestConnectionToTVService();
    }
@@ -771,13 +776,13 @@ public class DataHandler {
       return client.getTvControlApi().getTvTranscoderProfiles();
    }
 
-   public String startStreaming(String _id, long _position) {
-      return client.getRemoteAccessApi().startStreaming(_id, _position);
+   public String startStreaming(String _id, String _profile, long _position) {
+      return client.getRemoteAccessApi().startStreaming(_id, _profile, _position);
    }
 
    public void initStreaming(String _id, String _client, DownloadItemType _itemType,
-         String _itemId, String _profile) {
-      client.getRemoteAccessApi().initStreaming(_id, _client, _itemType, _itemId, _profile);
+         String _itemId) {
+      client.getRemoteAccessApi().initStreaming(_id, _client, _itemType, _itemId);
    }
 
    public StreamTranscodingInfo getTransocdingInfo(String _id) {
@@ -841,5 +846,9 @@ public class DataHandler {
    
    void stopRecordingStreaming(String _id){
       client.getTvControlApi().stopRecordingStreaming(_id);
+   }
+
+   public MediaInfo getRecordingMediaInfo(int _recordingId) {
+      return client.getTvControlApi().getRecordingMediaInfo(_recordingId);
    }
 }

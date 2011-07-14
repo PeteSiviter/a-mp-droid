@@ -126,7 +126,18 @@ public class TvProgramBase {
    @JsonProperty("StartTime")
    public void setStartTime(Date startTime) {
       StartTime = startTime;
-   }   
+   }
+
+
+
+   private Object mTag;
+   public void setTag(Object tag) {
+      mTag = tag;
+   }
+
+   public Object getTag() {
+      return mTag;
+   }
    
 
    

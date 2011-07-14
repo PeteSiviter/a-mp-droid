@@ -1,6 +1,7 @@
 package com.mediaportal.ampdroid.activities.videoplayback;
 
 import java.util.List;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseActivity;
+import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.controls.ListViewItemOnTouchListener;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MediaInfo;
@@ -32,6 +34,9 @@ import com.mediaportal.ampdroid.data.PlaybackSession;
 import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.database.PlaybackDatabaseHandler;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
+import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
+import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
@@ -43,6 +48,54 @@ public class StreamingDetailsActivity extends BaseActivity {
    public MediaInfo mMediaInfo;
    public Bitmap mVideoThumb;
    public boolean mFinishedLoading;
+   private DownloadStreamToSDCard mStartStreamingDownloadTask;
+
+   private class DownloadStreamToSDCard extends AsyncTask<Integer, Integer, Boolean> {
+      private Context mContext;
+
+      private DownloadStreamToSDCard(Context _context) {
+         mContext = _context;
+      }
+
+      @Override
+      protected Boolean doInBackground(Integer... arg0) {
+         String id = "aMPdroid." + new Random().nextInt() + ".mpeg";
+         String url = null;
+         if (mIsTv) {
+            boolean success = mService.initTvStreaming(id, "aMPdroid debug download",
+                  Integer.valueOf(mStreamingFile), mSelectedProfile.getName());
+            if (success) {
+               url = mService.startTvStreaming(id, 0);
+            }
+         } else if (mStreamingType == DownloadItemType.TvRecording) {
+            mService.initRecordingStreaming(id, "aMPdroid debug download",
+                  Integer.valueOf(mStreamingFile), mSelectedProfile.getName(), 0);
+            url = mService.startRecordingStreaming(id);
+         } else {
+            mService.initStreaming(id, "aMPdroid debug download", mStreamingType, mStreamingFile);
+            url = mService.startStreaming(id, mSelectedProfile.getName(), 0);
+         }
+
+         ApiCredentials cred = mService.getDownloadCredentials();
+         if (url != null) {
+            DownloadJob job = new DownloadJob();
+            job.setUrl(url);
+            job.setFileName("streaming_debug.ts");
+            job.setDisplayName(mStreamingFile);
+            job.setMediaType(MediaItemType.Video);
+            job.setLength(-99);
+            if (cred.useAut()) {
+               job.setAuth(cred.getUsername(), cred.getPassword());
+            }
+
+            Intent download = ItemDownloaderHelper.createDownloadIntent(mContext, job);
+            startService(download);
+         }
+
+         return null;
+      }
+
+   }
 
    private class LoadStreamDetailsTask extends AsyncTask<Integer, Integer, Boolean> {
       Activity mContext;
@@ -57,6 +110,9 @@ public class StreamingDetailsActivity extends BaseActivity {
             mProfiles = mService.getTvTranscoderProfiles();
             publishProgress(2);
          } else if (mStreamingType == DownloadItemType.TvRecording) {
+            mMediaInfo = mService.getRecordingMediaInfo(Integer.parseInt(mStreamingFile));
+            publishProgress(1);
+            
             mProfiles = mService.getTvTranscoderProfiles();
             publishProgress(2);
          } else {
@@ -73,9 +129,11 @@ public class StreamingDetailsActivity extends BaseActivity {
             if (mLastSession != null && mLastSession.getStartPosition() > 10000) {
                thumbPos = (int) (mLastSession.getStartPosition() / 1000);
             }
-            
-            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            mVideoThumb = mService.getBitmapFromMedia(mStreamingType, mStreamingFile, thumbPos, display.getWidth(), display.getHeight());
+
+            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                  .getDefaultDisplay();
+            mVideoThumb = mService.getBitmapFromMedia(mStreamingType, mStreamingFile, thumbPos,
+                  display.getWidth(), display.getHeight());
             publishProgress(3);
 
          }
@@ -178,6 +236,7 @@ public class StreamingDetailsActivity extends BaseActivity {
    private LinearLayout mButtonUseRtsp;
    protected String mPlayingUrl;
    private FrameLayout mStreamingHeader;
+   private int mVideoLength;
 
    /** Called when the activity is first created. */
    @Override
@@ -205,8 +264,43 @@ public class StreamingDetailsActivity extends BaseActivity {
                streamIntent.putExtra("video_name", mDisplayName);
                streamIntent.putExtra("profile_name", mSelectedProfile.getName());
                streamIntent.putExtra("streaming_profiles", mProfileItems);
+               if (mVideoLength > 0) {
+                  streamIntent.putExtra("video_length", mVideoLength);
+               }
+               if (mMediaInfo != null) {
+                  streamIntent.putExtra("video_needs_preconversion",
+                        mMediaInfo.isStreamingNeedsPreconversion());
+               }
                _view.getContext().startActivity(streamIntent);
             }
+         }
+      });
+
+      mButtonStartFromBeginning.setOnLongClickListener(new View.OnLongClickListener() {
+         @Override
+         public boolean onLongClick(final View _view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(_view.getContext());
+            builder.setTitle("Really download stream");
+            builder
+                  .setMessage("This is a debug option to track down stream errors. Really download this stream to your sd card?");
+            builder.setCancelable(false);
+            builder.setPositiveButton(getString(R.string.dialog_yes),
+                  new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int id) {
+                        mStartStreamingDownloadTask = new DownloadStreamToSDCard(_view.getContext());
+                        mStartStreamingDownloadTask.execute();
+                     }
+                  });
+
+            builder.setNegativeButton(getString(R.string.dialog_no),
+                  new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int id) {
+                     }
+                  });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+            return false;
          }
       });
 
@@ -248,6 +342,13 @@ public class StreamingDetailsActivity extends BaseActivity {
                streamIntent.putExtra("video_name", mDisplayName);
                streamIntent.putExtra("profile_name", mSelectedProfile.getName());
                streamIntent.putExtra("video_startfrom", mLastSession.getStartPosition());
+               if (mVideoLength > 0) {
+                  streamIntent.putExtra("video_length", mVideoLength);
+               }
+               if (mMediaInfo != null) {
+                  streamIntent.putExtra("video_needs_preconversion",
+                        mMediaInfo.isStreamingNeedsPreconversion());
+               }
                _view.getContext().startActivity(streamIntent);
             }
          }
@@ -304,6 +405,10 @@ public class StreamingDetailsActivity extends BaseActivity {
          mStreamingFile = extras.getString("video_id");
          mStreamingType = DownloadItemType.fromInt(extras.getInt("video_type", 0));
          mDisplayName = extras.getString("video_name");
+
+         if (extras.containsKey("video_length")) {
+            mVideoLength = extras.getInt("video_length");
+         }
          mTextViewVideoName.setText(mDisplayName);
 
          if (mStreamingType == DownloadItemType.LiveTv) {

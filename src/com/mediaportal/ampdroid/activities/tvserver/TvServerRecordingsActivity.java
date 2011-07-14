@@ -93,9 +93,11 @@ public class TvServerRecordingsActivity extends BaseActivity {
       mListView = (ListView) findViewById(R.id.ListViewRecordings);
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
-         public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-            mAdapter.showLoadingItem(false);
-            mAdapter.notifyDataSetChanged();
+         public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView
+            .getItemAtPosition(_pos);
+            mSelectedRecording = (TvRecording) item.getItem();
+            openDetails(mSelectedRecording);
          }
       });
 
@@ -147,6 +149,9 @@ public class TvServerRecordingsActivity extends BaseActivity {
       if (!mChannels.containsKey(_recording.getIdChannel())) {
          TvChannel channel = mService.getTvChannel(_recording.getIdChannel());
          recIntent.putExtra("recording_channel", channel.getDisplayName());
+      }
+      else{
+         recIntent.putExtra("recording_channel", mChannels.get(_recording.getIdChannel()).getDisplayName());
       }
       recIntent.putExtra("recording_description", _recording.getDescription());
       recIntent.putExtra("recording_filename", _recording.getFileName());

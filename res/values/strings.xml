@@ -259,6 +259,7 @@
 	<string name="info_not_implemented">Not implemented yet</string>
 	<string name="info_no_connection">No connection to service</string>
 	<string name="info_remote_notconnected">Remote not connected</string>
+	<string name="info_wrong_username_password">Wrong username or password</string>
 	<string name="info_loading_title">Loading. Please wait ...</string>
 	<string name="info_loading_failed">Loading failed, check your connection</string>
 	<string name="info_file_not_found">File has to be downloaded first</string>
@@ -321,4 +322,9 @@
 	<string name="streaming_remember_settings_text">Remember these stream settings</string>
 	<string name="streaming_initfailed_title">Couldn\'t start stream</string>
 	<string name="streaming_initfailed_text">Error on starting the tv stream, maybe no free cards are available.</string>
+	<string name="streaming_media_died_title">Stream failed</string>
+	<string name="streaming_media_died_text">Stream stopped unexpectedly, try to restart?</string>
+	<string name="streaming_seeking_available">Seeking available now</string>
+	<string name="streaming_seeking_preparing">Preparing video for seeking</string>
+	<string name="streaming_seeking_preparefailed">Seek preparation failed, seeking not available on this stream!</string>
 </resources>

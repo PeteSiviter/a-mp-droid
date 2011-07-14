@@ -25,8 +25,8 @@ import com.mediaportal.ampdroid.data.WebServiceDescription;
 
 public interface IMediaAccessDatabase {
    //general
-   WebServiceDescription getSupportedFunctions();
-   void setSupportedFunctions(WebServiceDescription supported);
+   WebServiceDescription getServiceDescription();
+   void setServiceDescription(WebServiceDescription supported);
    public void open();
    public void close();
    

@@ -68,9 +68,14 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
    public ImageButton getHomeButton(){
       return mHomeBtn;
    }
+   
+   public ImageButton getLogoutButton(){
+      return mLogoutBtn;
+   }
 
    private boolean mIsInitialised = false;
    private boolean mLoading;
+   private ImageButton mLogoutBtn;
    
 
    public ActionBar(Context _context, AttributeSet _attrs) {
@@ -89,6 +94,8 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
       mChangeClientBtn = (ImageButton) mBarView.findViewById(R.id.actionbar_item_clients);
       mSearchBtn = (ImageButton) mBarView.findViewById(R.id.actionbar_item_search);
+      mLogoutBtn = (ImageButton)mBarView.findViewById(R.id.actionbar_item_logout);
+      
       mProgressBar = (ProgressBar) mBarView.findViewById(R.id.actionbar_item_progress);
 
       if (mLoading) {

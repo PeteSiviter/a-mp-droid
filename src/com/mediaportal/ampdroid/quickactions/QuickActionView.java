@@ -71,6 +71,14 @@ public class QuickActionView extends RelativeLayout implements IQuickActionConta
       }
    }
    
+   public void clearActionList(){
+      for (int i = 0; i < mActionList.size(); i++) {
+         mTrack.removeViewAt(1);
+      }
+      
+      mActionList.clear();
+   }
+   
    /**
     * Get action item {@link View}
     * 

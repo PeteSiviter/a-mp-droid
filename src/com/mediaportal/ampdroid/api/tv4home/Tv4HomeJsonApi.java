@@ -28,11 +28,13 @@ import org.codehaus.jackson.map.deser.StdDeserializerProvider;
 
 import android.util.Log;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.ITvServiceApi;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
 import com.mediaportal.ampdroid.data.ChannelState;
+import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
 import com.mediaportal.ampdroid.data.TvCardDetails;
@@ -46,6 +48,7 @@ import com.mediaportal.ampdroid.data.TvRtspClient;
 import com.mediaportal.ampdroid.data.TvSchedule;
 import com.mediaportal.ampdroid.data.TvUser;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
+import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.IsoDate;
 
@@ -81,19 +84,20 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    private final String SWITCH_CHANNEL_GET_FILE = "SwitchTVServerToChannelAndGetTimeshiftFilename";
    private final String GET_CHANNEL_STATES = "GetAllChannelStatesForGroup";
    private final String GET_CHANNEL_STATE = "GetChannelState";
-   
+   private final String GET_MEDIA_INFO = "GetMediaInfo";
+
    private static final String INIT_STREAMING = "SwitchTVServerToChannelAndInitStream";
-   
+
    private static final String START_STREAMING = "StartStream";// not used for
                                                                // now
    private static final String RETRIEVE_STREAMING = "RetrieveStream";
    private static final String STOP_TV_STREAMING = "FinishStreamAndCancelTimeshifting";
    private static final String GET_TRANSCODING_INFO = "GetTranscodingInfo";
    private static final String GET_PROFILES = "GetTranscoderProfilesForTarget";
-   
+
    private static final String INIT_RECORDING_STREAMING = "InitRecordingStream";
    private static final String STOP_RECORDING_STREAMING = "FinishStream";
-   
+
    private static final String ANDROID_TARGET_NAME = "android";
 
    private String mServer;
@@ -214,11 +218,15 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    }
 
    @Override
-   public boolean TestConnectionToTVService() {
+   public boolean TestConnectionToTVService() throws WebServiceLoginException {
       Log.i(Constants.LOG_CONST, "Testing Tv4Home connection: " + mServer + ":" + mPort + "@"
             + mUser + ":" + mPass);
 
       String response = mJsonClient.Execute(TEST_SERVICE);
+      if (mJsonClient.getResponseCode() == 401) {
+         // unauthorised
+         throw new WebServiceLoginException(mUseAuth, mUser, mPass);
+      }
 
       if (response != null) {
          Boolean returnObject = (Boolean) getObjectsFromJson(response, Boolean.class);
@@ -658,19 +666,19 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
       }
       return null;
    }
-   
+
    @Override
    public boolean initTvStreaming(String _id, String _client, int _channelId, String _profile) {
-      String response = mJsonClient.Execute(INIT_STREAMING, 40000, JsonUtils.newPair("channelId", _channelId),
-            JsonUtils.newPair("profile", _profile), JsonUtils.newPair("userName", _id));
+      String response = mJsonClient.Execute(INIT_STREAMING, 80000,
+            JsonUtils.newPair("channelId", _channelId), JsonUtils.newPair("profile", _profile),
+            JsonUtils.newPair("userName", _id));
       if (response != null) {
          Boolean returnObject = (Boolean) getObjectsFromJson(response, Boolean.class);
 
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.e("Soap", "Error parsing result from soap method "
-                  + INIT_STREAMING);
+            Log.e("Soap", "Error parsing result from soap method " + INIT_STREAMING);
          }
       }
       return false;
@@ -741,11 +749,11 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    }
 
    @Override
-   public boolean initRecordingStreaming(String _id, String _client, int _recordingId, String _profile, int _startPosition) {
-      String response = mJsonClient.Execute(INIT_RECORDING_STREAMING, 40000,             
-            JsonUtils.newPair("recordingId", _recordingId),
-            JsonUtils.newPair("profile", _profile),
-            JsonUtils.newPair("startPosition", _startPosition), 
+   public boolean initRecordingStreaming(String _id, String _client, int _recordingId,
+         String _profile, int _startPosition) {
+      String response = mJsonClient.Execute(INIT_RECORDING_STREAMING, 40000,
+            JsonUtils.newPair("recordingId", _recordingId), JsonUtils.newPair("profile", _profile),
+            JsonUtils.newPair("startPosition", _startPosition),
             JsonUtils.newPair("identifier", _id));
       if (response != null) {
          Boolean returnObject = (Boolean) getObjectsFromJson(response, Boolean.class);
@@ -753,13 +761,12 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          if (returnObject != null) {
             return returnObject;
          } else {
-            Log.e("Soap", "Error parsing result from soap method "
-                  + INIT_STREAMING);
+            Log.e("Soap", "Error parsing result from soap method " + INIT_STREAMING);
          }
       }
       return false;
    }
-   
+
    @Override
    public String startRecordingStreaming(String _id) {
       /*
@@ -770,20 +777,21 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
             + RETRIEVE_STREAMING + "?identifier=" + _id;
       return fileUrl;
    }
-   
+
    @Override
    public void stopRecordingStreaming(String _id) {
       String methodName = STOP_RECORDING_STREAMING;
       mJsonClient.Execute(methodName, JsonUtils.newPair("identifier", _id));
    }
-   
+
    @Override
    public List<ChannelState> getAllChannelStatesForGroup(int _groupId, String _userName) {
       String method = GET_CHANNEL_STATES;
       String response = mJsonClient.Execute(method, 40000, JsonUtils.newPair("groupId", _groupId),
             JsonUtils.newPair("userName", _userName));
       if (response != null) {
-         ChannelState[] returnArray = (ChannelState[]) getObjectsFromJson(response, ChannelState[].class);
+         ChannelState[] returnArray = (ChannelState[]) getObjectsFromJson(response,
+               ChannelState[].class);
 
          if (returnArray != null) {
             return new ArrayList<ChannelState>(Arrays.asList(returnArray));
@@ -797,11 +805,30 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    @Override
    public ChannelState getChannelState(int _channelId, String _userName) {
       String methodName = GET_CHANNEL_STATE;
-      String response = mJsonClient.Execute(methodName, 40000, JsonUtils.newPair("channelId", _channelId),
-            JsonUtils.newPair("userName", _userName));
+      String response = mJsonClient.Execute(methodName, 40000,
+            JsonUtils.newPair("channelId", _channelId), JsonUtils.newPair("userName", _userName));
       if (response != null) {
-         ChannelState returnObject = (ChannelState) getObjectsFromJson(response,
-               ChannelState.class);
+         ChannelState returnObject = (ChannelState) getObjectsFromJson(response, ChannelState.class);
+
+         if (returnObject != null) {
+            return returnObject;
+         } else {
+            Log.e(Constants.LOG_CONST, "Error parsing result from JSON method " + methodName);
+         }
+      } else {
+         Log.e(Constants.LOG_CONST, "Error retrieving data for method" + methodName);
+      }
+      return null;
+   }
+
+   @Override
+   public MediaInfo getRecordingMediaInfo(int _recordingId) {
+      String methodName = GET_MEDIA_INFO;
+      String response = mJsonClient.Execute(methodName,
+            JsonUtils.newPair("recordingId", _recordingId));
+
+      if (response != null) {
+         MediaInfo returnObject = (MediaInfo) getObjectsFromJson(response, MediaInfo.class);
 
          if (returnObject != null) {
             return returnObject;

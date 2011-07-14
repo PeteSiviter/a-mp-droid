@@ -35,11 +35,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.api.CustomDateDeserializer;
 import com.mediaportal.ampdroid.api.IMediaAccessApi;
 import com.mediaportal.ampdroid.api.JsonClient;
 import com.mediaportal.ampdroid.api.JsonUtils;
 import com.mediaportal.ampdroid.data.FileInfo;
+import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.Movie;
 import com.mediaportal.ampdroid.data.MovieFull;
 import com.mediaportal.ampdroid.data.MusicAlbum;
@@ -50,11 +52,10 @@ import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.data.SeriesEpisodeDetails;
 import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
-import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
-import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.utils.Constants;
 
@@ -180,9 +181,13 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       return mServer;
    }
 
-   public WebServiceDescription getSupportedFunctions() {
+   public WebServiceDescription getServiceDescription() throws WebServiceLoginException{
       String methodName = GET_WEBSERVICE_DESC;
       String response = mJsonClient.Execute(methodName);
+      if(mJsonClient.getResponseCode() == 401){
+         //unauthorised
+         throw new WebServiceLoginException(mUseAuth, mUser, mPass);
+      }
 
       Log.i(Constants.LOG_CONST, "Getting GmaWebservice functions: " + mServer + ":" + mPort + "@"
             + mUser + ":" + mPass);
@@ -514,18 +519,18 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
 
    @Override
    public void initStreaming(String _id, String _client, DownloadItemType _itemType,
-         String _itemId, String _profile) {
-      mJsonClient.Execute(INIT_STREAMING,
+         String _itemId) {
+      mJsonClient.Execute(INIT_STREAMING, 40000,
             JsonUtils.newPair("type", DownloadItemType.toInt(_itemType)),
-            JsonUtils.newPair("itemId", _itemId), JsonUtils.newPair("profileName", _profile),
+            JsonUtils.newPair("itemId", _itemId),
             JsonUtils.newPair("clientDescription", _client), JsonUtils.newPair("identifier", _id));
    }
 
    @Override
-   public String startStreaming(String _id, long _position) {
+   public String startStreaming(String _id, String _profile, long _position) {
       mJsonClient.Execute(START_STREAMING, 40000,
             JsonUtils.newPair("startPosition", String.valueOf(_position)),
-            JsonUtils.newPair("identifier", _id));
+            JsonUtils.newPair("profileName", _profile), JsonUtils.newPair("identifier", _id));
 
       String fileUrl = JSON_PREFIX + mServer + ":" + mPort + STREAM_SUFFIX + "/"
             + RETRIEVE_STREAMING + "?identifier=" + _id;
@@ -537,7 +542,7 @@ public class GmaJsonWebserviceApi implements IMediaAccessApi {
       String methodName = GET_TRANSCODING_INFO;
       String response = mJsonClient.Execute(methodName, JsonUtils.newPair("identifier", _id));
 
-      if (response != null) {
+      if (response != null && !response.equals("")) {
          StreamTranscodingInfo returnObject = (StreamTranscodingInfo) getObjectsFromJson(response,
                StreamTranscodingInfo.class);
 

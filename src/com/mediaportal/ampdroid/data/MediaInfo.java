@@ -9,6 +9,7 @@ public class MediaInfo {
    private int mDisplayAspectRatio;
    private String mDisplayAspectRatioString;
    private String mSourceCodec;
+   private boolean mStreamingNeedsPreconversion;
 
    @ColumnProperty(value = "Duration", type = "integer")
    @JsonProperty("Duration")
@@ -53,6 +54,18 @@ public class MediaInfo {
    @JsonProperty("DisplayAspectRatioString")
    public String getDisplayAspectRatioString() {
       return mDisplayAspectRatioString;
+   }
+
+   @ColumnProperty(value = "StreamingNeedsPreconversion", type = "boolean")
+   @JsonProperty("StreamingNeedsPreconversion")
+   public void setStreamingNeedsPreconversion(boolean streamingNeedsPreconversion) {
+      mStreamingNeedsPreconversion = streamingNeedsPreconversion;
+   }
+
+   @ColumnProperty(value = "StreamingNeedsPreconversion", type = "boolean")
+   @JsonProperty("StreamingNeedsPreconversion")
+   public boolean isStreamingNeedsPreconversion() {
+      return mStreamingNeedsPreconversion;
    }
 
 }

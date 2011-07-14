@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (c) 2011 Benjamin Gmeiner.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the GNU Public License v2.0
-  which accompanies this distribution, and is available at
-  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-  
-  Contributors:
-      Benjamin Gmeiner - Project Owner
--->
 <resources>
 	<string name="app_name">aMPdroid</string>
 	<string name="app_desc">MP von deinem Android Phone steuern</string>
@@ -171,10 +161,10 @@
 	<string name="settings_preference_vibrate_desc">Bildschirm vibriert wenn Tasten gedrückt werden</string>
 	<string name="settings_tvserver_showall_title">Zeige \"Alle Sender\"</string>
 	<string name="settings_tvserver_showall_desc">Zeige die \"Alle Sender\" Gruppe die alle verfügbaren Sender am Tv Server beinhaltet</string>
-	<string name="settings_tvserver_clientname_title">Client Name</string>
-	<string name="settings_tvserver_clientname_desc">Der Name dieses Clients der am TvServer angezeigt wird</string>
+	<string name="settings_general_clientname_title">Client Name</string>
+	<string name="settings_general_clientname_desc">Ein Name um dieses Gerät gegenüber MediaPortal zu identifizieren.</string>
 	<string name="settings_media_cachemedia_title">Cache Informationen</string>
-	<string name="settings_media_cachemedia_desc">Ist diese Option aktiviert werden geladene Items in einer lokalen Datenbank gecacht</string>
+	<string name="settings_media_cachemedia_desc">Ist diese Option aktiviert werden geladene Items in einer lokalen Datenbank gespeichert</string>
 	<string name="settings_media_loaddetails_title">Lade Details</string>
 	<string name="settings_media_loaddetails_desc">Lade alle Details eines Items automatisch oder erst bei Bedarf.</string>
 	<string name="settings_media_cachevalid_title">Cache Gültigkeit</string>
@@ -190,6 +180,8 @@
 	<string name="settings_general_preloaditems_desc">Anzahl an Items die geladen werden wenn das Ende einer Liste erreicht ist.</string>
 	<string name="settings_general_autoconnect_title">Automatischer Connect</string>
 	<string name="settings_general_autoconnect_desc">Verbindung automatisch herstellen wenn ein Client geladen wird.</string>
+	<string name="settings_general_autoreconnect_title">Verbindungswiederherstellung</string>
+	<string name="settings_general_autoreconnect_desc">Stellt die Verbindung zum MediaPortal Client automatisch wieder her falls diese abreißt.</string>
 	<string name="settings_general_autowol_title">WOL bei Connect</string>
 	<string name="settings_general_autowol_desc">Automatisches Aufwachen des Client per WOL sobald eine Verbindung hergestellt wird.</string>
 	<string name="settings_general_statusbar_hide_title">Ausblenden der Statusbar</string>
@@ -230,6 +222,12 @@
 	<string name="settings_media_defaultview_musicartists_desc">Standardansicht für die Liste der Musiker</string>
 	<string name="settings_media_defaultview_musictracks_title">Ansicht Lieder</string>
 	<string name="settings_media_defaultview_musictracks_desc">Standardansicht für die Liste der Tracks</string>
+	<string name="settings_streaming_buffering_title">Buffer Modus</string>
+	<string name="settings_streaming_buffering_desc">Den Buffer Modus für Videostreaming auswählen</string>
+	<string name="settings_streaming_quality_title">Stream-Qualität</string>
+	<string name="settings_streaming_quality_desc">Die bevorzugte Stream-Qualität auswählen.</string>
+	<string name="settings_streaming_useexternal_title">Verwende externen Player</string>
+	<string name="settings_streaming_useexternal_desc">Wenn ausgewählt wird ein statt des internen MedienPlayer (nur für Geräte ab Android 2.3) ein externer verwendet.</string>
 	<string name="info_not_implemented">Noch nicht implementiert</string>
 	<string name="info_no_connection">Keine Verbindung zum Service</string>
 	<string name="info_remote_notconnected">Remote nicht verbunden</string>
@@ -237,6 +235,7 @@
 	<string name="info_loading_failed">Laden fehlgeschlagen, bitte checken Sie die Verbindung</string>
 	<string name="info_file_not_found">Datei muss erst geladen werden</string>
 	<string name="info_file_already_downloaded">Datei wurde bereits geladen</string>
+	<string name="info_no_groups_defined">Keine Gruppen am MediaPortal Tv Server definiert</string>
 	<string name="menu_clients">Clients</string>
 	<string name="menu_settings">Einstellungen</string>
 	<string name="menu_refresh">Aktualisieren</string>
@@ -247,6 +246,9 @@
 	<string name="menu_set_default_view">Als Standard</string>
 	<string name="menu_clear_downloads">Entfernen</string>
 	<string name="menu_downloads">Downloads</string>
+	<string name="menu_beam_to_pc">Auf PC beamen</string>
+	<string name="menu_select_stream_quality">Stream Qualität</string>
+	<string name="menu_quit_client">Client Verlassen</string>
 	<string name="remote_menu_keyboard">Tastatur</string>
 	<string name="dialog_ok">OK</string>
 	<string name="dialog_yes">Ja</string>
@@ -255,6 +257,9 @@
 	<string name="dialog_title_addhost">Client hinzufügen</string>
 	<string name="quickactions_playclient">Abspielen (PC)</string>
 	<string name="quickactions_playdevice">Abspielen (lokal)</string>
+	<string name="quickactions_streamdevice">Streamen</string>
+	<string name="quickactions_streamdevice_details">Streamen (erw)</string>
+	<string name="quickactions_details">Details</string>
 	<string name="quickactions_downloadsd">Abspeichern (lokal)</string>
 	<string name="quickactions_start">Starten</string>
 	<string name="quickactions_stop">Stoppen</string>
@@ -273,11 +278,22 @@
 	<string name="notification_download_failed">\u0020fehlgeschlagen</string>
 	<string name="notification_download_succeeded">\u0020Download(s) fertig</string>
 	<string name="notification_title">aMPdroid</string>
-	<string name="settings_media_defaultview_shares_title">Standardansicht Video Dateien</string>
-	<string name="settings_media_defaultview_shares_desc">Standardanischt der Video Datei Liste</string>
-	<string name="quickactions_starttimeshift">Abbrechen</string>
-	<string name="quickactions_stoptimeshift">Abbrechen</string>
-	<string name="quickactions_cancelrecord">Abbrechen</string>
-	<string name="quickactions_canceldownload">Abbrechen</string>
-	<string name="quickactions_deletedownload">Löschen</string>
+	<string name="settings_category_streaming">Streaming</string>
+	<string name="streaming_playfromstart_title">Abspielen</string>
+	<string name="streaming_playfromstart_text">Abspielen mit dem Profil\u0020</string>
+	<string name="streaming_resumefrompos_title">Fortsetzen</string>
+	<string name="streaming_resumefrompos_text">Fortsetzen von\u0020</string>
+	<string name="streaming_quality_title">Streaming Qualität</string>
+	<string name="streaming_quality_text">Die Stream Qualität auswählen</string>
+	<string name="streaming_tvserver_use_rtsp_title">RTSP Stream starten</string>
+	<string name="streaming_tvserver_use_rtsp_text">Den originalen RTSP Stream des Tv Servers öffnen (Beste Qualität, externer Player erforderlich)</string>
+	<string name="streaming_remember_settings_title">Merken</string>
+	<string name="streaming_remember_settings_text">Diese Stream einstellungen merken</string>
+	<string name="streaming_initfailed_title">Konnte Stream nicht starten</string>
+	<string name="streaming_initfailed_text">Fehler beim Starten des Streams, ev. sind am TvServer keine freien Karten verfügbar.</string>
+	<string name="streaming_media_died_title"></string>
+	<string name="streaming_media_died_text"></string>
+	<string name="streaming_seeking_available"></string>
+	<string name="streaming_seeking_preparing"></string>
+	<string name="streaming_seeking_preparefailed"></string>
 </resources>

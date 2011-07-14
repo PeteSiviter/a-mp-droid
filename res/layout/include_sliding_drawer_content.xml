@@ -17,11 +17,12 @@
 			<ImageView android:layout_width="wrap_content" android:id="@+id/imageView1" android:layout_height="wrap_content" android:src="@drawable/background_text" android:layout_gravity="center"></ImageView>
 		</LinearLayout>
 		<ImageView android:id="@+id/ImageViewSlider"
-			android:layout_gravity="top|center" android:layout_height="fill_parent" android:layout_width="fill_parent" android:scaleType="fitCenter"></ImageView>
+			android:layout_gravity="top|center" android:layout_height="fill_parent" android:layout_width="fill_parent" android:scaleType="fitCenter" android:visibility="visible"></ImageView>
 		<LinearLayout android:visibility="visible" android:layout_marginTop="10dip"
-			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:layout_marginBottom="100dip" android:id="@+id/LinearLayoutContent">
-			<TextView android:id="@+id/TextViewSliderTitle"
-				android:textStyle="bold" android:layout_width="fill_parent" android:layout_gravity="center" android:gravity="center" android:layout_height="wrap_content" android:textSize="18dip" android:layout_marginLeft="20dip" android:layout_marginRight="20dip"></TextView>
+			android:layout_width="fill_parent" android:orientation="vertical" android:gravity="top" android:layout_gravity="top" android:layout_height="fill_parent" android:id="@+id/LinearLayoutContent" android:layout_marginBottom="100dip">
+			<LinearLayout android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/linearLayout1">
+				<TextView android:textStyle="bold" android:layout_height="wrap_content" android:textSize="18dip" android:id="@+id/TextViewSliderTitle" android:layout_marginLeft="20dip" android:layout_gravity="center" android:layout_width="fill_parent" android:layout_marginRight="20dip" android:gravity="center"></TextView>
+			</LinearLayout>
 			<ScrollView android:layout_width="fill_parent" android:id="@+id/scrollView1" android:layout_marginTop="20dip" android:layout_height="fill_parent">
 				<TextView android:id="@+id/TextViewSliderTextDetail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16dip" android:paddingLeft="5dip" android:paddingRight="5dip"></TextView>
 			</ScrollView>
@@ -31,6 +32,7 @@
 			<LinearLayout android:id="@+id/linearLayout5"
 				android:layout_width="fill_parent" android:orientation="vertical"
 				android:layout_height="wrap_content">
+				<com.mediaportal.ampdroid.quickactions.QuickActionView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/QuickActionNowPlaying" android:visibility="gone"></com.mediaportal.ampdroid.quickactions.QuickActionView>
 				<LinearLayout android:layout_marginLeft="10dip"
 					android:layout_marginTop="10dip" android:gravity="right"
 					android:layout_marginRight="10dip" android:id="@+id/linearLayout3"

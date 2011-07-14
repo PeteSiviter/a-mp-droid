@@ -611,7 +611,7 @@ public class MediaDatabaseHandler implements IMediaAccessDatabase {
    }
 
    @Override
-   public WebServiceDescription getSupportedFunctions() {
+   public WebServiceDescription getServiceDescription() {
       try {
          if(!mUseCaching) return null;
          Cursor result = mDatabase.query(WebServiceDescription.TABLE_NAME, null, CLIENT_ID + "=" + mClientId,
@@ -634,7 +634,7 @@ public class MediaDatabaseHandler implements IMediaAccessDatabase {
    }
 
    @Override
-   public void setSupportedFunctions(WebServiceDescription _supported) {
+   public void setServiceDescription(WebServiceDescription _supported) {
       try {
          if(!mUseCaching) return ;
          ContentValues dbValues = SqliteAnnotationsHelper.getContentValuesFromObject(_supported,

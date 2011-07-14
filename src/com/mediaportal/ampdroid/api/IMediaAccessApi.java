@@ -14,6 +14,7 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 
+import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.MediaInfo;
 import com.mediaportal.ampdroid.data.Movie;
@@ -28,8 +29,8 @@ import com.mediaportal.ampdroid.data.SeriesFull;
 import com.mediaportal.ampdroid.data.SeriesSeason;
 import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
-import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.data.VideoShare;
+import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 
 public interface IMediaAccessApi extends IApiInterface {
@@ -64,7 +65,7 @@ public interface IMediaAccessApi extends IApiInterface {
    
    int getEpisodesCountForSeason(int _seriesId, int _seasonNumber);
 
-   WebServiceDescription getSupportedFunctions();
+   WebServiceDescription getServiceDescription() throws WebServiceLoginException;
 
    String getDownloadUri(String _itemId, DownloadItemType _itemType);
 
@@ -118,9 +119,9 @@ public interface IMediaAccessApi extends IApiInterface {
 
    List<MusicAlbum> getMusicAlbumsByArtist(String _artist);
 
-   void initStreaming(String _id, String _client, DownloadItemType _itemType, String _itemId, String _profile);
+   void initStreaming(String _id, String _client, DownloadItemType _itemType, String _itemId);
    
-   String startStreaming(String _id, long _position);
+   String startStreaming(String _id, String _profile, long _position);
 
    void stopStreaming(String _file);
 
