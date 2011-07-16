@@ -162,7 +162,7 @@ public class ItemDownloaderService extends Service {
             }
 
             mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(
-                  getApplicationContext().NOTIFICATION_SERVICE);
+                  Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(NOTIFICATION_ID, mNotification);
 
             HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
@@ -428,8 +428,9 @@ public class ItemDownloaderService extends Service {
       @Override
       protected void onProgressUpdate(Integer... values) {
          int type = values[0];
-         int progress = values[1];
+         
          if (type != -1) {
+            int progress = values[1];
             createNotificationText(type, progress);
             // inform the progress bar of updates in progress
             mNotificationManager.notify(NOTIFICATION_ID, mNotification);
@@ -464,6 +465,10 @@ public class ItemDownloaderService extends Service {
       }
 
       DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
+      if(job == null){
+         Log.d(Constants.LOG_CONST, "Couldn't get job from intent");
+         return Service.START_STICKY;
+      }
       DownloadsDatabaseHandler db = new DownloadsDatabaseHandler(this);
       db.open();
       job.setDateAdded(new Date());

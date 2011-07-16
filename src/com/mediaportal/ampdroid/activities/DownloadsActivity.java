@@ -173,6 +173,7 @@ public class DownloadsActivity extends Activity {
                         new OnClickListener() {
                            @Override
                            public void onClick(View _view) {
+                              Log.d(Constants.LOG_CONST, "User request download cancellation");
                               job.setRequestCancelation(true);
                               if(job.getState() == DownloadState.Queued){
                                  job.setState(DownloadState.Stopped);
@@ -193,6 +194,7 @@ public class DownloadsActivity extends Activity {
                         new OnClickListener() {
                            @Override
                            public void onClick(View _view) {
+                              Log.d(Constants.LOG_CONST, "User request download removal");
                               mAdapter.removeItem(item);
                               mDatabase.open();
                               mDatabase.removeDownload(job);
