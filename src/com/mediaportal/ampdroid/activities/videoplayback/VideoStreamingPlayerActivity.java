@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -283,6 +284,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
 
    public void onCreate(Bundle _bundle) {
       super.onCreate(_bundle);
+      setVolumeControlStream(AudioManager.STREAM_MUSIC);
       mSurfaceCreated = false;
       Thread.setDefaultUncaughtExceptionHandler(onUncaughtException);
 
@@ -797,14 +799,14 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       mLastActionTime = SystemClock.elapsedRealtime();
 
-      if (keyCode == KeyEvent.KEYCODE_BACK
+      /*if (keyCode == KeyEvent.KEYCODE_BACK
             && (mTopPanel.getVisibility() == View.VISIBLE || mBottomPanel.getVisibility() == View.VISIBLE)) {
          mLastActionTime = 0;
 
          setPanelsVisible(false);
 
          return (true);
-      }
+      }*/
 
       mSurface.setBackgroundDrawable(null);
       return (super.onKeyDown(keyCode, event));
