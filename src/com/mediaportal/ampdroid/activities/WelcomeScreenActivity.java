@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
@@ -95,7 +96,7 @@ public class WelcomeScreenActivity extends Activity {
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
       setContentView(R.layout.activity_welcomescreen);
-      
+      BugSenseHandler.setup(this, "4434a1f4");
       //AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
 
       
