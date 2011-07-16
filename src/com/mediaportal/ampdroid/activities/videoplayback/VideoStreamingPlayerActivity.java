@@ -702,7 +702,9 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       mActivityActive = false;
       if (mMediaPlayer != null) {
          mMediaPlayer.stop();
+         Log.d(Constants.LOG_CONST, "MediaPlayer stop finished");
       }
+      
 
       if (mCheckTranscodingStateTask != null) {
          mCheckTranscodingStateTask.stopChecking();

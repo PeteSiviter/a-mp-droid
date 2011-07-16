@@ -84,17 +84,20 @@ public class HomeActivity extends BaseActivity {
             try {
                WebServiceDescription functions = mService.getServiceDescription();
 
-               if (functions != null) {
-                  Log.d(Constants.LOG_CONST,
-                        "Connected to WebService version " + functions.getServiceVersion());
-                  if (functions.getMusicApiVersion() == 1) {
-                     Intent myIntent = new Intent(mContext, MusicActivity.class);
-                     return myIntent;
+               if (mIsActive) {
+                  // the activity is still in the foreground
+                  if (functions != null) {
+                     Log.d(Constants.LOG_CONST,
+                           "Connected to WebService version " + functions.getServiceVersion());
+                     if (functions.getMusicApiVersion() == 1) {
+                        Intent myIntent = new Intent(mContext, MusicActivity.class);
+                        return myIntent;
+                     } else {
+                        Util.showToast(mContext, "Wrong service version");
+                     }
                   } else {
-                     Util.showToast(mContext, "Wrong service version");
+                     publishProgress(loader);
                   }
-               } else {
-                  publishProgress(loader);
                }
             } catch (WebServiceLoginException ex) {
                return ex;
@@ -149,25 +152,27 @@ public class HomeActivity extends BaseActivity {
          if (!autoConnect) {
             if (mac != null & !mac.equals("")) {
                // no autoconnect, but valid mac -> ask user if WOL
-               AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-               builder.setTitle(mContext.getString(R.string.home_wol_confirmation_title));
-               builder.setMessage(mContext.getString(R.string.home_wol_confirmation_text));
-               builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
-                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                           // user wants to send WOL
-                           Util.showToast(mContext, getString(R.string.home_wol_running));
-                           WakeOnLan.sendMagicPacket(macString);
-                        }
-                     });
-               builder.setNegativeButton(mContext.getString(R.string.dialog_no),
-                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                           Util.showToast(mContext, getString(R.string.info_no_connection));
-                           dialog.cancel();
-                        }
-                     });
-               builder.create().show();
+               if (mIsActive) {
+                  AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                  builder.setTitle(mContext.getString(R.string.home_wol_confirmation_title));
+                  builder.setMessage(mContext.getString(R.string.home_wol_confirmation_text));
+                  builder.setPositiveButton(mContext.getString(R.string.dialog_yes),
+                        new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                              // user wants to send WOL
+                              Util.showToast(mContext, getString(R.string.home_wol_running));
+                              WakeOnLan.sendMagicPacket(macString);
+                           }
+                        });
+                  builder.setNegativeButton(mContext.getString(R.string.dialog_no),
+                        new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                              Util.showToast(mContext, getString(R.string.info_no_connection));
+                              dialog.cancel();
+                           }
+                        });
+                  builder.create().show();
+               }
 
             } else {
                Util.showToast(mContext, getString(R.string.info_no_connection));

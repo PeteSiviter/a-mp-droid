@@ -79,6 +79,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private ConnectClientControlTask mConnectTask;
    private MenuItem mConnectItem;
    protected ReconnectTask mReconnectTask;
+   protected boolean mIsActive;
 
    /** Called when the activity is first created. */
    @Override
@@ -133,8 +134,17 @@ public class BaseActivity extends Activity implements IClientControlListener {
 
    @Override
    protected void onStop() {
+      mIsActive = false;
       super.onStop();
       mService.removeClientControlListener(this);
+   }
+   
+   
+
+   @Override
+   protected void onResume() {
+      mIsActive = true;
+      super.onResume();
    }
 
    @Override

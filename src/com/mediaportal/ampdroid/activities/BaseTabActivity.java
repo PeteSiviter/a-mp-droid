@@ -79,6 +79,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
    private ConnectClientControlTask mConnectTask;
    private MenuItem mConnectItem;
    protected ReconnectTask mReconnectTask;
+   protected boolean mIsActive;
 
    /** Called when the activity is first created. */
    @Override
@@ -132,7 +133,14 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
    @Override
    protected void onStop() {
       super.onStop();
+      mIsActive = false;
       mService.removeClientControlListener(this);
+   }
+   
+   @Override
+   protected void onResume() {
+      mIsActive = true;
+      super.onResume();
    }
 
    @Override
