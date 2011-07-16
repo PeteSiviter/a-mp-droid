@@ -158,7 +158,6 @@ public class TvServerEpgActivity extends BaseActivity {
       mEarlierButton = (Button) findViewById(R.id.ButtonEarlier);
 
       mGroups.setOnItemSelectedListener(new OnItemSelectedListener() {
-
          @Override
          public void onItemSelected(AdapterView<?> _adapter, View _view, int _position, long _id) {
             Object selected = mGroups.getItemAtPosition(_position);
@@ -175,7 +174,6 @@ public class TvServerEpgActivity extends BaseActivity {
       mEpgView.setAdapter(mEpgAdapter);
 
       mEpgView.setOnItemClickListener(new OnItemClickListener() {
-
          @Override
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
             ILoadingAdapterItem item = (ILoadingAdapterItem) mEpgAdapter.getItem(_pos);
@@ -282,8 +280,6 @@ public class TvServerEpgActivity extends BaseActivity {
                            showChannelDetails(channel);
                         }
                      });
-               
-               
                qa.show();
             }
             return true;

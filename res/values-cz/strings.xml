@@ -230,6 +230,7 @@
 	<string name="info_not_implemented"></string>
 	<string name="info_no_connection"></string>
 	<string name="info_remote_notconnected"></string>
+	<string name="info_wrong_username_password"></string>
 	<string name="info_loading_title"></string>
 	<string name="info_loading_failed"></string>
 	<string name="info_file_not_found"></string>

@@ -234,6 +234,7 @@
 	<string name="info_not_implemented">Pas encore mise en oeuvre</string>
 	<string name="info_no_connection">Pas de connexion au service</string>
 	<string name="info_remote_notconnected">Télécommande non connectée</string>
+	<string name="info_wrong_username_password"></string>
 	<string name="info_loading_title">Chargement. Attendez svp..</string>
 	<string name="info_loading_failed">Chargement échoué, vérifiez votre connexion</string>
 	<string name="info_file_not_found">Fichier doit d\'abord être télécharger</string>

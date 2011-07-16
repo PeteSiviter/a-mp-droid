@@ -19,12 +19,15 @@ public class DateTimeHelper {
    }
 
    public static String getDateString(Date _date, boolean _getHours) {
-      if (_getHours) {
-         return (String) android.text.format.DateFormat.format("yyyy-MM-dd kk:mm", _date);
+      if (_date != null) {
+         if (_getHours) {
+            return (String) android.text.format.DateFormat.format("yyyy-MM-dd kk:mm", _date);
+         } else {
+            return (String) android.text.format.DateFormat.format("yyyy-MM-dd", _date);
+         }
       } else {
-         return (String) android.text.format.DateFormat.format("yyyy-MM-dd", _date);
+         return "";
       }
-
    }
 
    public static String getTimeString(Date _date) {
@@ -61,7 +64,7 @@ public class DateTimeHelper {
    }
 
    public static String getTimeStringFromMs(long _ms) {
-      int totalSeconds = (int)_ms / 1000;
+      int totalSeconds = (int) _ms / 1000;
       int seconds = totalSeconds % 60;
       int minutes = totalSeconds / 60;
 

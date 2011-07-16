@@ -281,7 +281,7 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                      }
                   });
                   qa.addActionItem(addScheduleAction);
-               } else if(program.getEndTime().before(now)){
+               } else if(program.getEndTime().after(now)){
                   ActionItem addScheduleAction = new ActionItem();
                   addScheduleAction.setTitle(getString(R.string.quickactions_record));
                   addScheduleAction.setIcon(getResources().getDrawable(R.drawable.quickaction_add));

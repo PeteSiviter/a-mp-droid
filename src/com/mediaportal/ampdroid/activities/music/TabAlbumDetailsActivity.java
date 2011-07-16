@@ -98,23 +98,6 @@ public class TabAlbumDetailsActivity extends Activity implements ILoadingListene
                final int index = i;
 
                MusicTrack s = _result.get(i);
-               // String seasonBanner = null;
-               // if (seasonBanner != null && !seasonBanner.equals("")) {
-               // String fileName = Utils.getFileNameWithExtension(seasonBanner,
-               // "\\");
-               // String cacheName = "Series" + File.separator + "" +
-               // File.separator
-               // + "LargePoster" + File.separator + fileName;
-               //
-               // LazyLoadingImage bannerImage = new
-               // LazyLoadingImage(seasonBanner, cacheName, 75,
-               // 100);
-               // image.setTag(seasonBanner);
-               // //mImageHandler.DisplayImage(bannerImage,
-               // R.drawable.listview_imageloading_poster,
-               // // mContext, image);
-               // }
-
                view.setOnTouchListener(new OnTouchListener() {
 
                   @Override

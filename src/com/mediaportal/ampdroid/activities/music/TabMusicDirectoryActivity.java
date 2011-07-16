@@ -53,7 +53,6 @@ import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.lists.views.MediaListType;
 import com.mediaportal.ampdroid.lists.views.MusicFileInfoTextViewAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;

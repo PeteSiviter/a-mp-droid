@@ -253,6 +253,7 @@ videoplayer.</string>
 	<string name="info_not_implemented">werkt nog niet</string>
 	<string name="info_no_connection">Geen verbinding met service</string>
 	<string name="info_remote_notconnected">Afstandsbediening niet verbonden</string>
+	<string name="info_wrong_username_password">Gebruikersnaam of wachtwoord onjuist</string>
 	<string name="info_loading_title">Laden. Een ogenblik a.u.b. ...</string>
 	<string name="info_loading_failed">Fout bij laden, check uw verbinding</string>
 	<string name="info_file_not_found">Bestand moet eerst gedownload worden</string>
@@ -315,9 +316,9 @@ videoplayer.</string>
 	<string name="streaming_initfailed_title">Kon stream niet starten</string>
 	<string name="streaming_initfailed_text">Fout bij het starten van de TV stream, waarschijnlijk is
 er geen vrije kaart beschikbaar.</string>
-	<string name="streaming_media_died_title"></string>
-	<string name="streaming_media_died_text"></string>
-	<string name="streaming_seeking_available"></string>
-	<string name="streaming_seeking_preparing"></string>
-	<string name="streaming_seeking_preparefailed"></string>
+	<string name="streaming_media_died_title">Streamen mislukt</string>
+	<string name="streaming_media_died_text">Stream is onverwacht gestopt, opnieuw proberen?</string>
+	<string name="streaming_seeking_available">Zoeken beschikbaar</string>
+	<string name="streaming_seeking_preparing">Video voorbereiden voor zoeken</string>
+	<string name="streaming_seeking_preparefailed">Zoek-voorbereiding mislukt, zoekfunctie niet beschikbaar bij deze stream!</string>
 </resources>

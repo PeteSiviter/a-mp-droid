@@ -242,7 +242,7 @@ public class ItemDownloaderService extends Service {
 
                      downloadJob.setProgress(currentProgress);
 
-                     mDownloadDatabase.updateDownloads(downloadJob);
+                     mDownloadDatabase.updateProgress(downloadJob.getId(), downloadJob.getProgress());
 
                      publishProgress(1, progress);
                   }

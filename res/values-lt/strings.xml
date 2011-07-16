@@ -230,6 +230,7 @@
 	<string name="info_not_implemented">Dar neįdiegta</string>
 	<string name="info_no_connection">Paslauga nepasiekiama</string>
 	<string name="info_remote_notconnected">Nuotolinis valdymas neprijungtas</string>
+	<string name="info_wrong_username_password">Neteisingas vartotojo vardas ar slaptažodis</string>
 	<string name="info_loading_title">Įkeliama. Prašome palaukti ...</string>
 	<string name="info_loading_failed">Įkėlimas nepavyko, patikrinkite sujungimą</string>
 	<string name="info_file_not_found">Failas pirma turi būti atsisiųstas</string>
@@ -290,9 +291,9 @@
 	<string name="streaming_remember_settings_text">Atsiminti šiuos srauto nustatymus</string>
 	<string name="streaming_initfailed_title">Nepavyko paleisti srautinio siuntimo</string>
 	<string name="streaming_initfailed_text">Klaidingai startavo TV srautas, tikėtinai nėra laisvų kortų.</string>
-	<string name="streaming_media_died_title"></string>
-	<string name="streaming_media_died_text"></string>
-	<string name="streaming_seeking_available"></string>
-	<string name="streaming_seeking_preparing"></string>
-	<string name="streaming_seeking_preparefailed"></string>
+	<string name="streaming_media_died_title">Nepavyko siųsti srautą</string>
+	<string name="streaming_media_died_text">Srautas netikėtai sustojo, bandyti iš naujo?</string>
+	<string name="streaming_seeking_available">Jau galima paieška</string>
+	<string name="streaming_seeking_preparing">Ruošiama video paieškai</string>
+	<string name="streaming_seeking_preparefailed">Nepavyko paruošti paieškos, paieška šiam srautui negalima!</string>
 </resources>

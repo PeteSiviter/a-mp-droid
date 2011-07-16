@@ -88,7 +88,7 @@ public class TvServerProgramDetailsActivity extends BaseActivity {
    public void onCreate(Bundle _savedInstanceState) {
       setTitle(R.string.title_tvserver_epg);
       super.onCreate(_savedInstanceState);
-      setContentView(R.layout.activity_recordingdetails);
+      setContentView(R.layout.activity_tvserverprogramdetails);
       
       mService = DataHandler.getCurrentRemoteInstance();
       mStatusBarHandler = new StatusBarActivityHandler(this, mService);
@@ -105,7 +105,7 @@ public class TvServerProgramDetailsActivity extends BaseActivity {
          mProgramId = extras.getInt("program_id");
          mProgramName = extras.getString("program_name");
 
-         if(mProgramName != null){
+         if(mProgramTitle != null && mProgramName != null){
             mProgramTitle.setText(mProgramName);
          }
 

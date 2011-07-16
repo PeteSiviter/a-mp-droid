@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name"></string>
-	<string name="app_desc"></string>
+	<string name="app_desc">Управление Медиа Порталом с помощью вашего android-телефона</string>
 	<string name="actionbar_activity_not_found"></string>
-	<string name="welcome_choose_client"></string>
-	<string name="welcome_auto_connect"></string>
-	<string name="welcome_no_client"></string>
-	<string name="welcome_connect"></string>
-	<string name="welcome_no_clients"></string>
-	<string name="home_wol_confirmation_title"></string>
-	<string name="home_wol_confirmation_text"></string>
-	<string name="home_wol_running"></string>
-	<string name="home_wol_nomac"></string>
+	<string name="welcome_choose_client">Выберите клиента</string>
+	<string name="welcome_auto_connect">Подключение при запуске</string>
+	<string name="welcome_no_client">Пожалуйста выберите клиента</string>
+	<string name="welcome_connect">Выбор</string>
+	<string name="welcome_no_clients">Не выбрано клиентов. Для добавления воспользуйтесь страницей настроек.</string>
+	<string name="home_wol_confirmation_title">Нет соединения</string>
+	<string name="home_wol_confirmation_text">Нет соединения с сервисом. \"Разбудить\" ПК с помощью WOL?</string>
+	<string name="home_wol_running">Отправка \"WOL\" пакетов</string>
+	<string name="home_wol_nomac">Нет соединения и невозможно отправить WOL пакеты, пока MAC адрес не будет определен в настройках.</string>
 	<string name="downloads_title"></string>
 	<string name="downloads_delete_file_success"></string>
 	<string name="downloads_delete_file_failed"></string>
@@ -230,6 +230,7 @@
 	<string name="info_not_implemented"></string>
 	<string name="info_no_connection"></string>
 	<string name="info_remote_notconnected"></string>
+	<string name="info_wrong_username_password"></string>
 	<string name="info_loading_title"></string>
 	<string name="info_loading_failed"></string>
 	<string name="info_file_not_found"></string>

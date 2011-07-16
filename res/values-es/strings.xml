@@ -248,6 +248,7 @@ reproductor interno.</string>
 	<string name="info_not_implemented">Sin implementar aún</string>
 	<string name="info_no_connection">Sin conexión con TVserver</string>
 	<string name="info_remote_notconnected">Sin Conexión</string>
+	<string name="info_wrong_username_password"></string>
 	<string name="info_loading_title">Cargando. Por favor, espere ...</string>
 	<string name="info_loading_failed">Error al cargar, compruebe su conexión</string>
 	<string name="info_file_not_found">El archivo debe descargarse primero</string>

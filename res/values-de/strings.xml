@@ -231,6 +231,7 @@
 	<string name="info_not_implemented">Noch nicht implementiert</string>
 	<string name="info_no_connection">Keine Verbindung zum Service</string>
 	<string name="info_remote_notconnected">Remote nicht verbunden</string>
+	<string name="info_wrong_username_password">Falscher Benutzername oder Passwort</string>
 	<string name="info_loading_title">Lade. Bitte warten ...</string>
 	<string name="info_loading_failed">Laden fehlgeschlagen, bitte checken Sie die Verbindung</string>
 	<string name="info_file_not_found">Datei muss erst geladen werden</string>
@@ -291,9 +292,9 @@
 	<string name="streaming_remember_settings_text">Diese Stream einstellungen merken</string>
 	<string name="streaming_initfailed_title">Konnte Stream nicht starten</string>
 	<string name="streaming_initfailed_text">Fehler beim Starten des Streams, ev. sind am TvServer keine freien Karten verfügbar.</string>
-	<string name="streaming_media_died_title"></string>
-	<string name="streaming_media_died_text"></string>
-	<string name="streaming_seeking_available"></string>
-	<string name="streaming_seeking_preparing"></string>
-	<string name="streaming_seeking_preparefailed"></string>
+	<string name="streaming_media_died_title">Stream-Fehler</string>
+	<string name="streaming_media_died_text">Stream wurde unterbrochen, soll er neu gestartet werden?</string>
+	<string name="streaming_seeking_available">Vorspulen verfügbar</string>
+	<string name="streaming_seeking_preparing">Video wird für Positionierung vorbereitet</string>
+	<string name="streaming_seeking_preparefailed">Positionierungsvorbereitung fehlgeschlagen, kein vorspulen verfügbar!</string>
 </resources>

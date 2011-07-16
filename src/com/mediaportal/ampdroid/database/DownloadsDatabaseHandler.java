@@ -97,6 +97,26 @@ public class DownloadsDatabaseHandler {
       }
       return false;
    }
+   
+   public boolean updateProgress(int _id, int _progress) {
+      if (mDatabase != null) {
+         try {
+            ContentValues clubValues = new ContentValues();
+            clubValues.put("Progress", _progress);
+            clubValues.put("DateLastUpdated", new Date().getTime());
+            
+            int rows = mDatabase.update(DownloadJob.TABLE_NAME, clubValues,
+                  "Id=" + _id, null);
+
+            if (rows == 1) {
+               return true;
+            }
+         } catch (Exception ex) {
+            Log.e("Database", ex.getMessage());
+         }
+      }
+      return false;
+   }
 
    public boolean removeDownload(DownloadJob _download) {
       if (mDatabase != null && _download != null) {

@@ -238,6 +238,7 @@ indbyggede videoafspiller.</string>
 	<string name="info_not_implemented">Er ikke implementeret</string>
 	<string name="info_no_connection">Ingen forbindelse til tjenesten</string>
 	<string name="info_remote_notconnected">Fjernbetjening er ikke forbundet</string>
+	<string name="info_wrong_username_password"></string>
 	<string name="info_loading_title">Indlæser... vent venligst</string>
 	<string name="info_loading_failed">Indlæsningsfejl, check din forbindelse</string>
 	<string name="info_file_not_found">Filen skal først downloades</string>
