@@ -254,6 +254,7 @@ public class ItemDownloaderService extends Service {
             inputStream.close();
 
             if (cancelRequested) {
+               Log.d(Constants.LOG_CONST, "Download Cancel requested");
                if (downloadFile != null) {
                   deleteFile(downloadFile);
                }
@@ -373,9 +374,12 @@ public class ItemDownloaderService extends Service {
       protected void onPostExecute(HashMap<DownloadState, Integer> _result) {
          if (mNotificationManager != null) {
             stopSelf();
+            Log.d(Constants.LOG_CONST, "Download ended, cancel progress item");
             mNotificationManager.cancel(NOTIFICATION_ID);
 
+            
             Intent onClickIntent = new Intent(getApplicationContext(), DownloadsActivity.class);
+            onClickIntent.putExtra("notification_id", 49);
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                   onClickIntent, PendingIntent.FLAG_CANCEL_CURRENT);// PendingIntent.FLAG_CANCEL_CURRENT
             Notification notification = new Notification(R.drawable.mp_logo_2,

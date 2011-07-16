@@ -16,6 +16,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -123,6 +124,17 @@ public class DownloadsActivity extends Activity {
       mAdapter = new LazyLoadingAdapter(this);
       mListView.setAdapter(mAdapter);
       
+      Bundle extras = getIntent().getExtras();
+      if (extras != null) {
+       if(extras.containsKey("notification_id")){
+          int id = extras.getInt("notification_id");
+          NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(
+                Context.NOTIFICATION_SERVICE);
+          manager.cancel(id);
+       }
+
+      
+      }
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> _adapter, View _view, int _position, long _id) {
