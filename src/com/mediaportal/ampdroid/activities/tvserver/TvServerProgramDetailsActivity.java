@@ -17,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
@@ -107,6 +108,7 @@ public class TvServerProgramDetailsActivity extends BaseActivity {
 
          if(mProgramTitle != null && mProgramName != null){
             mProgramTitle.setText(mProgramName);
+            mProgramTitle.setMovementMethod(new ScrollingMovementMethod());
          }
 
          mLoadProgramTask = new LoadProgramDetailsTask(this);

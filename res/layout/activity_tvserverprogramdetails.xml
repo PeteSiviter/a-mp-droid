@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (c) 2011 Benjamin Gmeiner.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the GNU Public License v2.0
-  which accompanies this distribution, and is available at
-  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-  
-  Contributors:
-      Benjamin Gmeiner - Project Owner
--->
+<!-- Copyright (c) 2011 Benjamin Gmeiner. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	GNU Public License v2.0 which accompanies this distribution, and is available 
+	at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html Contributors: Benjamin 
+	Gmeiner - Project Owner -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:background="@drawable/background">
@@ -16,18 +11,19 @@
 		android:id="@+id/actionbar" style="@style/ActionBar"
 		android:layout_gravity="top" />
 	<LinearLayout android:layout_width="fill_parent"
-		android:layout_marginTop="50dip"
-		android:layout_marginBottom="90dip" android:layout_gravity="top"
-		android:layout_height="fill_parent" android:id="@+id/BottomMarginLayout"
-		android:orientation="vertical" android:gravity="top">
+		android:layout_marginTop="50dip" android:layout_marginBottom="90dip"
+		android:layout_gravity="top" android:layout_height="fill_parent"
+		android:id="@+id/BottomMarginLayout" android:orientation="vertical"
+		android:gravity="top">
 		<LinearLayout android:layout_width="fill_parent"
 			android:id="@+id/LinearLayout02" android:background="@drawable/bottom_bar_bg"
-			android:layout_height="40dip">
-			<TextView android:layout_height="wrap_content"
+			android:layout_height="50dip">
+			<com.mediaportal.ampdroid.controls.AutoResizeTextView android:layout_height="wrap_content"
 				android:layout_gravity="center" android:textStyle="bold"
-				android:gravity="center" android:layout_width="fill_parent"
-				android:textSize="20dip" android:id="@+id/TextViewProgramName"
-				android:text="[ Program Name ]"></TextView>
+				android:gravity="center" android:textSize="20dip" android:id="@+id/TextViewProgramName"
+				android:text="[ Program Name ]" android:lines="1" android:maxLines="1"
+				android:layout_width="fill_parent">
+			</com.mediaportal.ampdroid.controls.AutoResizeTextView>
 		</LinearLayout>
 		<ScrollView android:id="@+id/ScrollViewRoot"
 			android:layout_height="wrap_content" android:layout_width="fill_parent">

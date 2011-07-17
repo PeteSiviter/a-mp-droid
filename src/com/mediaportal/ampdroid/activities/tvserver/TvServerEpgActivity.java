@@ -252,6 +252,8 @@ public class TvServerEpgActivity extends BaseActivity {
                            @Override
                            public void onClick(View arg0) {
                               showProgramDetails(program);
+                              
+                              qa.dismiss();
                            }
                         });
                   

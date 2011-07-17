@@ -206,7 +206,7 @@ public class ItemDownloaderService extends Service {
             long read = 0;
             int currentProgress = 0;
             int len;
-            while ((len = inputStream.read(buf)) > 0 && !cancelRequested) {
+            while (!cancelRequested && (len = inputStream.read(buf)) > 0) {
                out.write(buf, 0, len);
 
                read += len;
@@ -242,25 +242,40 @@ public class ItemDownloaderService extends Service {
 
                      downloadJob.setProgress(currentProgress);
 
-                     mDownloadDatabase.updateProgress(downloadJob.getId(), downloadJob.getProgress());
+                     mDownloadDatabase.updateProgress(downloadJob.getId(),
+                           downloadJob.getProgress());
 
                      publishProgress(1, progress);
                   }
                   cancelRequested = mDownloadDatabase.getCancelRequest(downloadJob);
+                  //Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Cancel Requested: " + cancelRequested);
                   lastUpdated = curTime;
                }
             }
+            try {
+               if (cancelRequested) {
+                  Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Disconnecting socket");
+                  conn.disconnect();
+               }
+               Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Closing in stream");
+               inputStream.close();
+            } catch (Exception ex) {
+               Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, ex.toString());
+            }
+
+            Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Closing out stream");
+            out.flush();
             out.close();
-            inputStream.close();
 
             if (cancelRequested) {
-               Log.d(Constants.LOG_CONST, "Download Cancel requested");
+               Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Download Cancel requested");
                if (downloadFile != null) {
                   deleteFile(downloadFile);
                }
                downloadJob.setState(DownloadState.Stopped);
                downloadJob.setErrorMessage("Cancelled by User");
             } else {
+               Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Download Finished");
                downloadJob.setState(DownloadState.Finished);
                downloadJob.setProgress(100);
             }
@@ -272,21 +287,25 @@ public class ItemDownloaderService extends Service {
             // return true only if download finished
             return downloadJob.getState();
          } catch (MalformedURLException e) {
+            Log.w(Constants.LOG_CONST_ITEMDOWNLOADER, e.toString());
             if (e != null) {
                mToastMessage = e.getMessage();
                publishProgress(-1);
             }
          } catch (UnsupportedEncodingException e) {
+            Log.w(Constants.LOG_CONST_ITEMDOWNLOADER, e.toString());
             if (e != null) {
                mToastMessage = e.getMessage();
                publishProgress(-1);
             }
          } catch (IOException e) {
+            Log.w(Constants.LOG_CONST_ITEMDOWNLOADER, e.toString());
             if (e != null) {
                mToastMessage = e.getMessage();
                publishProgress(-1);
             }
          } catch (Exception e) {
+            Log.w(Constants.LOG_CONST_ITEMDOWNLOADER, e.toString());
             if (e != null) {
                mToastMessage = e.getMessage();
                publishProgress(-1);
@@ -374,10 +393,9 @@ public class ItemDownloaderService extends Service {
       protected void onPostExecute(HashMap<DownloadState, Integer> _result) {
          if (mNotificationManager != null) {
             stopSelf();
-            Log.d(Constants.LOG_CONST, "Download ended, cancel progress item");
+            Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Download ended, cancel progress item");
             mNotificationManager.cancel(NOTIFICATION_ID);
 
-            
             Intent onClickIntent = new Intent(getApplicationContext(), DownloadsActivity.class);
             onClickIntent.putExtra("notification_id", 49);
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
@@ -428,7 +446,7 @@ public class ItemDownloaderService extends Service {
       @Override
       protected void onProgressUpdate(Integer... values) {
          int type = values[0];
-         
+
          if (type != -1) {
             int progress = values[1];
             createNotificationText(type, progress);
@@ -465,8 +483,8 @@ public class ItemDownloaderService extends Service {
       }
 
       DownloadJob job = ItemDownloaderHelper.getDownloadJobFromIntent(intent);
-      if(job == null){
-         Log.d(Constants.LOG_CONST, "Couldn't get job from intent");
+      if (job == null) {
+         Log.d(Constants.LOG_CONST_ITEMDOWNLOADER, "Couldn't get job from intent");
          return Service.START_STICKY;
       }
       DownloadsDatabaseHandler db = new DownloadsDatabaseHandler(this);
