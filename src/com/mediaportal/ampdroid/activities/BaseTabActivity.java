@@ -103,8 +103,8 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
       mService.addClientControlListener(this);
 
       handleAutoHide();
-      
-      if(mService != null){
+
+      if (mService != null) {
          mStatusBarHandler.setConnected(mService.isClientControlConnected());
       }
 
@@ -134,12 +134,19 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
    protected void onStop() {
       super.onStop();
       mIsActive = false;
+      if(mReconnectTask != null){
+         mReconnectTask.cancelReConnect();
+      }
       mService.removeClientControlListener(this);
    }
-   
+
    @Override
    protected void onResume() {
       mIsActive = true;
+      if (PreferencesManager.getAutoReconnect()) {
+         mReconnectTask = new ReconnectTask();
+         mReconnectTask.execute(mService);
+      }
       super.onResume();
    }
 
@@ -228,7 +235,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
             return true;
          }
       });
-      
+
       MenuItem downloadsItem = _menu.add(0, Menu.FIRST, Menu.NONE,
             getString(R.string.menu_downloads));
       downloadsItem.setIcon(R.drawable.ic_menu_save);
@@ -243,7 +250,7 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
 
       return true;
    }
-   
+
    private void startDownloads() {
       Intent myIntent = new Intent(this, DownloadsActivity.class);
       startActivity(myIntent);
@@ -259,8 +266,6 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
    private void disconnectClientControl() {
       mService.disconnectClientControl();
    }
-
-
 
    @Override
    public void messageReceived(Object _message) {
@@ -291,10 +296,10 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
          mStatusBarHandler.setImage(img);
       } else if (_message.getClass().equals(RemoteAuthenticationResponse.class)) {
          RemoteAuthenticationResponse auth = (RemoteAuthenticationResponse) _message;
-         if(!auth.isSuccess()){
+         if (!auth.isSuccess()) {
             Util.showToast(this, auth.getErrorMessage());
          }
-      } 
+      }
    }
 
    @Override
@@ -302,29 +307,31 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
       runOnUiThread(new Runnable() {
          @Override
          public void run() {
-            handleAutoHide();
-            if (_state == ConnectionState.Disconnected) {
-               if (mConnectItem != null) {
-                  mConnectItem.setTitle(getString(R.string.menu_connect));
-                  mConnectItem.setIcon(R.drawable.ic_menu_connect);
-               }
-               if (mStatusBarHandler != null) {
-                  mStatusBarHandler.setNowPlayingInfoVisible(false);
-                  mStatusBarHandler.setConnected(false);
-               }
-               
-               if(PreferencesManager.getAutoReconnect()){
-                  mReconnectTask = new ReconnectTask();
-                  mReconnectTask.execute(mService);
-               }
-            } else if (_state == ConnectionState.Connected) {
-               if (mConnectItem != null) {
-                  mConnectItem.setTitle(getString(R.string.menu_disconnect));
-                  mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
-               }
-               if (mStatusBarHandler != null) {
-                  mStatusBarHandler.setNowPlayingInfoVisible(true);
-                  mStatusBarHandler.setConnected(true);
+            if (mIsActive) {
+               handleAutoHide();
+               if (_state == ConnectionState.Disconnected) {
+                  if (mConnectItem != null) {
+                     mConnectItem.setTitle(getString(R.string.menu_connect));
+                     mConnectItem.setIcon(R.drawable.ic_menu_connect);
+                  }
+                  if (mStatusBarHandler != null) {
+                     mStatusBarHandler.setNowPlayingInfoVisible(false);
+                     mStatusBarHandler.setConnected(false);
+                  }
+
+                  if (PreferencesManager.getAutoReconnect()) {
+                     mReconnectTask = new ReconnectTask();
+                     mReconnectTask.execute(mService);
+                  }
+               } else if (_state == ConnectionState.Connected) {
+                  if (mConnectItem != null) {
+                     mConnectItem.setTitle(getString(R.string.menu_disconnect));
+                     mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
+                  }
+                  if (mStatusBarHandler != null) {
+                     mStatusBarHandler.setNowPlayingInfoVisible(true);
+                     mStatusBarHandler.setConnected(true);
+                  }
                }
             }
          }

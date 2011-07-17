@@ -135,15 +135,20 @@ public class BaseActivity extends Activity implements IClientControlListener {
    @Override
    protected void onStop() {
       mIsActive = false;
+      if(mReconnectTask != null){
+         mReconnectTask.cancelReConnect();
+      }
       super.onStop();
       mService.removeClientControlListener(this);
    }
-   
-   
 
    @Override
    protected void onResume() {
       mIsActive = true;
+      if (PreferencesManager.getAutoReconnect()) {
+         mReconnectTask = new ReconnectTask();
+         mReconnectTask.execute(mService);
+      }
       super.onResume();
    }
 
@@ -304,29 +309,31 @@ public class BaseActivity extends Activity implements IClientControlListener {
       runOnUiThread(new Runnable() {
          @Override
          public void run() {
-            handleAutoHide();
-            if (_state == ConnectionState.Disconnected) {
-               if (mConnectItem != null) {
-                  mConnectItem.setTitle(getString(R.string.menu_connect));
-                  mConnectItem.setIcon(R.drawable.ic_menu_connect);
-               }
-               if (mStatusBarHandler != null) {
-                  mStatusBarHandler.setNowPlayingInfoVisible(false);
-                  mStatusBarHandler.setConnected(false);
-               }
-               
-               if(PreferencesManager.getAutoReconnect()){
-                  mReconnectTask = new ReconnectTask();
-                  mReconnectTask.execute(mService);
-               }
-            } else if (_state == ConnectionState.Connected) {
-               if (mConnectItem != null) {
-                  mConnectItem.setTitle(getString(R.string.menu_disconnect));
-                  mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
-               }
-               if (mStatusBarHandler != null) {
-                  mStatusBarHandler.setNowPlayingInfoVisible(true);
-                  mStatusBarHandler.setConnected(true);
+            if (mIsActive) {
+               handleAutoHide();
+               if (_state == ConnectionState.Disconnected) {
+                  if (mConnectItem != null) {
+                     mConnectItem.setTitle(getString(R.string.menu_connect));
+                     mConnectItem.setIcon(R.drawable.ic_menu_connect);
+                  }
+                  if (mStatusBarHandler != null) {
+                     mStatusBarHandler.setNowPlayingInfoVisible(false);
+                     mStatusBarHandler.setConnected(false);
+                  }
+
+                  if (PreferencesManager.getAutoReconnect()) {
+                     mReconnectTask = new ReconnectTask();
+                     mReconnectTask.execute(mService);
+                  }
+               } else if (_state == ConnectionState.Connected) {
+                  if (mConnectItem != null) {
+                     mConnectItem.setTitle(getString(R.string.menu_disconnect));
+                     mConnectItem.setIcon(R.drawable.ic_menu_disconnect);
+                  }
+                  if (mStatusBarHandler != null) {
+                     mStatusBarHandler.setNowPlayingInfoVisible(true);
+                     mStatusBarHandler.setConnected(true);
+                  }
                }
             }
          }
