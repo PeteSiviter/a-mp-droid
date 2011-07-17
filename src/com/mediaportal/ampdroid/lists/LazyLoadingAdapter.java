@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.mediaportal.ampdroid.lists.views.LoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.views.ViewTypes;
+import com.mediaportal.ampdroid.utils.Constants;
 
 public class LazyLoadingAdapter extends BaseAdapter implements SectionIndexer {
    public interface ILoadingListener {
@@ -206,15 +207,19 @@ public class LazyLoadingAdapter extends BaseAdapter implements SectionIndexer {
                int defaultImage = item.getDefaultImageResource();
                int loadingImage = item.getLoadingImageResource();
 
-               if (image != null && !image.equals("")) {
-                  holder.image.setTag(image.getImageUrl());
-                  mImageLoader.DisplayImage(image, loadingImage, mActivity, holder.image);
-               } else {
-                  if (defaultImage == 0) {// show nothing as default image
-                     holder.image.setImageBitmap(null);
+               try {
+                  if (image != null && !image.equals("")) {
+                     holder.image.setTag(image.getImageUrl());
+                     mImageLoader.DisplayImage(image, loadingImage, mActivity, holder.image);
                   } else {
-                     holder.image.setImageResource(defaultImage);
+                     if (defaultImage == 0) {// show nothing as default image
+                        holder.image.setImageBitmap(null);
+                     } else {
+                        holder.image.setImageResource(defaultImage);
+                     }
                   }
+               } catch (Exception ex) {
+                  Log.w(Constants.LOG_CONST, "Exception on image setting: " + ex.toString());
                }
             }
          }
@@ -274,6 +279,7 @@ public class LazyLoadingAdapter extends BaseAdapter implements SectionIndexer {
    }
 
    private boolean FLAG_THUMB_PLUS = false;
+
    public void resetFastScrolling(ListView _listView) {
       mFastScrollingInitialised = false;
       _listView.setFastScrollEnabled(false);

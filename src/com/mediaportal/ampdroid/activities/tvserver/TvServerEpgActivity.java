@@ -118,10 +118,12 @@ public class TvServerEpgActivity extends BaseActivity {
                      begin, end);
                // ILoadingAdapterItem[] channelList = new
                // ILoadingAdapterItem[programs.size() + 1];
-               publishProgress(new TvServerChannelAdapterItem(c));
-               for (TvProgramBase p : programs) {
-                  p.setTag(c);
-                  publishProgress(new TvServerProgramsBaseViewItem(p));
+               if (programs != null) {
+                  publishProgress(new TvServerChannelAdapterItem(c));
+                  for (TvProgramBase p : programs) {
+                     p.setTag(c);
+                     publishProgress(new TvServerProgramsBaseViewItem(p));
+                  }
                }
             }
          }
@@ -181,7 +183,7 @@ public class TvServerEpgActivity extends BaseActivity {
                   .equals(TvServerChannelAdapterItem.class)) {
                // open channel detail view
                TvChannel channel = (TvChannel) item.getItem();
-               
+
                showChannelDetails(channel);
             }
 
@@ -241,22 +243,23 @@ public class TvServerEpgActivity extends BaseActivity {
                   qa.addActionItem(addScheduleAction);
                   Date now = new Date();
                   if (now.after(program.getStartTime()) && now.before(program.getEndTime())) {
-                     TvChannel channel = (TvChannel)program.getTag();
+                     TvChannel channel = (TvChannel) program.getTag();
                      QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
-                           mService, String.valueOf(channel.getIdChannel()), DownloadItemType.LiveTv,
-                           channel.getDisplayName(), channel.getDisplayName());
+                           mService, String.valueOf(channel.getIdChannel()),
+                           DownloadItemType.LiveTv, channel.getDisplayName(),
+                           channel.getDisplayName());
                   }
-                  
+
                   QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                         new View.OnClickListener() {
                            @Override
                            public void onClick(View arg0) {
                               showProgramDetails(program);
-                              
+
                               qa.dismiss();
                            }
                         });
-                  
+
                }
                qa.show();
             } else if (item.getClass().equals(TvServerChannelAdapterItem.class)) {
@@ -274,7 +277,7 @@ public class TvServerEpgActivity extends BaseActivity {
                   }
                });
                qa.addActionItem(playOnDeviceAction);
-               
+
                QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                      new View.OnClickListener() {
                         @Override
@@ -320,21 +323,19 @@ public class TvServerEpgActivity extends BaseActivity {
    }
 
    protected void showChannelDetails(TvChannel channel) {
-      Intent myIntent = new Intent(this,
-            TvServerChannelDetailsActivity.class);
+      Intent myIntent = new Intent(this, TvServerChannelDetailsActivity.class);
       myIntent.putExtra("channel_id", channel.getIdChannel());
       myIntent.putExtra("channel_name", channel.getDisplayName());
       startActivity(myIntent);
    }
 
    private void showProgramDetails(TvProgramBase _program) {
-      Intent myIntent = new Intent(this,
-            TvServerProgramDetailsActivity.class);
+      Intent myIntent = new Intent(this, TvServerProgramDetailsActivity.class);
       myIntent.putExtra("program_id", _program.getIdProgram());
       myIntent.putExtra("program_name", _program.getTitle());
       startActivity(myIntent);
    }
-   
+
    private void startTvStreaming(TvChannel _channel) {
       IntentUtils.startTvStreaming(this, mService, _channel);
    }
