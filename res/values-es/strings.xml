@@ -248,7 +248,7 @@ reproductor interno.</string>
 	<string name="info_not_implemented">Sin implementar aún</string>
 	<string name="info_no_connection">Sin conexión con TVserver</string>
 	<string name="info_remote_notconnected">Sin Conexión</string>
-	<string name="info_wrong_username_password"></string>
+	<string name="info_wrong_username_password">Nombre de usuario o contraseña erróneos</string>
 	<string name="info_loading_title">Cargando. Por favor, espere ...</string>
 	<string name="info_loading_failed">Error al cargar, compruebe su conexión</string>
 	<string name="info_file_not_found">El archivo debe descargarse primero</string>
@@ -310,9 +310,9 @@ reproductor interno.</string>
 	<string name="streaming_remember_settings_text">Recordar la configuración de Stream</string>
 	<string name="streaming_initfailed_title">No se pudo iniciar el stream</string>
 	<string name="streaming_initfailed_text">Error al iniciar el stream de tv, podría ser por no tener tarjetas de TV libres</string>
-	<string name="streaming_media_died_title"></string>
-	<string name="streaming_media_died_text"></string>
-	<string name="streaming_seeking_available"></string>
-	<string name="streaming_seeking_preparing"></string>
-	<string name="streaming_seeking_preparefailed"></string>
+	<string name="streaming_media_died_title">Error en el stream</string>
+	<string name="streaming_media_died_text">Stream cerrado inesperadamente, ¿desea reiniciarlo?</string>
+	<string name="streaming_seeking_available">Seeking ya disponible</string>
+	<string name="streaming_seeking_preparing">Preparando vídeo para seeking</string>
+	<string name="streaming_seeking_preparefailed">Error al iniciar seeking, no estará disponible en este stream</string>
 </resources>

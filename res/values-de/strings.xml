@@ -261,7 +261,7 @@
 	<string name="quickactions_streamdevice">Streamen</string>
 	<string name="quickactions_streamdevice_details">Streamen (erw)</string>
 	<string name="quickactions_details">Details</string>
-	<string name="quickactions_downloadsd">Abspeichern (lokal)</string>
+	<string name="quickactions_downloadsd">Speichern</string>
 	<string name="quickactions_start">Starten</string>
 	<string name="quickactions_stop">Stoppen</string>
 	<string name="quickactions_record">Aufnehmen</string>

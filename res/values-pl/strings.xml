@@ -37,11 +37,11 @@
 	<string name="episode_rating">Ocena</string>
 	<string name="button_prev">&lt;&lt;</string>
 	<string name="button_next">&gt;&gt;</string>
-	<string name="button_earlier">Przedtem</string>
-	<string name="button_later">Potem</string>
+	<string name="button_earlier">&lt;&lt;</string>
+	<string name="button_later">&gt;&gt;</string>
 	<string name="title_home">MediaPortal dla Androida</string>
 	<string name="title_tvserver">Serwer TV</string>
-	<string name="title_tvserver_state">Stan kart TV</string>
+	<string name="title_tvserver_state">Sterowanie manualne</string>
 	<string name="title_tvserver_channels">Kanały</string>
 	<string name="title_tvserver_recordings">Nagrania</string>
 	<string name="title_tvserver_schedules">Zaplanowane</string>
@@ -97,7 +97,7 @@
 	<string name="state_recording">Nagrywanie</string>
 	<string name="state_timeshifting">Timeshifting</string>
 	<string name="state_grabbingEpg">Pobieranie EPG</string>
-	<string name="tvserver_manual_title">Stan kart TV</string>
+	<string name="tvserver_manual_title">Sterowanie manualne</string>
 	<string name="tvserver_manual_desc">Aktualny stan serwisu TV i kart TV.</string>
 	<string name="tvserver_epg_title">EPG</string>
 	<string name="tvserver_epg_desc">Elektroniczny przewodnik po programach.</string>
@@ -114,7 +114,7 @@
 	<string name="tvserver_stoptimeshift_failed">Nie można zatrzymać timeshiftu</string>
 	<string name="tvserver_starttimeshift">Start timeshift</string>
 	<string name="tvserver_startrecording">Start nagrywania</string>
-	<string name="tvserver_stoptimeshift">Stop timeshiftu</string>
+	<string name="tvserver_stoptimeshift">Stop timeshift</string>
 	<string name="tvserver_loadgroups">Ładowanie grup</string>
 	<string name="tvserver_loadchannels">Ładowanie kanałów</string>
 	<string name="tvserver_schedulecanceled">Zaplanowanie anulowano</string>
@@ -206,9 +206,9 @@ listy zostanie osiągnięty.</string>
 	<string name="settings_delete_client_end">\"?</string>
 	<string name="settings_media_preload_items_title"> Ładowane elementy</string>
 	<string name="settings_media_preload_items_desc">Jak wiele elementów powinno być ładowanych, gdy koniec listy zostanie osiągnięty.</string>
-	<string name="settings_media_defaultview_series_title">Domyślny widok dla seriali</string>
+	<string name="settings_media_defaultview_series_title">Domyślny widok seriali</string>
 	<string name="settings_media_defaultview_series_desc">Domyślny widok dla przeglądania seriali.</string>
-	<string name="settings_media_defaultview_movies_title">Domyślny widok dla filmów</string>
+	<string name="settings_media_defaultview_movies_title">Domyślny widok filmów</string>
 	<string name="settings_media_defaultview_movies_desc">Domyślny widok dla przeglądania filmów.</string>
 	<string name="settings_media_defaultview_videos_title">Domyślny widok wideo</string>
 	<string name="settings_media_defaultview_videos_desc">Domyślny widok dla przeglądania wideo.</string>
@@ -227,7 +227,7 @@ listy zostanie osiągnięty.</string>
 	<string name="settings_streaming_quality_title">Jakość strumienia </string>
 	<string name="settings_streaming_quality_desc">Wybierz jakość strumienia wideo. Należy pamietać, że te ustawienia będą nieważne jeśli profil strumienia zostanie zmieniony.</string>
 	<string name="settings_streaming_useexternal_title">Użyj innego odtwarzacza</string>
-	<string name="settings_streaming_useexternal_desc">Jeśli zaznaczono, zamiast używania wewnętrznego MediaPlayer (dostępne tylko dla >2.3) strumień uruchomi się z zainstalowanego zewnętrznego odtwarzacza. Używaj tylko jeśli masz problem z wbudowanym odtwarzaczem wideo. </string>
+	<string name="settings_streaming_useexternal_desc">Jeśli zaznaczono, zamiast używania wewnętrznego MediaPlayer (tylko dla Android >2.3) strumień uruchomi się z zewnętrznego odtwarzacza.</string>
 	<string name="info_not_implemented">Nie zaimplementowano</string>
 	<string name="info_no_connection">Brak połączenia z usługą</string>
 	<string name="info_remote_notconnected">Sterowanie nie podłączone</string>

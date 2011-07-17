@@ -230,7 +230,7 @@
 	<string name="info_not_implemented">Ikke implementert ennå</string>
 	<string name="info_no_connection">Ingen forbindelse med tjeneste</string>
 	<string name="info_remote_notconnected">Fjernkontroll ikke tilkoblet</string>
-	<string name="info_wrong_username_password"></string>
+	<string name="info_wrong_username_password">Feil brukernavn eller passord</string>
 	<string name="info_loading_title">Laster. Venligst vent...</string>
 	<string name="info_loading_failed">Lasting feilet. Sjekk forbindelsen</string>
 	<string name="info_file_not_found">Filen må lastes ned først</string>
