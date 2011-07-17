@@ -92,22 +92,18 @@ public class BaseActivity extends Activity implements IClientControlListener {
          getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                WindowManager.LayoutParams.FLAG_FULLSCREEN);
       }
-
-      mService = DataHandler.getCurrentRemoteInstance();
    }
 
    @Override
    protected void onStart() {
       super.onStart();
-      mStatusBarHandler = new StatusBarActivityHandler(this, mService);
-      mService.addClientControlListener(this);
-
-      handleAutoHide();
-
+      mService = DataHandler.getCurrentRemoteInstance();
       if (mService != null) {
+         mStatusBarHandler = new StatusBarActivityHandler(this, mService);
+         mService.addClientControlListener(this);
+         handleAutoHide();
          mStatusBarHandler.setConnected(mService.isClientControlConnected());
       }
-
    }
 
    private void handleAutoHide() {

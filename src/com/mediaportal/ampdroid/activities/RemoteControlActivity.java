@@ -133,7 +133,9 @@ public class RemoteControlActivity extends BaseActivity {
 
       @Override
       protected String doInBackground(Void... _keys) {
-         mController.requestPlugins();
+         if (mController != null) {
+            mController.requestPlugins();
+         }
          return null;
       }
    }
@@ -324,12 +326,12 @@ public class RemoteControlActivity extends BaseActivity {
             int height = remote.getHeight();
 
             if (_x < width * 0.25 && _y > height * 0.10 && _y < height * 0.9) {
-               //left
+               // left
                return 0;
             }
 
             if (_x > width * 0.75 && _y > height * 0.10 && _y < height * 0.9) {
-               //right
+               // right
                return 1;
             }
 
