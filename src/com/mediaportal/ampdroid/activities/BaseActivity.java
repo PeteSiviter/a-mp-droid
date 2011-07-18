@@ -134,8 +134,10 @@ public class BaseActivity extends Activity implements IClientControlListener {
       if(mReconnectTask != null){
          mReconnectTask.cancelReConnect();
       }
+      if (mService != null) {
+         mService.removeClientControlListener(this);
+      }
       super.onStop();
-      mService.removeClientControlListener(this);
    }
 
    @Override

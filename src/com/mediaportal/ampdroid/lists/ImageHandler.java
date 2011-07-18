@@ -118,7 +118,7 @@ public class ImageHandler {
             DataHandler service = DataHandler.getCurrentRemoteInstance();
             b = service.getImage(_image.getImageUrl(), _image.getMaxWidth(), _image.getMaxHeight());
          } catch (Exception ex) {
-            ex.printStackTrace();
+            Log.w(Constants.LOG_CONST, ex);
             return null;
          }
 
@@ -250,15 +250,17 @@ public class ImageHandler {
                   // // cache.
                   // }
 
-                  try {
-                     if (((String) photoToLoad.imageView.getTag()).equals(photoToLoad.image
-                           .getImageUrl())) {
-                        BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad.imageView);
-                        Activity a = (Activity) photoToLoad.imageView.getContext();
-                        a.runOnUiThread(bd);
+                  if (bmp != null) {
+                     try {
+                        if (((String) photoToLoad.imageView.getTag()).equals(photoToLoad.image
+                              .getImageUrl())) {
+                           BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad.imageView);
+                           Activity a = (Activity) photoToLoad.imageView.getContext();
+                           a.runOnUiThread(bd);
+                        }
+                     } catch (Exception ex) {
+                        Log.e(Constants.LOG_CONST, "Error on displaying image:" + ex.toString());
                      }
-                  } catch (Exception ex) {
-                     Log.e(Constants.LOG_CONST, "Error on displaying image:" + ex.toString());
                   }
                }
                if (Thread.interrupted())

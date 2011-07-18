@@ -150,9 +150,14 @@ public class TvServerStateActivity extends BaseActivity {
       @Override
       protected String doInBackground(TvChannel... _params) {
          if (_params != null) {
-            String url = mService.startTimeshift(_params[0].getIdChannel(),
-                  PreferencesManager.getTvClientName());
-            return url;
+            try {
+               String url = mService.startTimeshift(_params[0].getIdChannel(),
+                     PreferencesManager.getTvClientName());
+               return url;
+            } catch (Exception ex) {
+               Log.e(Constants.LOG_CONST, "Error during start timeshift: " + ex.toString());
+               return null;
+            }
          }
          return null;
       }

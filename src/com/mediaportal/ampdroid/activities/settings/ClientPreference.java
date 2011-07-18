@@ -20,6 +20,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -147,22 +148,21 @@ public class ClientPreference extends DialogPreference {
    }
 
    private void setHardwareAddress(String addr) {
-      if(mEditTextMac != null){
-         if(addr.contains(":") || addr.contains("-")){
+      if (mEditTextMac != null) {
+         if (addr.contains(":") || addr.contains("-")) {
             mEditTextMac.setText(addr);
-         }
-         else{
+         } else {
             StringBuilder newMac = new StringBuilder();
-            for(int i = 0; i < addr.length(); i++){
+            for (int i = 0; i < addr.length(); i++) {
                newMac.append(addr.charAt(i));
-               if(i%2 == 1 && i < addr.length() -1){
+               if (i % 2 == 1 && i < addr.length() - 1) {
                   newMac.append(":");
                }
             }
             mEditTextMac.setText(newMac.toString());
          }
       }
-      
+
    }
 
    public void create(PreferenceManager preferenceManager, PreferenceScreen _root) {
@@ -541,12 +541,20 @@ public class ClientPreference extends DialogPreference {
             mClient.setClientControlApi(clientApi);
          } else {
             String gmaAddr = mEditTextGmaHost.getText().toString();
-            String gmaPort = mEditTextGmaPort.getText().toString();
+            String gmaPortString = mEditTextGmaPort.getText().toString();
             String gmaMac = mEditTextGmaMac.getText().toString();
             String gmaUser = mUserViewGma.getText().toString();
             String gmaPass = mPassViewGma.getText().toString();
             boolean gmaUseAuth = mUseGmaAuth.isChecked();
-            GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(gmaAddr, Integer.valueOf(gmaPort),
+            
+            int gmaPort = Constants.DEFAULT_REMOTEACCESS_PORT;
+            try {
+               gmaPort = Integer.valueOf(gmaPortString);
+            } catch (Exception ex) {
+               Log.w(Constants.LOG_CONST, gmaPortString + " is not a valid port");
+            }
+            
+            GmaJsonWebserviceApi api = new GmaJsonWebserviceApi(gmaAddr, gmaPort,
                   gmaMac, gmaUser, gmaPass, gmaUseAuth);
             mClient.setRemoteAccessApi(api);
 
@@ -556,18 +564,33 @@ public class ClientPreference extends DialogPreference {
             String tvUser = mUserViewTv4Home.getText().toString();
             String tvPass = mPassViewTv4Home.getText().toString();
             boolean tvUseAuth = mUseTv4HomeAuth.isChecked();
-            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(tv4homeAddr, Integer.valueOf(tv4homePort),
-                  tv4homeMac, tvUser, tvPass, tvUseAuth);
+            int tvPort = Constants.DEFAULT_TV_PORT;
+            try {
+               tvPort = Integer.valueOf(tv4homePort);
+            } catch (Exception ex) {
+               Log.w(Constants.LOG_CONST, tv4homePort + " is not a valid port");
+            }
+
+            Tv4HomeJsonApi tvApi = new Tv4HomeJsonApi(tv4homeAddr, tvPort, tv4homeMac, tvUser,
+                  tvPass, tvUseAuth);
             mClient.setTvControlApi(tvApi);
 
             String wifiAddr = mEditTextWifiRemoteHost.getText().toString();
-            String wifiPort = mEditTextWifiRemotePort.getText().toString();
+            String wifiPortString = mEditTextWifiRemotePort.getText().toString();
             String wifiMac = mEditTextWifiRemoteMac.getText().toString();
             String wifiUser = mUserViewWifiRemote.getText().toString();
             String wifiPass = mPassViewWifiRemote.getText().toString();
             boolean wifiUseAuth = mUseWifiRemoteAuth.isChecked();
+
+            int wifiPort = Constants.DEFAULT_WIFI_PORT;
+            try {
+               wifiPort = Integer.valueOf(wifiPortString);
+            } catch (Exception ex) {
+               Log.w(Constants.LOG_CONST, wifiPortString + " is not a valid port");
+            }
+
             WifiRemoteMpController clientApi = new WifiRemoteMpController(mContext, wifiAddr,
-                  Integer.valueOf(wifiPort), wifiMac, wifiUser, wifiPass, wifiUseAuth);
+                  wifiPort, wifiMac, wifiUser, wifiPass, wifiUseAuth);
             mClient.setClientControlApi(clientApi);
          }
 

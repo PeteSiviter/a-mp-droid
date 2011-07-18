@@ -252,7 +252,7 @@ public class StreamingDetailsActivity extends BaseActivity {
 
          @Override
          public void onClick(View _view) {
-            if (mFinishedLoading) {
+            if (mFinishedLoading && mSelectedProfile != null) {
                if (getChecked(mButtonRememberSettings)) {
                   PreferencesManager.setDefaultProfile(mSelectedProfile.getName(), mIsTv);
                }
@@ -334,7 +334,7 @@ public class StreamingDetailsActivity extends BaseActivity {
 
          @Override
          public void onClick(View _view) {
-            if (mFinishedLoading) {
+            if (mFinishedLoading && mSelectedProfile != null) {
                Intent streamIntent = new Intent(_view.getContext(),
                      VideoStreamingPlayerActivity.class);
                streamIntent.putExtra("video_id", mStreamingFile);

@@ -103,7 +103,9 @@ public class SettingsDatabaseHandler {
             if (row > 0)
                return true;
          } catch (Exception ex) {
-            Log.e("Database", ex.getMessage());
+            if (ex != null) {
+               Log.e("Database", ex.toString());
+            }
          }
       }
       return false;

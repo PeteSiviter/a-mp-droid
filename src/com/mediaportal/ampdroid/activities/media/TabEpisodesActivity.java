@@ -17,12 +17,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -30,19 +29,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mediaportal.ampdroid.R;
-import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.SeriesEpisode;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
-import com.mediaportal.ampdroid.downloadservice.DownloadJob;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
 import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.Utils;
 import com.mediaportal.ampdroid.lists.views.EpisodePosterViewAdapterItem;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
@@ -88,6 +82,7 @@ public class TabEpisodesActivity extends Activity {
                   mAdapter.addItem(new EpisodePosterViewAdapterItem(mContext, mSeriesId, e));
                }
             }
+            Log.d(Constants.LOG_CONST, "Finished adding " + episodes.size() + " episodes to listview");
          }
          mAdapter.notifyDataSetChanged();
          super.onProgressUpdate(values);
@@ -95,7 +90,9 @@ public class TabEpisodesActivity extends Activity {
 
       @Override
       protected void onPostExecute(Boolean _result) {
+         Log.d(Constants.LOG_CONST, "Episode loading complete, set adapter loading to false");
          mAdapter.showLoadingItem(false);
+         mAdapter.notifyDataSetChanged();
       }
    }
 
