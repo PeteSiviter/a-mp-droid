@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.mediaportal.ampdroid.activities.tvserver;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,9 +44,9 @@ public class TvServerRecordingsActivity extends BaseActivity {
    private StatusBarActivityHandler mStatusBarHandler;
    protected TvRecording mSelectedRecording;
    private HashMap<Integer, TvChannel> mChannels;
-   
+
    private class UpdateRecordingsTask extends AsyncTask<Integer, Integer, List<TvRecording>> {
-      
+
       private Context mContext;
 
       private UpdateRecordingsTask(Context _context) {
@@ -94,8 +93,7 @@ public class TvServerRecordingsActivity extends BaseActivity {
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
-            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView
-            .getItemAtPosition(_pos);
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(_pos);
             mSelectedRecording = (TvRecording) item.getItem();
             openDetails(mSelectedRecording);
          }
@@ -104,8 +102,7 @@ public class TvServerRecordingsActivity extends BaseActivity {
       mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
          @Override
          public boolean onItemLongClick(AdapterView<?> _item, View _view, int _pos, long _id) {
-             ILoadingAdapterItem item = (ILoadingAdapterItem) mListView
-             .getItemAtPosition(_pos);
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(_pos);
             final QuickAction qa = new QuickAction(_view);
             mSelectedRecording = (TvRecording) item.getItem();
 
@@ -148,14 +145,16 @@ public class TvServerRecordingsActivity extends BaseActivity {
       recIntent.putExtra("recording_end", _recording.getEndTime());
       if (!mChannels.containsKey(_recording.getIdChannel())) {
          TvChannel channel = mService.getTvChannel(_recording.getIdChannel());
-         recIntent.putExtra("recording_channel", channel.getDisplayName());
-      }
-      else{
-         recIntent.putExtra("recording_channel", mChannels.get(_recording.getIdChannel()).getDisplayName());
+         if (channel != null) {
+            recIntent.putExtra("recording_channel", channel.getDisplayName());
+         }
+      } else {
+         recIntent.putExtra("recording_channel", mChannels.get(_recording.getIdChannel())
+               .getDisplayName());
       }
       recIntent.putExtra("recording_description", _recording.getDescription());
       recIntent.putExtra("recording_filename", _recording.getFileName());
-      
+
       startActivity(recIntent);
    }
 

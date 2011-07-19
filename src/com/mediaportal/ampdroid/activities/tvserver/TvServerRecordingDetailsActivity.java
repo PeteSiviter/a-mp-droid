@@ -12,12 +12,7 @@ package com.mediaportal.ampdroid.activities.tvserver;
 
 import java.util.Date;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -25,12 +20,10 @@ import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.TvProgram;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.quickactions.QuickActionView;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 import com.mediaportal.ampdroid.utils.QuickActionUtils;
-import com.mediaportal.ampdroid.utils.StringUtils;
 
 public class TvServerRecordingDetailsActivity extends BaseActivity {
    private DataHandler mService;

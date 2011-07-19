@@ -313,6 +313,8 @@ public class WifiRemoteMpController implements IClientControlApi {
          Log.e(Constants.LOG_CONST, e.toString());
       } catch (IOException e) {
          Log.e(Constants.LOG_CONST, e.toString());
+      } catch (Exception ex){
+         Log.e(Constants.LOG_CONST, "Unknown connection error: " + ex.toString());
       }
       return false;
    }

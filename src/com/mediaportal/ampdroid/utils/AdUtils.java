@@ -38,6 +38,7 @@ public class AdUtils {
 
                @Override
                public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+                 
                   Log.d(Constants.LOG_CONST, "onFailedToReceiveAd");
                }
 

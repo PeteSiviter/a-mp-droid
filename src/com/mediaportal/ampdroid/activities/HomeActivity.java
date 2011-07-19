@@ -28,9 +28,9 @@ import android.widget.LinearLayout;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
-import com.mediaportal.ampdroid.api.exceptions.WebServiceException;
 import com.mediaportal.ampdroid.data.WebServiceDescription;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.settings.PreferencesManager.StatusbarAutohide;
 import com.mediaportal.ampdroid.utils.AdUtils;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DpiUtils;
@@ -71,7 +71,7 @@ public class HomeActivity extends BaseActivity {
                            functions.supportsMovingPictures());
                      return myIntent;
                   } else {
-                     Util.showToast(mContext, "Wrong service version");
+                      return "Wrong service version";
                   }
                } else {
                   publishProgress(loader);
@@ -93,7 +93,7 @@ public class HomeActivity extends BaseActivity {
                         Intent myIntent = new Intent(mContext, MusicActivity.class);
                         return myIntent;
                      } else {
-                        Util.showToast(mContext, "Wrong service version");
+                        return "Wrong service version";
                      }
                   } else {
                      publishProgress(loader);
@@ -122,16 +122,10 @@ public class HomeActivity extends BaseActivity {
       protected void onProgressUpdate(String... _params) {
          String loader = _params[0];
          String mac = null;
-         String ip = null;
-         int port = 0;
          if (loader.equals("media") || loader.equals("music")) {
             mac = mService.getRemoteAccessApi().getMac();
-            ip = mService.getRemoteAccessApi().getServer();
-            port = mService.getRemoteAccessApi().getPort();
          } else if (loader.equals("tvservice")) {
             mac = mService.getTvApi().getMac();
-            ip = mService.getTvApi().getServer();
-            port = mService.getTvApi().getPort();
          }
 
          final String macString = mac;// we need a final for the dialog
@@ -191,6 +185,8 @@ public class HomeActivity extends BaseActivity {
                WebServiceLoginException ex = (WebServiceLoginException) _result;
                Util.showToast(mContext, getString(R.string.info_wrong_username_password));
                Log.d(Constants.LOG_CONST, ex.toString());
+            } else if (_result.getClass() == String.class){
+               Util.showToast(mContext, (String) _result);
             }
          } else {
 
@@ -327,11 +323,8 @@ public class HomeActivity extends BaseActivity {
             // }
          }
       });
-
-      setAdPosition();
-
+      
       AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
-
    }
 
    private void setAdPosition() {
@@ -340,9 +333,14 @@ public class HomeActivity extends BaseActivity {
             FrameLayout.LayoutParams.FILL_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
       lp.gravity = Gravity.BOTTOM;
 
-      if (mStatusBarHandler != null && mStatusBarHandler.isVisible()) {
+      StatusbarAutohide hideMode = PreferencesManager.getStatusbarAutohide();
+      if ((hideMode == StatusbarAutohide.ShowWhenConnected && mService != null && mService.isClientControlConnected()) ||
+           hideMode == StatusbarAutohide.AlwaysShow
+          ) {
+         Util.showToast(this, "Position -> up");
          lp.setMargins(0, 0, 0, DpiUtils.getPxFromDpi(this, 90));
       } else {
+         Util.showToast(this, "Position -> down");
          lp.setMargins(0, 0, 0, 0);
       }
 
@@ -351,6 +349,9 @@ public class HomeActivity extends BaseActivity {
 
    @Override
    protected void onStart() {
+      setAdPosition();
+
+      
       super.onStart();
    }
 
