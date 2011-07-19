@@ -337,10 +337,10 @@ public class HomeActivity extends BaseActivity {
       if ((hideMode == StatusbarAutohide.ShowWhenConnected && mService != null && mService.isClientControlConnected()) ||
            hideMode == StatusbarAutohide.AlwaysShow
           ) {
-         Util.showToast(this, "Position -> up");
+         Log.d(Constants.LOG_CONST, "Position -> up");
          lp.setMargins(0, 0, 0, DpiUtils.getPxFromDpi(this, 90));
       } else {
-         Util.showToast(this, "Position -> down");
+         Log.d(Constants.LOG_CONST, "Position -> down");
          lp.setMargins(0, 0, 0, 0);
       }
 
@@ -350,7 +350,6 @@ public class HomeActivity extends BaseActivity {
    @Override
    protected void onStart() {
       setAdPosition();
-
       
       super.onStart();
    }

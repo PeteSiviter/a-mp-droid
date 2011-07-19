@@ -17,13 +17,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
@@ -32,7 +29,6 @@ import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -140,9 +136,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
 
       @Override
       protected void onProgressUpdate(Integer... values) {
-         if (values[0] == 0) {
-
-         }
          super.onProgressUpdate(values);
       }
    }
@@ -704,7 +697,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          mMediaPlayer.stop();
          Log.d(Constants.LOG_CONST, "MediaPlayer stop finished");
       }
-      
 
       if (mCheckTranscodingStateTask != null) {
          mCheckTranscodingStateTask.stopChecking();
@@ -801,14 +793,15 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       mLastActionTime = SystemClock.elapsedRealtime();
 
-      /*if (keyCode == KeyEvent.KEYCODE_BACK
-            && (mTopPanel.getVisibility() == View.VISIBLE || mBottomPanel.getVisibility() == View.VISIBLE)) {
-         mLastActionTime = 0;
-
-         setPanelsVisible(false);
-
-         return (true);
-      }*/
+      /*
+       * if (keyCode == KeyEvent.KEYCODE_BACK && (mTopPanel.getVisibility() ==
+       * View.VISIBLE || mBottomPanel.getVisibility() == View.VISIBLE)) {
+       * mLastActionTime = 0;
+       * 
+       * setPanelsVisible(false);
+       * 
+       * return (true); }
+       */
 
       mSurface.setBackgroundDrawable(null);
       return (super.onKeyDown(keyCode, event));
@@ -967,10 +960,10 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          // timeline.setSecondaryProgress(0);
 
          if (mStartSeek != null) {
-            Util.showToast(
-                  this,
-                  "Time for seeking: "
-                        + String.valueOf(new Date().getTime() - mStartSeek.getTime()) + " ms");
+            String seekTime = "Time for seeking: "
+                  + String.valueOf(new Date().getTime() - mStartSeek.getTime()) + " ms";
+            
+            Log.d(Constants.LOG_CONST, seekTime);
          }
 
          if (mAutoStart) {
