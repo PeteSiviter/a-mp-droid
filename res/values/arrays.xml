@@ -74,7 +74,6 @@
 		<item>Always Show</item>
 		<item>Always Hide</item>
 		<item>Show when connected</item>
-		<item>Manually show/hide</item>
 	</string-array>
 
 	<string-array name="settings_media_defaultview_series_text">

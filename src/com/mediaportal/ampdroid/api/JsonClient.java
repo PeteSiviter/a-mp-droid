@@ -40,6 +40,7 @@ import org.apache.http.protocol.HTTP;
 import android.util.Log;
 
 import com.mediaportal.ampdroid.utils.Constants;
+import com.mediaportal.ampdroid.utils.Util;
 
 public class JsonClient {
    public static int DEFAULT_TIMEOUT = 5000;
@@ -180,6 +181,7 @@ public class JsonClient {
       HttpConnectionParams.setTcpNoDelay(httpParameters, true);
 
       DefaultHttpClient client = new DefaultHttpClient(httpParameters);
+      request.setHeader("User-Agent", Constants.USER_AGENT);
 
       if (mUseAuth) {
          CredentialsProvider credProvider = new BasicCredentialsProvider();
