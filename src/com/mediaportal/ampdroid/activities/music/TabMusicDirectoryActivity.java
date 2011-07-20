@@ -267,6 +267,7 @@ public class TabMusicDirectoryActivity extends Activity implements ILoadingListe
       mAdapter.setLoadingListener(this);
 
       mListView = (ListView) findViewById(R.id.ListViewVideos);
+      mListView.setFastScrollEnabled(true);
       mListView.setAdapter(mAdapter);
 
       mListView.setOnItemClickListener(new OnItemClickListener() {

@@ -149,6 +149,10 @@ public class BaseActivity extends Activity implements IClientControlListener {
       }
       super.onResume();
    }
+   
+   public boolean getIsActive() {
+      return mIsActive;
+   }
 
    @Override
    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

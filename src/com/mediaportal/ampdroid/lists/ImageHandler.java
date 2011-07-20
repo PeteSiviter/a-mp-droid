@@ -37,11 +37,9 @@ public class ImageHandler {
 
    public static int MEMORY_CACHE_SIZE = 20;
 
-   // the simplest in-memory cache implementation. This should be replaced with
-   // something like SoftReference or BitmapOptions.inPurgeable(since 1.6)
-   private LinkedHashMap<String, Bitmap> memoryCache = new CacheHashMap(MEMORY_CACHE_SIZE);
+   MemoryCache memoryCache = new MemoryCache();
 
-   private File cacheDir;
+   private FileCache fileCache;
    private Context mContext;
 
    public ImageHandler(Context context) {
@@ -50,29 +48,21 @@ public class ImageHandler {
       mContext = context;
       photoLoaderThread.setPriority(Thread.MIN_PRIORITY);
 
-      // Find the dir to save cached images
-      if (android.os.Environment.getExternalStorageState().equals(
-            android.os.Environment.MEDIA_MOUNTED))
-         cacheDir = new File(android.os.Environment.getExternalStorageDirectory(),
-               "aMPdroid/.Cache");
-      else
-         cacheDir = context.getCacheDir();
-      if (!cacheDir.exists())
-         cacheDir.mkdirs();
+      fileCache = new FileCache(context);
    }
 
    public void DisplayImage(LazyLoadingImage _image, int _loadingImage, Activity activity,
          ImageView imageView) {
-      Bitmap bitmap = null;
       String url = _image.getImageUrl();
-      if (memoryCache.containsKey(url)) {
-         bitmap = memoryCache.get(url);
-         imageView.setImageBitmap(bitmap);
-      } else {
-         queuePhoto(_image, activity, imageView);
-      }
+      Bitmap bitmap = memoryCache.get(url);
+         
 
-      if (bitmap == null) {
+      if (bitmap != null) {
+         imageView.setImageBitmap(bitmap);
+      }
+      else{
+         queuePhoto(_image, activity, imageView);
+         
          // loading image
          if (_loadingImage == 0) {
             // show nothing as loading image
@@ -105,7 +95,7 @@ public class ImageHandler {
    public Bitmap getBitmap(LazyLoadingImage _image, boolean thumb) {
       if (_image != null && _image.getImageUrl() != null && !_image.getImageUrl().equals("")) {
 
-         File file = new File(cacheDir + File.separator + _image.getImageCacheName());
+         File file = fileCache.getFile(_image.getImageCacheName());
 
          // from SD cache
          Bitmap b = decodeFile(file, thumb);
@@ -124,28 +114,7 @@ public class ImageHandler {
 
          if (b != null) {
             // save bitmap to sd card for caching
-            try {
-
-               if (android.os.Environment.getExternalStorageState().equals(
-                     android.os.Environment.MEDIA_MOUNTED)) {
-                  File parentDir = file.getParentFile();
-                  if (!parentDir.exists()) {
-                     parentDir.mkdirs();
-                  }
-
-                  FileOutputStream f = new FileOutputStream(file);
-                  b.compress(Bitmap.CompressFormat.JPEG, 100, f);
-                  f.flush();
-                  f.close();
-               } else {
-                  // todo: write to internal memory here???
-               }
-
-            } catch (FileNotFoundException e) {
-               e.printStackTrace();
-            } catch (IOException e) {
-               e.printStackTrace();
-            }
+            fileCache.storeBitmap(b, file);
          }
 
          return b;

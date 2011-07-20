@@ -160,10 +160,10 @@ public class WifiRemoteMpController implements IClientControlApi {
                }
             }
          } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.LOG_CONST, e.toString());
             listening = false;
          } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(Constants.LOG_CONST, e.toString());
             listening = false;
          }
          this.listening = false;

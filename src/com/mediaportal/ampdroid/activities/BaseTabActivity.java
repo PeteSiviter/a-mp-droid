@@ -145,6 +145,10 @@ public class BaseTabActivity extends TabActivity implements IClientControlListen
       }
       super.onResume();
    }
+   
+   public boolean getIsActive() {
+      return mIsActive;
+   }
 
    @Override
    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

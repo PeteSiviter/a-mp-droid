@@ -262,10 +262,6 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
                         s, showArtist));
                   mAdapter.addItem(ViewTypes.ThumbView.ordinal(),
                         new MusicAlbumThumbViewAdapterItem(s, showArtist));
-
-                  if (mAdapter.fastScrollingInitialised()) {
-                     mAdapter.resetFastScrolling(mListView);
-                  }
                }
             } else {
                mAdapter.setLoadingText(getString(R.string.info_loading_failed), false);
@@ -282,6 +278,10 @@ public class TabAlbumsActivity extends Activity implements ILoadingListener {
          if (_result) {
             mAdapter.showLoadingItem(false);
             mAdapter.notifyDataSetChanged();
+         }
+         
+         if (mAdapter.fastScrollingInitialised()) {
+            mAdapter.resetFastScrolling(mListView);
          }
          mStatusBarHandler.setLoading(false);
          mMusicLoaderTask = null;

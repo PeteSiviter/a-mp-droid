@@ -83,7 +83,9 @@ public class TabSharesActivity extends Activity {
 
          mListView.setAdapter(mListItems);
          mListItems.notifyDataSetChanged();
-         mLoadingDialog.dismiss();
+         if (mLoadingDialog != null && mBaseActivity.getIsActive()) {
+            mLoadingDialog.dismiss();
+         }
       }
    }
 
@@ -149,8 +151,7 @@ public class TabSharesActivity extends Activity {
                FileInfo selected = (FileInfo) mListView.getItemAtPosition(_pos);
                if (selected.isFolder()) {
                   loadFiles(selected.getFullPath());
-               }
-               else{
+               } else {
                   Intent download = new Intent(_view.getContext(), StreamingDetailsActivity.class);
                   download.putExtra("video_id", selected.getFullPath());
                   download.putExtra("video_type", DownloadItemType.VideoShareItem);
@@ -210,8 +211,7 @@ public class TabSharesActivity extends Activity {
 
                   qa.show();
 
-               }
-               else if (_adapter.getAdapter().equals(mListItems)) {
+               } else if (_adapter.getAdapter().equals(mListItems)) {
                   final VideoShare selected = (VideoShare) mListView.getItemAtPosition(_pos);
                   mCurrentShare = selected;
                   final QuickAction qa = new QuickAction(_view);
@@ -222,7 +222,7 @@ public class TabSharesActivity extends Activity {
                               loadFiles(selected.Path);
                            }
                         });
-                  
+
                   qa.setAnimStyle(QuickAction.ANIM_AUTO);
 
                   qa.show();
