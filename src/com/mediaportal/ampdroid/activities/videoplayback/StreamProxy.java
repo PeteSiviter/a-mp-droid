@@ -70,6 +70,8 @@ public class StreamProxy implements Runnable {
   private ServerSocket socket;
   private Thread thread;
 
+private String mUrl;
+
   public void init() {
     try {
       socket = new ServerSocket(port, 0, InetAddress.getByAddress(new byte[] {127,0,0,1}));
@@ -83,8 +85,8 @@ public class StreamProxy implements Runnable {
     }
   }
 
-  public void start() {
-
+  public void start(String url) {
+    mUrl = url;
     if (socket == null) {
       throw new IllegalStateException("Cannot start proxy; it has not been initialized.");
     }
@@ -150,11 +152,11 @@ public class StreamProxy implements Runnable {
 
     StringTokenizer st = new StringTokenizer(firstLine);
     String method = st.nextToken();
-    String uri = st.nextToken();
-    Log.d(LOG_TAG, uri);
-    String realUri = uri.substring(1);
-    Log.d(LOG_TAG, realUri);
-    request = new BasicHttpRequest(method, realUri);
+   //String uri = st.nextToken();
+//    Log.d(LOG_TAG, uri);
+//    String realUri = uri.substring(1);
+//    Log.d(LOG_TAG, realUri);
+    request = new BasicHttpRequest(method, mUrl);
     return request;
   }
 
@@ -163,7 +165,7 @@ public class StreamProxy implements Runnable {
     SchemeRegistry registry = new SchemeRegistry();
     registry.register(
             new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-    SingleClientConnManager mgr = new MyClientConnManager(seed.getParams(),
+    SingleClientConnManager mgr = new SingleClientConnManager(seed.getParams(),
         registry);
     DefaultHttpClient http = new DefaultHttpClient(mgr, seed.getParams());
     HttpGet method = new HttpGet(url);
@@ -231,120 +233,4 @@ public class StreamProxy implements Runnable {
       client.close();
     }
   }
-
-  private class IcyLineParser extends BasicLineParser {
-    private static final String ICY_PROTOCOL_NAME = "ICY";
-    private IcyLineParser() {
-      super();
-    }
-
-    @Override
-    public boolean hasProtocolVersion(CharArrayBuffer buffer,
-        ParserCursor cursor) {
-      boolean superFound = super.hasProtocolVersion(buffer, cursor);
-      if (superFound) {
-        return true;
-      }
-      int index = cursor.getPos();
-
-      final int protolength = ICY_PROTOCOL_NAME.length();
-
-      if (buffer.length() < protolength)
-          return false; // not long enough for "HTTP/1.1"
-
-      if (index < 0) {
-          // end of line, no tolerance for trailing whitespace
-          // this works only for single-digit major and minor version
-          index = buffer.length() - protolength;
-      } else if (index == 0) {
-          // beginning of line, tolerate leading whitespace
-          while ((index < buffer.length()) &&
-                  HTTP.isWhitespace(buffer.charAt(index))) {
-               index++;
-           }
-      } // else within line, don't tolerate whitespace
-
-      return index + protolength <= buffer.length() &&
-          buffer.substring(index, index + protolength).equals(ICY_PROTOCOL_NAME);
-
-      }
-
-
-    @Override
-    public ProtocolVersion parseProtocolVersion(CharArrayBuffer buffer,
-        ParserCursor cursor) throws ParseException {
-
-      if (buffer == null) {
-          throw new IllegalArgumentException("Char array buffer may not be null");
-      }
-      if (cursor == null) {
-          throw new IllegalArgumentException("Parser cursor may not be null");
-      }
-
-      final int protolength = ICY_PROTOCOL_NAME.length();
-
-      int indexFrom = cursor.getPos();
-      int indexTo = cursor.getUpperBound();
-      
-      skipWhitespace(buffer, cursor);
-
-      int i = cursor.getPos();
-      
-      // long enough for "HTTP/1.1"?
-      if (i + protolength + 4 > indexTo) {
-          throw new ParseException
-              ("Not a valid protocol version: " +
-               buffer.substring(indexFrom, indexTo));
-      }
-
-      // check the protocol name and slash
-      if (!buffer.substring(i, i + protolength).equals(ICY_PROTOCOL_NAME)) {
-        return super.parseProtocolVersion(buffer, cursor);
-      }
-
-      cursor.updatePos(i + protolength);
-
-      return createProtocolVersion(1, 0);
-    }
-
-    @Override
-    public StatusLine parseStatusLine(CharArrayBuffer buffer,
-        ParserCursor cursor) throws ParseException {
-      return super.parseStatusLine(buffer, cursor);
-    }
-  }
-
-  class MyClientConnection extends DefaultClientConnection {
-    @Override
-    protected HttpMessageParser createResponseParser(
-        final SessionInputBuffer buffer,
-        final HttpResponseFactory responseFactory, final HttpParams params) {
-      return new DefaultResponseParser(buffer, new IcyLineParser(),
-          responseFactory, params);
-    }
-  }
-
-  class MyClientConnectionOperator extends DefaultClientConnectionOperator {
-    public MyClientConnectionOperator(final SchemeRegistry sr) {
-      super(sr);
-    }
-
-    @Override
-    public OperatedClientConnection createConnection() {
-      return new MyClientConnection();
-    }
-  }
-
-  class MyClientConnManager extends SingleClientConnManager {
-    private MyClientConnManager(HttpParams params, SchemeRegistry schreg) {
-      super(params, schreg);
-    }
-
-    @Override
-    protected ClientConnectionOperator createConnectionOperator(
-        final SchemeRegistry sr) {
-      return new MyClientConnectionOperator(sr);
-    }
-  }
-
 }

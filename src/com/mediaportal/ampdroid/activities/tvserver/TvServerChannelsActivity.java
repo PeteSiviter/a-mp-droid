@@ -145,7 +145,7 @@ public class TvServerChannelsActivity extends BaseActivity {
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
             TvChannel channel = mChannelItems.getItem(_pos);
 
-openDetails(channel);
+            openDetails(channel);
 
          }
       });
@@ -211,6 +211,7 @@ openDetails(channel);
       Intent myIntent = new Intent(this, TvServerChannelDetailsActivity.class);
       myIntent.putExtra("channel_id", channel.getIdChannel());
       myIntent.putExtra("channel_name", channel.getDisplayName());
+      Log.d(Constants.LOG_CONST, "Opening channel details for channel: " + channel.getIdChannel());
       startActivity(myIntent);
    }
 

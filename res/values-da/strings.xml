@@ -238,7 +238,7 @@ indbyggede videoafspiller.</string>
 	<string name="info_not_implemented">Er ikke implementeret</string>
 	<string name="info_no_connection">Ingen forbindelse til tjenesten</string>
 	<string name="info_remote_notconnected">Fjernbetjening er ikke forbundet</string>
-	<string name="info_wrong_username_password"></string>
+	<string name="info_wrong_username_password">Forkert brugernavn eller kodeord</string>
 	<string name="info_loading_title">Indlæser... vent venligst</string>
 	<string name="info_loading_failed">Indlæsningsfejl, check din forbindelse</string>
 	<string name="info_file_not_found">Filen skal først downloades</string>
@@ -301,9 +301,9 @@ indbyggede videoafspiller.</string>
 	<string name="streaming_remember_settings_text">Gem disse stream indstillinger</string>
 	<string name="streaming_initfailed_title">Kunne ikke starte stream</string>
 	<string name="streaming_initfailed_text">fejl ved start af TV, kan skyldes at der ikke er flere ledige TV kort</string>
-	<string name="streaming_media_died_title"></string>
-	<string name="streaming_media_died_text"></string>
-	<string name="streaming_seeking_available"></string>
-	<string name="streaming_seeking_preparing"></string>
-	<string name="streaming_seeking_preparefailed"></string>
+	<string name="streaming_media_died_title">Stream fejlede</string>
+	<string name="streaming_media_died_text">Stream stoppede uventet, vil du prøve igen?</string>
+	<string name="streaming_seeking_available">Søgning er tilgængelig nu</string>
+	<string name="streaming_seeking_preparing">Forberede video til søgning</string>
+	<string name="streaming_seeking_preparefailed">Forberelse af søgning fejlede, Søgning er ikke tilgængelig på denne stream!</string>
 </resources>

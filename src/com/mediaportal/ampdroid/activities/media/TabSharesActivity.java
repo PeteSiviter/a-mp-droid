@@ -17,38 +17,33 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseTabActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.activities.videoplayback.StreamingDetailsActivity;
-import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
-import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.asynctasks.ReconnectTask;
 import com.mediaportal.ampdroid.data.FileInfo;
 import com.mediaportal.ampdroid.data.VideoShare;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
-import com.mediaportal.ampdroid.downloadservice.DownloadJob;
-import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
-import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.StringUtils;
-import com.mediaportal.ampdroid.utils.Util;
 
 public class TabSharesActivity extends Activity {
    private ListView mListView;
@@ -62,6 +57,7 @@ public class TabSharesActivity extends Activity {
    private ProgressDialog mLoadingDialog;
    private BaseTabActivity mBaseActivity;
    private StatusBarActivityHandler mStatusBarHandler;
+   private GoogleAnalyticsTracker mTracker;
 
    private class LoadSharesTask extends AsyncTask<Integer, Integer, List<VideoShare>> {
       @Override
@@ -154,7 +150,7 @@ public class TabSharesActivity extends Activity {
                } else {
                   Intent download = new Intent(_view.getContext(), StreamingDetailsActivity.class);
                   download.putExtra("video_id", selected.getFullPath());
-                  download.putExtra("video_type", DownloadItemType.VideoShareItem);
+                  download.putExtra("video_type", DownloadItemType.toInt(DownloadItemType.VideoShareItem));
                   download.putExtra("video_name", selected.getName());
                   startActivity(download);
                }
@@ -245,6 +241,21 @@ public class TabSharesActivity extends Activity {
       }
 
       loadShares();
+      
+      mTracker = GoogleAnalyticsTracker.getInstance();
+      mTracker.start(Constants.ANALYTICS_ID, this);
+   }
+   
+   @Override
+   protected void onResume() {
+      mTracker.trackPageView("/" + this.getLocalClassName());
+      super.onResume();
+   }
+   
+   @Override
+   protected void onDestroy() {
+      mTracker.stop();
+      super.onDestroy();
    }
 
    private void loadShares() {

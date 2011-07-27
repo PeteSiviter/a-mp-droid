@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -27,25 +26,17 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.bugsense.trace.BugSenseHandler;
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest;
-import com.google.ads.AdRequest.ErrorCode;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.settings.SettingsActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.RemoteClient;
 import com.mediaportal.ampdroid.database.SettingsDatabaseHandler;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
-import com.mediaportal.ampdroid.utils.AdUtils;
-import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class WelcomeScreenActivity extends Activity {
@@ -91,6 +82,8 @@ public class WelcomeScreenActivity extends Activity {
       }
    }
 
+   GoogleAnalyticsTracker mTracker;
+   
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle _savedInstanceState) {
@@ -99,8 +92,10 @@ public class WelcomeScreenActivity extends Activity {
       BugSenseHandler.setup(this, "4434a1f4");
       //AdUtils.createAdForView(this, R.id.LinearLayoutAdMob);
 
+      mTracker = GoogleAnalyticsTracker.getInstance();
+      mTracker.start("UA-24774210-1", 300, this);
       
-
+      mTracker.trackPageView("/WelcomeScreen");
    }
 
    @Override
@@ -149,6 +144,14 @@ public class WelcomeScreenActivity extends Activity {
       }
 
       super.onStart();
+   }
+   
+   
+
+   @Override
+   protected void onDestroy() {
+      mTracker.stop();
+      super.onDestroy();
    }
 
    @Override

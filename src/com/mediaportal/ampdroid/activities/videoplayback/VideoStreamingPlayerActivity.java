@@ -322,7 +322,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          mMediaPlayer = new MediaPlayer();
          mMediaPlayer.setScreenOnWhilePlaying(true);
          mMediaPlayer.setOnPreparedListener(this);
-
          mMediaPlayer.setOnErrorListener(new OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
@@ -637,11 +636,13 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
                      .getDefaultDisplay();
                final Bitmap bm = mService.getBitmapFromMedia(mStreamingType, mStreamingFile,
                      _position, display.getWidth(), display.getHeight());
-               mImageViewOverlay.post(new Runnable() {
-                  public void run() {
-                     setOverlayImage(new BitmapDrawable(bm));
-                  }
-               });
+               if (bm != null) {
+                  mImageViewOverlay.post(new Runnable() {
+                     public void run() {
+                        setOverlayImage(new BitmapDrawable(bm));
+                     }
+                  });
+               }
             }
          }).start();
       }
@@ -847,6 +848,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       try {
          Log.d(Constants.LOG_CONST, "MediaPlayer prepareMediaPlayerAsync");
          mMediaPlayerPrepared = false;
+
          mMediaPlayer.setDataSource(this, Uri.parse(mStreamingUrl));
          mMediaPlayer.prepareAsync();
       } catch (IllegalArgumentException e) {
@@ -962,11 +964,20 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          if (mStartSeek != null) {
             String seekTime = "Time for seeking: "
                   + String.valueOf(new Date().getTime() - mStartSeek.getTime()) + " ms";
-            
+
             Log.d(Constants.LOG_CONST, seekTime);
          }
 
          if (mAutoStart) {
+            if(mIsTv){
+               Log.d(Constants.LOG_CONST, "Sleeping");
+               try {
+                  Thread.sleep(10000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+               Log.d(Constants.LOG_CONST, "Sleeping end");
+            }
             mMediaPlayer.start();
             setOverlayImage(null);
          }

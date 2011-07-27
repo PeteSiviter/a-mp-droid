@@ -342,6 +342,7 @@ public class StreamingDetailsActivity extends BaseActivity {
                streamIntent.putExtra("video_name", mDisplayName);
                streamIntent.putExtra("profile_name", mSelectedProfile.getName());
                streamIntent.putExtra("video_startfrom", mLastSession.getStartPosition());
+               streamIntent.putExtra("streaming_profiles", mProfileItems);
                if (mVideoLength > 0) {
                   streamIntent.putExtra("video_length", mVideoLength);
                }

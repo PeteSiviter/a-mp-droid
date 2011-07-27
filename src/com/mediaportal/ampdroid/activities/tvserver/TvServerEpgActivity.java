@@ -17,10 +17,9 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -49,6 +48,7 @@ import com.mediaportal.ampdroid.lists.views.TvServerProgramsBaseViewItem;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.IntentUtils;
 import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
@@ -358,6 +358,13 @@ public class TvServerEpgActivity extends BaseActivity {
       mEpgAdapter.showLoadingItem(true);
       mEpgAdapter.notifyDataSetChanged();
       mEpgLoaderTask = new LoadEpgTask(this);
-      mEpgLoaderTask.execute(_group.getIdGroup());
+      if(_group != null){
+         Log.d(Constants.LOG_CONST, "Refreshing EPG for group " + _group.getIdGroup()  + "(hour offset=" + mHoursOffset + ")");
+         mEpgLoaderTask.execute(_group.getIdGroup());
+      }
+      else{
+         Log.e(Constants.LOG_CONST, "Group is null in refresh epg ...");
+      }
+      
    }
 }

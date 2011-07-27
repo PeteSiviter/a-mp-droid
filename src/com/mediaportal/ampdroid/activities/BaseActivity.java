@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.api.ConnectionState;
 import com.mediaportal.ampdroid.api.DataHandler;
@@ -44,6 +45,7 @@ import com.mediaportal.ampdroid.remote.RemoteVolumeMessage;
 import com.mediaportal.ampdroid.remote.RemoteWelcomeMessage;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.settings.PreferencesManager.StatusbarAutohide;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.Util;
 
 public class BaseActivity extends Activity implements IClientControlListener {
@@ -80,6 +82,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private MenuItem mConnectItem;
    protected ReconnectTask mReconnectTask;
    protected boolean mIsActive;
+   private GoogleAnalyticsTracker mTracker;
 
    /** Called when the activity is first created. */
    @Override
@@ -92,6 +95,9 @@ public class BaseActivity extends Activity implements IClientControlListener {
          getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                WindowManager.LayoutParams.FLAG_FULLSCREEN);
       }
+      
+      mTracker = GoogleAnalyticsTracker.getInstance();
+      mTracker.start(Constants.ANALYTICS_ID, this);
    }
 
    @Override
@@ -142,12 +148,19 @@ public class BaseActivity extends Activity implements IClientControlListener {
 
    @Override
    protected void onResume() {
+      mTracker.trackPageView("/" + this.getLocalClassName());
       mIsActive = true;
       if (PreferencesManager.getAutoReconnect()) {
          mReconnectTask = new ReconnectTask();
          mReconnectTask.execute(mService);
       }
       super.onResume();
+   }
+   
+   @Override
+   protected void onDestroy() {
+      mTracker.stop();
+      super.onDestroy();
    }
    
    public boolean getIsActive() {

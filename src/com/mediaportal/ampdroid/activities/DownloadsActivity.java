@@ -48,7 +48,6 @@ import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
-import com.mediaportal.ampdroid.utils.WakeOnLan;
 
 public class DownloadsActivity extends Activity {
    private LoadServiceTask mDownloadsUpdaterTask = null;

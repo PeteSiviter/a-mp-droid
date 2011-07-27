@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -43,7 +44,7 @@ import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
 import com.mediaportal.ampdroid.lists.views.TvServerProgramsDetailsViewItem;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
-import com.mediaportal.ampdroid.quickactions.QuickActionView;
+import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DateTimeHelper;
 import com.mediaportal.ampdroid.utils.QuickActionUtils;
 import com.mediaportal.ampdroid.utils.Util;
@@ -79,8 +80,9 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
          Date begin = day.getDayBegin();
          Date end = day.getDayEnd();
 
+         Log.d(Constants.LOG_CONST, String.format("Loading programs for {0} | {1} | {2}", mChannelId, begin, end));
          List<TvProgramBase> programs = mService.getTvBaseEpgForChannel(mChannelId, begin, end);
-
+         Log.d(Constants.LOG_CONST, String.format("Finished loading loading programs for {0} | {1} | {2}", mChannelId, begin, end));
          return programs;
       }
 
@@ -114,7 +116,10 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                   }
                }
             }
-
+         }
+         else{
+            Log.w(Constants.LOG_CONST, "No programs found");
+            Util.showToast(mContext, "Failed to load epg");
          }
          mEpgAdapter.showLoadingItem(false);
          mEpgAdapter.notifyDataSetChanged();

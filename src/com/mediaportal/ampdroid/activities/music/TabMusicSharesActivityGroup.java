@@ -12,6 +12,9 @@ package com.mediaportal.ampdroid.activities.music;
 
 import java.util.ArrayList;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+import com.mediaportal.ampdroid.utils.Constants;
+
 import android.app.ActivityGroup;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +34,7 @@ public class TabMusicSharesActivityGroup extends ActivityGroup {
    // Need to keep track of the history if you want the back-button to work
    // properly, don't use this if your activities requires a lot of memory.
    private ArrayList<View> mHistory;
+   private GoogleAnalyticsTracker mTracker;
 
    @Override
    protected void onCreate(Bundle _savedInstanceState) {
@@ -45,18 +49,27 @@ public class TabMusicSharesActivityGroup extends ActivityGroup {
       // Start the root activity withing the group and get its view
       View view = getLocalActivityManager().startActivity("SharesActivity", intent).getDecorView();
 
+      mTracker = GoogleAnalyticsTracker.getInstance();
+      mTracker.start(Constants.ANALYTICS_ID, this);
+      
       // Replace the view of this ActivityGroup
       replaceView(view);
 
    }
+   
+   @Override
+   protected void onDestroy() {
+      mTracker.stop();
+      super.onDestroy();
+   }
 
    public void replaceView(View _view) {
+      mTracker.trackPageView("/" + _view.getContext().getClass().getSimpleName());
       // Adds the old one to history
       mHistory.add(_view);
       // Changes this Groups View to the new View.
       setContentView(_view);
    }
-
    public void back() {
       if (mHistory.size() > 1) {
          mHistory.remove(mHistory.size() - 1);
