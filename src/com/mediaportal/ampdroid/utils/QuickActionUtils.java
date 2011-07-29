@@ -17,9 +17,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.videoplayback.StreamingDetailsActivity;
+import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.ApiCredentials;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.data.FileInfo;
@@ -29,12 +31,12 @@ import com.mediaportal.ampdroid.downloadservice.ItemDownloaderHelper;
 import com.mediaportal.ampdroid.downloadservice.MediaItemType;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.IQuickActionContainer;
-import com.mediaportal.ampdroid.quickactions.QuickAction;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 
 public class QuickActionUtils {
 
-   public static void createQuickAction(Context _context, IQuickActionContainer _parent, int _titleStringId,
-         int _iconResId, OnClickListener _onClickListener) {
+   public static void createQuickAction(Context _context, IQuickActionContainer _parent,
+         int _titleStringId, int _iconResId, OnClickListener _onClickListener) {
       ActionItem quickAction = new ActionItem();
       quickAction.setTitle(_context.getString(_titleStringId));
       quickAction.setIcon(_context.getResources().getDrawable(_iconResId));
@@ -42,8 +44,8 @@ public class QuickActionUtils {
       _parent.addActionItem(quickAction);
    }
 
-   public static void createPlayOnClientQuickAction(Context _context, IQuickActionContainer _parent,
-         DataHandler _service, String _file) {
+   public static void createPlayOnClientQuickAction(Context _context,
+         IQuickActionContainer _parent, DataHandler _service, String _file) {
 
       final String playFile = _file;
       final DataHandler service = _service;
@@ -56,7 +58,8 @@ public class QuickActionUtils {
          actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play_pc));
          actionItem.setEnabled(true);
       } else {
-         actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play_pc_disabled));
+         actionItem.setIcon(_context.getResources().getDrawable(
+               R.drawable.quickaction_play_pc_disabled));
          actionItem.setEnabled(false);
       }
       actionItem.setOnClickListener(new OnClickListener() {
@@ -70,25 +73,26 @@ public class QuickActionUtils {
 
       _parent.addActionItem(actionItem);
    }
-   
-   public static void createPlayOnClientQuickAction(Context _context, IQuickActionContainer _parent,
-         DataHandler _service, OnClickListener _onClickListener) {
+
+   public static void createPlayOnClientQuickAction(Context _context,
+         IQuickActionContainer _parent, DataHandler _service, OnClickListener _onClickListener) {
       ActionItem actionItem = new ActionItem();
       actionItem.setTitle(_context.getString(R.string.quickactions_playclient));
       if (_service.isClientControlConnected()) {
          actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play_pc));
          actionItem.setEnabled(true);
       } else {
-         actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play_pc_disabled));
+         actionItem.setIcon(_context.getResources().getDrawable(
+               R.drawable.quickaction_play_pc_disabled));
          actionItem.setEnabled(false);
       }
       actionItem.setOnClickListener(_onClickListener);
 
       _parent.addActionItem(actionItem);
    }
-   
-   public static void createDownloadSdCardQuickAction(final Context _context, IQuickActionContainer _parent,
-         DataHandler _service, View.OnClickListener _onClickListener){
+
+   public static void createDownloadSdCardQuickAction(final Context _context,
+         IQuickActionContainer _parent, DataHandler _service, View.OnClickListener _onClickListener) {
       ActionItem actionItem = new ActionItem();
       actionItem.setTitle(_context.getString(R.string.quickactions_downloadsd));
       actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_download));
@@ -97,9 +101,9 @@ public class QuickActionUtils {
       _parent.addActionItem(actionItem);
    }
 
-   public static void createDownloadSdCardQuickAction(final Context _context, IQuickActionContainer _parent,
-         DataHandler _service, String _itemId, String _epFile, DownloadItemType _itemType,
-         MediaItemType _mediaType, String _fileName, String _displayName) {
+   public static void createDownloadSdCardQuickAction(final Context _context,
+         IQuickActionContainer _parent, DataHandler _service, String _itemId, String _epFile,
+         DownloadItemType _itemType, MediaItemType _mediaType, String _fileName, String _displayName) {
 
       final DataHandler service = _service;
       final IQuickActionContainer parent = _parent;
@@ -110,8 +114,6 @@ public class QuickActionUtils {
       final MediaItemType mediaType = _mediaType;
       final String fileName = _fileName;
       final String displayName = _displayName;
-      
-      
 
       ActionItem actionItem = new ActionItem();
       actionItem.setTitle(_context.getString(R.string.quickactions_downloadsd));
@@ -146,8 +148,8 @@ public class QuickActionUtils {
       _parent.addActionItem(actionItem);
    }
 
-   public static void createPlayOnDeviceQuickAction(Context _context, IQuickActionContainer _parent,
-         File _localFile, MediaItemType _mediaType) {
+   public static void createPlayOnDeviceQuickAction(Context _context,
+         IQuickActionContainer _parent, File _localFile, MediaItemType _mediaType) {
 
       final IQuickActionContainer parent = _parent;
       final Context context = _context;
@@ -171,9 +173,9 @@ public class QuickActionUtils {
 
       _parent.addActionItem(actionItem);
    }
-   
-   public static void createPlayOnDeviceQuickAction(Context _context, IQuickActionContainer _parent,
-         OnClickListener _onClickListener) {
+
+   public static void createPlayOnDeviceQuickAction(Context _context,
+         IQuickActionContainer _parent, OnClickListener _onClickListener) {
       ActionItem actionItem = new ActionItem();
       actionItem.setTitle(_context.getString(R.string.quickactions_playdevice));
       actionItem.setIcon(_context.getResources().getDrawable(R.drawable.quickaction_play));
@@ -182,9 +184,9 @@ public class QuickActionUtils {
       _parent.addActionItem(actionItem);
    }
 
-   public static void createStreamOnClientQuickAction(Context _context, IQuickActionContainer _parent,
-         DataHandler _service, String _itemId, DownloadItemType _itemType, String _fileName,
-         String _displayName) {
+   public static void createStreamOnClientQuickAction(Context _context,
+         IQuickActionContainer _parent, DataHandler _service, String _itemId,
+         DownloadItemType _itemType, String _fileName, String _displayName) {
       final IQuickActionContainer parent = _parent;
       final Context context = _context;
       final String itemId = _itemId;
@@ -204,6 +206,30 @@ public class QuickActionUtils {
             context.startActivity(download);
 
             parent.dismiss();
+         }
+      });
+
+      actionItem.setOnLongClickListener(new OnLongClickListener() {
+         @Override
+         public boolean onLongClick(View _view) {
+            String defaultProfile = null;
+            if (itemType == DownloadItemType.LiveTv) {
+               defaultProfile = PreferencesManager.getDefaultProfile(true);
+            } else {
+               defaultProfile = PreferencesManager.getDefaultProfile(false);
+            }
+            if (defaultProfile != null) {
+               Intent download = new Intent(_view.getContext(), VideoStreamingPlayerActivity.class);
+               download.putExtra("video_id", itemId);
+               download.putExtra("video_type", DownloadItemType.toInt(itemType));
+               download.putExtra("video_name", displayName);
+               context.startActivity(download);
+            } else {
+               Util.showToast(context, "no default profile defained yet");
+            }
+
+            parent.dismiss();
+            return false;
          }
       });
 

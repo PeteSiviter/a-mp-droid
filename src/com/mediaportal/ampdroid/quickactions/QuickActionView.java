@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -53,14 +55,15 @@ public class QuickActionView extends RelativeLayout implements IQuickActionConta
       String title;
       Drawable icon;
       OnClickListener listener;
+      OnLongClickListener longClickListener;
       int index = 1;
       
       for (int i = 0; i < mActionList.size(); i++) {
          title       = mActionList.get(i).getTitle();
          icon     = mActionList.get(i).getIcon();
          listener = mActionList.get(i).getListener();
-   
-         view     = getActionItem(title, icon, listener);
+         longClickListener = mActionList.get(i).getLongClickListener();
+         view = getActionItem(title, icon, listener, longClickListener);
       
          view.setFocusable(true);
          view.setClickable(mActionList.get(i).getEnabled());
@@ -87,25 +90,31 @@ public class QuickActionView extends RelativeLayout implements IQuickActionConta
     * @param _listener {@link View.OnClickListener} action item listener
     * @return action item {@link View}
     */
-   private View getActionItem(String _title, Drawable _icon, OnClickListener _listener) {
-      LinearLayout container  = (LinearLayout) mInflater.inflate(R.layout.quickaction_action_item, null);
-      ImageView img        = (ImageView) container.findViewById(R.id.icon);
-      TextView text        = (TextView) container.findViewById(R.id.title);
-      
+   private View getActionItem(String _title, Drawable _icon, OnClickListener _listener,
+         OnLongClickListener _longClickListener) {
+      LinearLayout container = (LinearLayout) mInflater.inflate(R.layout.quickaction_action_item,
+            null);
+      ImageView img = (ImageView) container.findViewById(R.id.icon);
+      TextView text = (TextView) container.findViewById(R.id.title);
+
       if (_icon != null) {
          img.setImageDrawable(_icon);
       } else {
          img.setVisibility(View.GONE);
       }
-      
+
       if (_title != null) {
          text.setText(_title);
       } else {
          text.setVisibility(View.GONE);
       }
-      
+
       if (_listener != null) {
          container.setOnClickListener(_listener);
+      }
+
+      if (_longClickListener != null) {
+         container.setOnLongClickListener(_longClickListener);
       }
 
       return container;

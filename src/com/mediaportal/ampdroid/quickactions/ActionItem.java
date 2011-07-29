@@ -14,6 +14,7 @@ package com.mediaportal.ampdroid.quickactions;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 /**
  * Action item, displayed as menu with icon and text.
@@ -26,6 +27,7 @@ public class ActionItem {
 	private String mTitle = null;
 	private OnClickListener mListener = null;
    private boolean mEnabled = true;
+   private OnLongClickListener mLongClickListener = null;
 	
 	/**
 	 * Constructor
@@ -84,6 +86,19 @@ public class ActionItem {
 	public void setOnClickListener(OnClickListener _listener) {
 		this.mListener = _listener;
 	}
+	
+	  /**
+    * Set on click listener
+    * 
+    * @param _listener on click listener {@link View.OnClickListener}
+    */
+   public void setOnLongClickListener(OnLongClickListener _listener) {
+      this.mLongClickListener  = _listener;
+   }
+   
+   public OnLongClickListener getLongClickListener() {
+      return this.mLongClickListener;
+   }
 	
 	/**
 	 * Get on click listener
