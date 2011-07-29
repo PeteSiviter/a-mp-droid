@@ -20,6 +20,6 @@ public class Constants {
    public static final String LOG_CONST_ITEMDOWNLOADER = "ItemDownloaderService";
    public static final Boolean ENABLE_STREAMING = true;
    public static final boolean SHOW_ADS = true;
-   public static final String USER_AGENT = "aMPdroid/0.8.2";
+   public static final String USER_AGENT = "aMPdroid/0.9.0";
    public static final String ANALYTICS_ID = "UA-24774210-1";
 }
