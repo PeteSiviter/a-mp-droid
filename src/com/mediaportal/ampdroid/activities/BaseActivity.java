@@ -82,7 +82,7 @@ public class BaseActivity extends Activity implements IClientControlListener {
    private MenuItem mConnectItem;
    protected ReconnectTask mReconnectTask;
    protected boolean mIsActive;
-   private GoogleAnalyticsTracker mTracker;
+   protected GoogleAnalyticsTracker mTracker;
 
    /** Called when the activity is first created. */
    @Override

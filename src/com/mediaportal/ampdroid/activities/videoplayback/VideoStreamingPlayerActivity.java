@@ -18,9 +18,11 @@ import java.util.Date;
 import java.util.Random;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
@@ -28,6 +30,8 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,6 +52,7 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -72,6 +77,45 @@ import com.mediaportal.ampdroid.videoplayer.TappableSurfaceView;
 
 public class VideoStreamingPlayerActivity extends BaseActivity implements OnCompletionListener,
       MediaPlayer.OnPreparedListener, SurfaceHolder.Callback {
+   private class ConnectionMonitor extends BroadcastReceiver {
+
+      @Override
+      public void onReceive(Context context, Intent intent) {
+         String action = intent.getAction();
+
+         if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            return;
+         }
+
+         boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY,
+               false);
+         NetworkInfo aNetworkInfo = (NetworkInfo) intent
+               .getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+
+         if (!noConnectivity) {
+            if ((aNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+                  || (aNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI)) {
+               // Handle connected case
+            }
+         } else {
+            if ((aNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+                  || (aNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI)) {
+               // Handle disconnected case
+               Util.showToast(mContext, "DISCONNECTEEEEEEEEEEED");
+            }
+         }
+      }
+   }
+
+   private synchronized void startMonitoringConnection() {
+      IntentFilter aFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+      registerReceiver(mConnectionReceiver, aFilter);
+   }
+
+   private synchronized void stopMonitoringConnection() {
+      unregisterReceiver(mConnectionReceiver);
+   }
+
    private class StartStreamingTask extends AsyncTask<Boolean, Integer, Boolean> {
       protected Boolean doInBackground(Boolean... _params) {
          boolean init = _params[0];
@@ -83,8 +127,25 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             if (!success) {
                return false;
             }
+
             mStreamingUrl = mService.startTvStreaming(mIdentifier, mStartPosition / 1000);
 
+            // tried to manually connect to th stream to trigger transcoding
+            // start -> not working
+            // try {
+            // URL myFileUrl = new URL(mStreamingUrl);
+            // HttpURLConnection conn = (HttpURLConnection)
+            // myFileUrl.openConnection();
+            // conn.setDoInput(true);
+            // conn.connect();
+            // InputStream inputStream = conn.getInputStream();
+            // inputStream.read();
+            // inputStream.close();
+            // conn.disconnect();
+            // } catch (IOException e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
          } else if (mIsRecording) {
             Log.i(Constants.LOG_CONST, "Initialising Recording Stream");
             boolean success = mService.initRecordingStreaming(mIdentifier, mClientName,
@@ -272,6 +333,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    private boolean mIsSeeking;
    private boolean mVideoNeedsPreconversion;
    private boolean mActivityActive;
+   private ConnectionMonitor mConnectionReceiver;
 
    private static boolean USE_AUTOSTART = true;
 
@@ -291,9 +353,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       } else {
          mUseInternalPlayer = false;
       }
-
-      mSurface = (TappableSurfaceView) findViewById(R.id.surface);
-      mSurface.addTapListener(onTap);
 
       mProgressbarSeeking = (ProgressBar) findViewById(R.id.progressBarSeeking);
       mTextViewVideoName = (TextView) findViewById(R.id.TextViewVideoName);
@@ -315,53 +374,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       });
 
       if (mUseInternalPlayer) {
-         mHolder = mSurface.getHolder();
-         mHolder.addCallback(this);
-         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+         initialiseMediaPlayer();
 
-         mMediaPlayer = new MediaPlayer();
-         mMediaPlayer.setScreenOnWhilePlaying(true);
-         mMediaPlayer.setOnPreparedListener(this);
-         mMediaPlayer.setOnErrorListener(new OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
-               switch (_error1) {
-               case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                  /*
-                   * try { Thread.sleep(10000); } catch (InterruptedException e)
-                   * { // TODO Auto-generated catch block e.printStackTrace(); }
-                   * if (mUseInternalPlayer) { mMediaPlayer.stop();
-                   * mMediaPlayer.reset(); }
-                   * 
-                   * playVideo(USE_AUTOSTART);
-                   */
-                  showMediaDiedError();
-                  // showErrorToast("MEDIA_ERROR_SERVER_DIED", _error2);
-                  break;
-               case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                  showErrorToast("MEDIA_ERROR_UNKNOWN", _error2);
-                  break;
-               case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                  showErrorToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
-                  break;
-               default:
-                  showErrorToast(String.valueOf(_error1), _error2);
-                  Log.w(Constants.LOG_CONST, "Media Error: " + String.valueOf(_error1) + " | "
-                        + String.valueOf(_error2));
-               }
-
-               return false;
-            }
-         });
-
-         mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer _player, int _buffer) {
-               // Log.d(Constants.LOG_CONST, "Buffering: " + _buffer);
-            }
-         });
-
-         mMediaPlayer.setOnCompletionListener(this);
       }
 
       mTopPanel = findViewById(R.id.top_panel);
@@ -490,6 +504,98 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
 
       mTextViewVideoName.setText(mDisplayName);
+      
+      mConnectionReceiver = new ConnectionMonitor();
+      
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+   }
+   
+   private void hideStatusBar() {
+      WindowManager.LayoutParams attrs = getWindow().getAttributes();
+      attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+      getWindow().setAttributes(attrs);
+  }
+
+  private void showStatusBar() {
+      WindowManager.LayoutParams attrs = getWindow().getAttributes();
+      attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+      getWindow().setAttributes(attrs);
+  }
+
+   private void initialiseMediaPlayer() {
+      LinearLayout parent = (LinearLayout) findViewById(R.id.surface);
+      LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT);
+      params.gravity = Gravity.CENTER;
+      mSurface = new TappableSurfaceView(this);
+      mSurface.setLayoutParams(params);
+
+      mSurface.addTapListener(onTap);
+      parent.removeAllViews();
+      parent.addView(mSurface);
+
+      mHolder = mSurface.getHolder();
+      mHolder.addCallback(this);
+      mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+      mMediaPlayer = new MediaPlayer();
+      mMediaPlayer.setScreenOnWhilePlaying(true);
+      mMediaPlayer.setOnPreparedListener(this);
+      mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+         @Override
+         public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
+            switch (_error1) {
+            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                     "MEDIA_ERROR_SERVER_DIED", _error2);
+               if (mIsTv) {
+                  Log.w(Constants.LOG_CONST, "Media died on tv, trying to restart");
+                  restartTv();
+               } else {
+                  showMediaDiedError();
+               }
+               break;
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                     "MEDIA_ERROR_UNKNOWN", _error2);
+               showErrorToast("MEDIA_ERROR_UNKNOWN", _error2);
+               break;
+            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                     "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
+               showErrorToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
+               break;
+            default:
+               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                     String.valueOf(_error1), _error2);
+               showErrorToast(String.valueOf(_error1), _error2);
+               Log.w(Constants.LOG_CONST, "Media Error: " + String.valueOf(_error1) + " | "
+                     + String.valueOf(_error2));
+            }
+
+            return true;
+         }
+      });
+
+      mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+         @Override
+         public void onBufferingUpdate(MediaPlayer _player, int _buffer) {
+            // Log.d(Constants.LOG_CONST, "Buffering: " + _buffer);
+         }
+      });
+
+      mMediaPlayer.setOnCompletionListener(this);
+   }
+
+   protected String getMediaTypeString() {
+      if (mIsTv) {
+         return "LiveTv";
+      } else if (mIsRecording) {
+         return "TvRecording";
+      } else {
+         return "Media";
+      }
    }
 
    public void showStartFromBeginningDialog() {
@@ -556,7 +662,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    }
 
    private String createIdentifier() {
-      return "aMPdroid." + new Random().nextInt() + ".mpeg";
+      return "aMPdroid." + new Random().nextInt() + ".ts";
    }
 
    public void showInitError(Context _context) {
@@ -586,10 +692,11 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          builder.setPositiveButton(getString(R.string.dialog_yes),
                new DialogInterface.OnClickListener() {
                   public void onClick(DialogInterface dialog, int id) {
-                     mStartSeek = new Date();
-                     // String oldIdentifier = mIdentifier;
-                     // stopStreamingAsync(oldIdentifier);
-                     // mIdentifier = createIdentifier();
+                     playVideoInExternalPlayer();
+                     mStartSeek = new Date(); //
+                     String oldIdentifier = mIdentifier; //
+                     stopStreamingAsync(oldIdentifier); // mIdentifier =
+                     createIdentifier();
 
                      mStartPosition = mStartPosition + mMediaPlayer.getCurrentPosition();
                      downloadAndShowOverlayImage((int) (mStartPosition / 1000));
@@ -603,6 +710,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
 
                      mStartStreamingTask = new StartStreamingTask();
                      mStartStreamingTask.execute(false);
+
                   }
                });
 
@@ -624,7 +732,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       } else {
          mStartExternalPlayerOverlay.setVisibility(View.INVISIBLE);
       }
-
    }
 
    protected void downloadAndShowOverlayImage(final int _position) {
@@ -670,6 +777,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    @Override
    protected void onPause() {
       Log.d(Constants.LOG_CONST, "MediaPlayer onPause");
+      
+      stopMonitoringConnection();
 
       mIsPaused = true;
 
@@ -709,6 +818,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    @Override
    protected void onResume() {
       Log.d(Constants.LOG_CONST, "MediaPlayer onResume");
+      startMonitoringConnection();
       super.onResume();
 
       mActivityActive = true;
@@ -808,15 +918,9 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       return (super.onKeyDown(keyCode, event));
    }
 
-   /*
-    * public void onBufferingUpdate(MediaPlayer arg0, int percent) { }
-    */
-
    public void onCompletion(MediaPlayer arg0) {
       Log.d(Constants.LOG_CONST, "MediaPlayer onCompletion");
       mStartPosition = 0;
-      // finish();
-      // media.setEnabled(false);
    }
 
    public void surfaceChanged(SurfaceHolder surfaceholder, int i, int j, int k) {
@@ -969,15 +1073,15 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          }
 
          if (mAutoStart) {
-            if(mIsTv){
-               Log.d(Constants.LOG_CONST, "Sleeping");
-               try {
-                  Thread.sleep(10000);
-               } catch (InterruptedException e) {
-                  e.printStackTrace();
-               }
-               Log.d(Constants.LOG_CONST, "Sleeping end");
-            }
+            // if(mIsTv){
+            // Log.d(Constants.LOG_CONST, "Sleeping");
+            // try {
+            // Thread.sleep(10000);
+            // } catch (InterruptedException e) {
+            // e.printStackTrace();
+            // }
+            // Log.d(Constants.LOG_CONST, "Sleeping end");
+            // }
             mMediaPlayer.start();
             setOverlayImage(null);
          }
@@ -1118,8 +1222,27 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       return true;
    }
 
+   private void restartTv() {
+      if (mUseInternalPlayer) {
+         setSeeking(true);
+         mMediaPlayer.stop();
+         mMediaPlayer.reset();
+         mMediaPlayer.release();
+         setOverlayImage(null);
+         mSurfaceCreated = false;
+         mSurface.destroyDrawingCache();
+         mSurface = null;
+         mHolder = null;
+
+         initialiseMediaPlayer();
+
+         playVideo(USE_AUTOSTART);
+      }
+   }
+
    @Override
    public boolean onPrepareOptionsMenu(Menu menu) {
+      showStatusBar();
       if (mStreamingProfiles != null) {
          mQualityItem.clear();
          for (final String p : mStreamingProfiles) {
@@ -1139,6 +1262,14 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          }
       }
       return super.onPrepareOptionsMenu(menu);
+   }
+   
+   
+
+   @Override
+   public void onOptionsMenuClosed(Menu menu) {
+      hideStatusBar();
+      super.onOptionsMenuClosed(menu);
    }
 
    protected void changeStreamingQuality(String _profile) {

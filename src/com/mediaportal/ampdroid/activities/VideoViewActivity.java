@@ -1,9 +1,12 @@
 package com.mediaportal.ampdroid.activities;
 
+import java.util.Random;
+
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,9 +14,11 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.mediaportal.ampdroid.R;
+import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.database.DownloadsDatabaseHandler;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.downloadservice.DownloadJob;
+import com.mediaportal.ampdroid.settings.PreferencesManager;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.DownloaderUtils;
 
@@ -80,13 +85,51 @@ public class VideoViewActivity extends BaseActivity {
    private DownloadItemType mStreamingType;
    private String mStreamingUrl;
    private VideoView view;
+   private String mDisplayName;
+   private String mProfile;
+   private String mIdentifier;
+   private long mStartPosition;
+   private long mVideoLength;
+   private String mClientName;
 
    @Override
    public void onCreate(Bundle _savedInstanceState) {
       super.onCreate(_savedInstanceState);
       setContentView(R.layout.activity_videoview);
+      mService = DataHandler.getCurrentRemoteInstance();
+      
+      Bundle extras = getIntent().getExtras();
+      mStreamingFile = extras.getString("video_id");
+      int type = extras.getInt("video_type", 0);
+      mStreamingType = DownloadItemType.fromInt(type);
+      mDisplayName = extras.getString("video_name");
+      mProfile = extras.getString("profile_name");
+      mIdentifier = createIdentifier();
+      mStartPosition = extras.getLong("video_startfrom");
 
-      startVideoPlayback();
+      if (extras.containsKey("video_length")) {
+         mVideoLength = extras.getLong("video_length");
+      }
+      
+      Log.i(Constants.LOG_CONST, "Initialising Tv Stream");
+      mClientName = PreferencesManager.getTvClientName();
+      boolean success = mService.initTvStreaming(mIdentifier, mClientName,
+            Integer.parseInt(mStreamingFile), mProfile);
+      if (success) {
+         mStreamingUrl = mService.startTvStreaming(mIdentifier, mStartPosition / 1000);
+
+         startVideoPlayback();
+      }
+   }
+   
+   @Override
+   protected void onDestroy() {
+      mService.stopTvStreaming(mIdentifier);
+      super.onDestroy();
+   }
+
+   private String createIdentifier() {
+      return "aMPdroid." + new Random().nextInt() + ".ts";
    }
 
    public void startVideoPlayback() {
@@ -94,8 +137,9 @@ public class VideoViewActivity extends BaseActivity {
          view = (VideoView) findViewById(R.id.video);
          MediaController mc = new MediaController(this);
          view.setMediaController(mc);
-         view.setVideoPath(DownloaderUtils.getBaseDirectory() + "/Shares/Movies/0.ts");
-         //view.setVideoURI(%5CUsers%5CDieBagger%5CVideos%5CTestMovies%5CThor%5CThor.2011.avi&profileName=android&identifier=aMPdroid"));
+         
+         //view.setVideoPath(DownloaderUtils.getBaseDirectory() + "/Shares/Movies/0.ts");
+         view.setVideoURI(Uri.parse(mStreamingUrl));
 
          view.requestFocus();
          view.start();
@@ -106,8 +150,8 @@ public class VideoViewActivity extends BaseActivity {
          view.setOnCompletionListener(new OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer _player) {
-               view.setVideoPath(DownloaderUtils.getBaseDirectory() + "/Shares/Movies/1.ts");
-               view.start();
+               //view.setVideoPath(DownloaderUtils.getBaseDirectory() + "/Shares/Movies/1.ts");
+               //view.start();
             }
          });
 

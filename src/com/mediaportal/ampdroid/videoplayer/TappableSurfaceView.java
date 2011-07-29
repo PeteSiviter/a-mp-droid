@@ -29,6 +29,10 @@ public class TappableSurfaceView extends SurfaceView {
       super(context, attrs);
    }
 
+   public TappableSurfaceView(Context context) {
+      super(context);
+   }
+
    public boolean onTouchEvent(MotionEvent event) {
       if (event.getAction() == MotionEvent.ACTION_UP) {
          gestureListener.onSingleTapUp(event);
