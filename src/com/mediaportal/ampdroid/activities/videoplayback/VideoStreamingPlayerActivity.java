@@ -373,10 +373,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
          }
       });
 
-      if (mUseInternalPlayer) {
-         initialiseMediaPlayer();
-
-      }
+      initialiseMediaPlayer();
 
       mTopPanel = findViewById(R.id.top_panel);
       mBottomPanel = findViewById(R.id.bottom_panel);
@@ -504,24 +501,24 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
 
       mTextViewVideoName.setText(mDisplayName);
-      
+
       mConnectionReceiver = new ConnectionMonitor();
-      
+
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
    }
-   
+
    private void hideStatusBar() {
       WindowManager.LayoutParams attrs = getWindow().getAttributes();
       attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
       getWindow().setAttributes(attrs);
-  }
+   }
 
-  private void showStatusBar() {
+   private void showStatusBar() {
       WindowManager.LayoutParams attrs = getWindow().getAttributes();
       attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
       getWindow().setAttributes(attrs);
-  }
+   }
 
    private void initialiseMediaPlayer() {
       LinearLayout parent = (LinearLayout) findViewById(R.id.surface);
@@ -539,53 +536,55 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       mHolder.addCallback(this);
       mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-      mMediaPlayer = new MediaPlayer();
-      mMediaPlayer.setScreenOnWhilePlaying(true);
-      mMediaPlayer.setOnPreparedListener(this);
-      mMediaPlayer.setOnErrorListener(new OnErrorListener() {
-         @Override
-         public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
-            switch (_error1) {
-            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
-                     "MEDIA_ERROR_SERVER_DIED", _error2);
-               if (mIsTv) {
-                  Log.w(Constants.LOG_CONST, "Media died on tv, trying to restart");
-                  restartTv();
-               } else {
-                  showMediaDiedError();
+      if (mUseInternalPlayer) {
+         mMediaPlayer = new MediaPlayer();
+         mMediaPlayer.setScreenOnWhilePlaying(true);
+         mMediaPlayer.setOnPreparedListener(this);
+         mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer arg0, int _error1, int _error2) {
+               switch (_error1) {
+               case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                  mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                        "MEDIA_ERROR_SERVER_DIED", _error2);
+                  if (mIsTv) {
+                     Log.w(Constants.LOG_CONST, "Media died on tv, trying to restart");
+                     restartTv();
+                  } else {
+                     showMediaDiedError();
+                  }
+                  break;
+               case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                  mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                        "MEDIA_ERROR_UNKNOWN", _error2);
+                  showErrorToast("MEDIA_ERROR_UNKNOWN", _error2);
+                  break;
+               case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+                  mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                        "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
+                  showErrorToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
+                  break;
+               default:
+                  mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
+                        String.valueOf(_error1), _error2);
+                  showErrorToast(String.valueOf(_error1), _error2);
+                  Log.w(Constants.LOG_CONST, "Media Error: " + String.valueOf(_error1) + " | "
+                        + String.valueOf(_error2));
                }
-               break;
-            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
-                     "MEDIA_ERROR_UNKNOWN", _error2);
-               showErrorToast("MEDIA_ERROR_UNKNOWN", _error2);
-               break;
-            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
-                     "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
-               showErrorToast("MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", _error2);
-               break;
-            default:
-               mTracker.trackEvent("MediaPlayer Errors", getMediaTypeString(),
-                     String.valueOf(_error1), _error2);
-               showErrorToast(String.valueOf(_error1), _error2);
-               Log.w(Constants.LOG_CONST, "Media Error: " + String.valueOf(_error1) + " | "
-                     + String.valueOf(_error2));
+
+               return true;
             }
+         });
 
-            return true;
-         }
-      });
+         mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+            @Override
+            public void onBufferingUpdate(MediaPlayer _player, int _buffer) {
+               // Log.d(Constants.LOG_CONST, "Buffering: " + _buffer);
+            }
+         });
 
-      mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-         @Override
-         public void onBufferingUpdate(MediaPlayer _player, int _buffer) {
-            // Log.d(Constants.LOG_CONST, "Buffering: " + _buffer);
-         }
-      });
-
-      mMediaPlayer.setOnCompletionListener(this);
+         mMediaPlayer.setOnCompletionListener(this);
+      }
    }
 
    protected String getMediaTypeString() {
@@ -739,16 +738,24 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       if (!mIsTv) {
          new Thread(new Runnable() {
             public void run() {
-               Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                     .getDefaultDisplay();
-               final Bitmap bm = mService.getBitmapFromMedia(mStreamingType, mStreamingFile,
-                     _position, display.getWidth(), display.getHeight());
-               if (bm != null) {
-                  mImageViewOverlay.post(new Runnable() {
-                     public void run() {
-                        setOverlayImage(new BitmapDrawable(bm));
-                     }
-                  });
+               try {
+                  Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                        .getDefaultDisplay();
+                  int pos = _position;
+                  Bitmap bm = mService.getBitmapFromMedia(mStreamingType, mStreamingFile, pos,
+                        display.getWidth(), display.getHeight());
+                  final Bitmap displayImage = bm;
+                  if (bm != null) {
+                     mImageViewOverlay.post(new Runnable() {
+                        public void run() {
+                           setOverlayImage(new BitmapDrawable(displayImage));
+                        }
+                     });
+                  }
+               } catch (Exception ex) {
+                  //Log.w(Constants.LOG_CONST, ex.toString());
+                  
+                  //TODO: I'm getting a nullpointer-exception here for some reason -> check out why and how to fix it
                }
             }
          }).start();
@@ -777,7 +784,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    @Override
    protected void onPause() {
       Log.d(Constants.LOG_CONST, "MediaPlayer onPause");
-      
+
       stopMonitoringConnection();
 
       mIsPaused = true;
@@ -994,7 +1001,8 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             Util.showToast(this, getString(R.string.tvserver_errorplaying) + mStreamingUrl
                   + getString(R.string.tvserver_errorplaying_resultcode) + resultCode);
          } else {
-            Util.showToast(this, getString(R.string.tvserver_finishedplaying) + mStreamingUrl);
+            // Util.showToast(this, getString(R.string.tvserver_finishedplaying)
+            // + mStreamingUrl);
          }
          if (mIsTv) {
             mService.stopTimeshift(PreferencesManager.getTvClientName());
@@ -1263,8 +1271,6 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       }
       return super.onPrepareOptionsMenu(menu);
    }
-   
-   
 
    @Override
    public void onOptionsMenuClosed(Menu menu) {
