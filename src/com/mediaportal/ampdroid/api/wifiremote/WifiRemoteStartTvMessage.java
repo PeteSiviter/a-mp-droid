@@ -13,10 +13,12 @@ package com.mediaportal.ampdroid.api.wifiremote;
 
 public class WifiRemoteStartTvMessage extends WifiRemoteMessage {
 
-   public WifiRemoteStartTvMessage(int _channelId){
-      this.Type = "tune";
+   public WifiRemoteStartTvMessage(int _channelId, boolean _fullscreen){
+      this.Type = "playchannel";
       this.ChannelId = _channelId;
+      this.StartFullscreen = _fullscreen;
    }
    
    public int ChannelId;
+   public boolean StartFullscreen;
 }

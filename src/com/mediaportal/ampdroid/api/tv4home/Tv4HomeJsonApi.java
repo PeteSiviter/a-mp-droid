@@ -11,11 +11,17 @@
 package com.mediaportal.ampdroid.api.tv4home;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.List;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -26,6 +32,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.deser.CustomDeserializerFactory;
 import org.codehaus.jackson.map.deser.StdDeserializerProvider;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.mediaportal.ampdroid.activities.WebServiceLoginException;
@@ -48,7 +56,6 @@ import com.mediaportal.ampdroid.data.TvRtspClient;
 import com.mediaportal.ampdroid.data.TvSchedule;
 import com.mediaportal.ampdroid.data.TvUser;
 import com.mediaportal.ampdroid.data.TvVirtualCard;
-import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.utils.Constants;
 import com.mediaportal.ampdroid.utils.IsoDate;
 
@@ -85,7 +92,8 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
    private final String GET_CHANNEL_STATES = "GetAllChannelStatesForGroup";
    private final String GET_CHANNEL_STATE = "GetChannelState";
    private final String GET_MEDIA_INFO = "GetMediaInfo";
-
+   private static final String GET_LOGO_IMAGE = "GetChannelLogo";
+   
    private static final String INIT_STREAMING = "SwitchTVServerToChannelAndInitStream";
 
    private static final String START_STREAMING = "StartStream";// not used for
@@ -240,6 +248,39 @@ public class Tv4HomeJsonApi implements ITvServiceApi {
          }
       }
       return false;
+   }
+   
+   @Override
+   public Bitmap getTvChannelLogo(String _channelId) {
+      URL myFileUrl = null;
+      Bitmap bmImg = null;
+      try {
+         myFileUrl = new URL(JSON_PREFIX + mServer + ":" + mPort + JSON_SUFFIX + "/" + GET_LOGO_IMAGE
+               + "?channelId=" + String.valueOf(_channelId));
+
+         if (mUseAuth) {
+            Authenticator.setDefault(new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(mUser, mPass.toCharArray());
+               }
+            });
+         }
+
+         HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
+         conn.setDoInput(true);
+         conn.connect();
+         InputStream is = conn.getInputStream();
+
+         bmImg = BitmapFactory.decodeStream(is);
+      } catch (MalformedURLException e) {
+         e.printStackTrace();
+      } catch (UnsupportedEncodingException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
+      return bmImg;
    }
 
    @Override

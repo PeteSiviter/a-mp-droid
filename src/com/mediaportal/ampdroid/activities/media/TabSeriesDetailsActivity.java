@@ -246,21 +246,24 @@ public class TabSeriesDetailsActivity extends Activity {
             mSeriesRating.setRating(rating);
 
             mTextViewSeriesOverview.setText(_result.getSummary());
-            mLoadingDialog.cancel();
+            if (mBaseActivity.getIsActive()) {
+               mLoadingDialog.cancel();
+            }
          } else {
-            mLoadingDialog.cancel();
-            Dialog diag = new Dialog(getParent());
-            diag.setTitle(getString(R.string.media_series_loadingerror));
-            diag.setCancelable(true);
+            if (mBaseActivity.getIsActive()) {
+               mLoadingDialog.cancel();
+               Dialog diag = new Dialog(getParent());
+               diag.setTitle(getString(R.string.media_series_loadingerror));
+               diag.setCancelable(true);
 
-            diag.show();
-            diag.setOnDismissListener(new OnDismissListener() {
-               @Override
-               public void onDismiss(DialogInterface dialog) {
-                  mContext.finish();
+               diag.show();
+               diag.setOnDismissListener(new OnDismissListener() {
+                  @Override
+                  public void onDismiss(DialogInterface dialog) {
 
-               }
-            });
+                  }
+               });
+            }
          }
 
          mLoadSeasonTask = new LoadSeasonsDetailsTask(mContext);
@@ -363,21 +366,21 @@ public class TabSeriesDetailsActivity extends Activity {
                                  }
                               });
                               qa.addActionItem(sdCardAction);
-                              
-                              QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
-                                    new OnClickListener() {
-                                 @Override
-                                 public void onClick(View _view) {
-                                    mSeasonPlayTask = new PlaySeasonTask(_view.getContext());
-                                    mSeasonPlayTask.execute(s);
 
-                                    Util.showToast(_view.getContext(),
-                                          getString(R.string.info_not_implemented));
-                                    // mService.playFileOnClient(epFile);
+                              QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(),
+                                    qa, mService, new OnClickListener() {
+                                       @Override
+                                       public void onClick(View _view) {
+                                          mSeasonPlayTask = new PlaySeasonTask(_view.getContext());
+                                          mSeasonPlayTask.execute(s);
 
-                                    qa.dismiss();
-                                 }
-                              });
+                                          Util.showToast(_view.getContext(),
+                                                getString(R.string.info_not_implemented));
+                                          // mService.playFileOnClient(epFile);
+
+                                          qa.dismiss();
+                                       }
+                                    });
 
                               QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                                     new View.OnClickListener() {

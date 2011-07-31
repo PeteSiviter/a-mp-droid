@@ -10,17 +10,28 @@
  ******************************************************************************/
 package com.mediaportal.ampdroid.lists;
 
+
 public class LazyLoadingImage {
    private String mImageUrl;
    private String mImageCacheName;
    private int mMaxWidth;
    private int mMaxHeight;
+   private ImageType mImageType;
+   public enum ImageType { Media, TvLogo };
    
    public LazyLoadingImage(String _url, String _cache, int _maxWidth, int _maxHeight) {
       mImageUrl = _url;
       mImageCacheName = _cache;
       mMaxWidth = _maxWidth;
       mMaxHeight = _maxHeight;
+   }
+   
+   public void setImageType(ImageType _type){
+      mImageType = _type;
+   }
+   
+   public ImageType getImageType(){
+      return mImageType;
    }
    
    /**

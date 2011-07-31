@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.List;
 
+import android.graphics.Bitmap;
+
 import com.mediaportal.ampdroid.activities.WebServiceLoginException;
 import com.mediaportal.ampdroid.data.ChannelState;
 import com.mediaportal.ampdroid.data.MediaInfo;
@@ -113,5 +115,7 @@ public interface ITvServiceApi extends IApiInterface {
    ChannelState getChannelState(int _channelId, String _userName);
 
    MediaInfo getRecordingMediaInfo(int _recordingId);
+
+   Bitmap getTvChannelLogo(String _channelId);
 
 }

@@ -47,7 +47,7 @@ public interface IClientControlApi extends IApiInterface {
 
    void sendKeyUpCommand();
 
-   void playChannelOnClient(int _channel);
+   void playTvChannelOnClient(int _channel, boolean _fullscreen);
 
    void requestPlugins();
 

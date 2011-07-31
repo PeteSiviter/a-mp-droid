@@ -12,11 +12,8 @@ package com.mediaportal.ampdroid.activities.tvserver;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.ser.ArraySerializers.StringArraySerializer;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,12 +30,15 @@ import android.widget.Spinner;
 import com.mediaportal.ampdroid.R;
 import com.mediaportal.ampdroid.activities.BaseActivity;
 import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
-import com.mediaportal.ampdroid.activities.videoplayback.VideoStreamingPlayerActivity;
 import com.mediaportal.ampdroid.api.DataHandler;
-import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.TvChannel;
+import com.mediaportal.ampdroid.data.TvChannelDetails;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
+import com.mediaportal.ampdroid.data.TvRecording;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
+import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
+import com.mediaportal.ampdroid.lists.LazyLoadingAdapter;
+import com.mediaportal.ampdroid.lists.views.TvServerChannelDetailsAdapterItem;
 import com.mediaportal.ampdroid.quickactions.ActionItem;
 import com.mediaportal.ampdroid.quickactions.QuickAction;
 import com.mediaportal.ampdroid.settings.PreferencesManager;
@@ -57,11 +57,12 @@ public class TvServerChannelsActivity extends BaseActivity {
    UpdateGroupsTask mGroupsUpdater;
    UpdateChannelsTask mChannelUpdater;
    ProgressDialog mLoadingDialog;
-   TvChannel mSelectedChannel;
    String mPlayingUrl;
 
    boolean mShowAllGroup = false;
    private StatusBarActivityHandler mStatusBarHandler;
+   private LazyLoadingAdapter mAdapter;
+   protected TvChannelDetails mSelectedTvChannel;
 
    private class UpdateGroupsTask extends AsyncTask<Integer, Integer, List<TvChannelGroup>> {
       @Override
@@ -87,22 +88,23 @@ public class TvServerChannelsActivity extends BaseActivity {
       }
    }
 
-   private class UpdateChannelsTask extends AsyncTask<TvChannelGroup, Integer, List<TvChannel>> {
+   private class UpdateChannelsTask extends AsyncTask<TvChannelGroup, Integer, List<TvChannelDetails>> {
       @Override
-      protected List<TvChannel> doInBackground(TvChannelGroup... _group) {
-         List<TvChannel> channels = mService.getTvChannelsForGroup(_group[0].getIdGroup()); // get
+      protected List<TvChannelDetails> doInBackground(TvChannelGroup... _group) {
+         List<TvChannelDetails> channels = mService.getTvChannelDetailsForGroup(_group[0].getIdGroup());
          return channels;
       }
 
       @Override
-      protected void onPostExecute(List<TvChannel> _result) {
+      protected void onPostExecute(List<TvChannelDetails> _result) {
          if (_result != null) {
-            mChannelItems.clear();
+            mAdapter.clear();
 
-            for (TvChannel c : _result) {
-               mChannelItems.add(c);
+            for (TvChannelDetails c : _result) {
+               mAdapter.addItem(new TvServerChannelDetailsAdapterItem(c));
             }
          }
+         mAdapter.notifyDataSetChanged();
          mLoadingDialog.cancel();
       }
    }
@@ -114,8 +116,9 @@ public class TvServerChannelsActivity extends BaseActivity {
 
       setContentView(R.layout.activity_tvserverchannels);
       mListView = (ListView) findViewById(R.id.ListViewChannels);
-      mChannelItems = new ArrayAdapter<TvChannel>(this, android.R.layout.simple_list_item_1);
-      mListView.setAdapter(mChannelItems);
+
+      mAdapter = new LazyLoadingAdapter(this);
+      mListView.setAdapter(mAdapter);
 
       mGroupsSpinner = (Spinner) findViewById(R.id.SpinnerGroups);
       mGroupsItems = new ArrayAdapter<TvChannelGroup>(this, android.R.layout.simple_spinner_item);
@@ -143,9 +146,10 @@ public class TvServerChannelsActivity extends BaseActivity {
       mListView.setOnItemClickListener(new OnItemClickListener() {
          @Override
          public void onItemClick(AdapterView<?> _adapter, View _view, int _pos, long _id) {
-            TvChannel channel = mChannelItems.getItem(_pos);
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(_pos);
+            mSelectedTvChannel = (TvChannelDetails) item.getItem();
 
-            openDetails(channel);
+            openDetails(mSelectedTvChannel);
 
          }
       });
@@ -156,22 +160,8 @@ public class TvServerChannelsActivity extends BaseActivity {
             // ILoadingAdapterItem item = (ILoadingAdapterItem) mListView
             // .getItemAtPosition(_pos);
             final QuickAction qa = new QuickAction(_view);
-            mSelectedChannel = (TvChannel) mListView.getItemAtPosition(_pos);
-
-            // start channel on device -> not working yet on plugin-side
-            /*
-             * ActionItem playOnClientAction = new ActionItem();
-             * playOnClientAction.setTitle("Play on Client"); playOnClientAction
-             * .
-             * setIcon(getResources().getDrawable(R.drawable.quickaction_play));
-             * playOnClientAction.setOnClickListener(new OnClickListener() {
-             * 
-             * @Override public void onClick(View _view) { TvChannel channel =
-             * mSelectedChannel;
-             * mService.playChannelOnClient(channel.getIdChannel());
-             * 
-             * qa.dismiss(); } }); qa.addActionItem(playOnClientAction);
-             */
+            ILoadingAdapterItem item = (ILoadingAdapterItem) mListView.getItemAtPosition(_pos);
+            mSelectedTvChannel = (TvChannelDetails) item.getItem();
 
             ActionItem playOnDeviceAction = new ActionItem();
             playOnDeviceAction.setTitle(getString(R.string.quickactions_streamdevice));
@@ -179,7 +169,7 @@ public class TvServerChannelsActivity extends BaseActivity {
             playOnDeviceAction.setOnClickListener(new OnClickListener() {
                @Override
                public void onClick(View _view) {
-                  TvChannel channel = mSelectedChannel;
+                  TvChannel channel = mSelectedTvChannel;
                   startTvStreaming(channel);
 
                   qa.dismiss();
@@ -188,11 +178,22 @@ public class TvServerChannelsActivity extends BaseActivity {
             });
             qa.addActionItem(playOnDeviceAction);
             
+            QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                  new OnClickListener() {
+               @Override
+               public void onClick(View _view) {
+                  TvChannel channel = mSelectedTvChannel;
+                  mService.playTvChannelOnClient(channel.getIdChannel(), true);
+
+                  qa.dismiss();
+               }
+            });
+            
             QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                   new View.OnClickListener() {
                      @Override
                      public void onClick(View arg0) {
-                        openDetails(mSelectedChannel);
+                        openDetails(mSelectedTvChannel);
                         qa.dismiss();
                      }
                   });

@@ -243,11 +243,21 @@ public class TvServerEpgActivity extends BaseActivity {
                   qa.addActionItem(addScheduleAction);
                   Date now = new Date();
                   if (now.after(program.getStartTime()) && now.before(program.getEndTime())) {
-                     TvChannel channel = (TvChannel) program.getTag();
+                     final TvChannel channel = (TvChannel) program.getTag();
                      QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
                            mService, String.valueOf(channel.getIdChannel()),
                            DownloadItemType.LiveTv, channel.getDisplayName(),
                            channel.getDisplayName());
+                     
+                     QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                           new OnClickListener() {
+                        @Override
+                        public void onClick(View _view) {
+                           mService.playTvChannelOnClient(channel.getIdChannel(), true);
+
+                           qa.dismiss();
+                        }
+                     });
                   }
 
                   QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
@@ -277,6 +287,16 @@ public class TvServerEpgActivity extends BaseActivity {
                   }
                });
                qa.addActionItem(playOnDeviceAction);
+               
+               QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                     new OnClickListener() {
+                  @Override
+                  public void onClick(View _view) {
+                     mService.playTvChannelOnClient(channel.getIdChannel(), true);
+
+                     qa.dismiss();
+                  }
+               });
 
                QuickActionUtils.createDetailsQuickAction(_view.getContext(), qa,
                      new View.OnClickListener() {

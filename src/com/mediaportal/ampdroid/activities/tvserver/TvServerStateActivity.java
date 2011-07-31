@@ -110,7 +110,10 @@ public class TvServerStateActivity extends BaseActivity {
                mChannelItems.add(c);
             }
          }
-         mLoadingDialog.cancel();
+
+         if (mIsActive) {
+            mLoadingDialog.cancel();
+         }
       }
    }
 

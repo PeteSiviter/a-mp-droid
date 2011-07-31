@@ -37,6 +37,7 @@ import com.mediaportal.ampdroid.activities.StatusBarActivityHandler;
 import com.mediaportal.ampdroid.api.DataHandler;
 import com.mediaportal.ampdroid.asynctasks.AddScheduleTask;
 import com.mediaportal.ampdroid.asynctasks.CancelScheduleTask;
+import com.mediaportal.ampdroid.data.TvChannel;
 import com.mediaportal.ampdroid.data.TvProgramBase;
 import com.mediaportal.ampdroid.downloadservice.DownloadItemType;
 import com.mediaportal.ampdroid.lists.ILoadingAdapterItem;
@@ -307,6 +308,16 @@ public class TvServerChannelDetailsActivity extends BaseActivity {
                   QuickActionUtils.createStreamOnClientQuickAction(_view.getContext(), qa,
                         mService, String.valueOf(mChannelId), DownloadItemType.LiveTv,
                         mChannelName, mChannelName);
+                  
+                  QuickActionUtils.createPlayOnClientQuickAction(_view.getContext(), qa, mService,
+                        new OnClickListener() {
+                     @Override
+                     public void onClick(View _view) {
+                        mService.playTvChannelOnClient(mChannelId, true);
+
+                        qa.dismiss();
+                     }
+                  });
                }
 
                qa.show();

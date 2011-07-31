@@ -109,6 +109,8 @@
 	<string name="tvserver_manual_title">Manual Control</string>
 	<string name="tvserver_manual_desc">Current state of the tv service and the tv cards.
 	</string>
+	<string name="tvserver_epg_now">Now</string>
+	<string name="tvserver_epg_next">Next</string>
 	<string name="tvserver_epg_title">EPG</string>
 	<string name="tvserver_epg_desc">Electronic Program Guide.</string>
 	<string name="tvserver_channel_title">Channels</string>

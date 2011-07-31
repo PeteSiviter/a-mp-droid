@@ -27,6 +27,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.mediaportal.ampdroid.api.DataHandler;
+import com.mediaportal.ampdroid.lists.LazyLoadingImage.ImageType;
 import com.mediaportal.ampdroid.utils.Constants;
 
 public class ImageHandler {
@@ -55,14 +56,12 @@ public class ImageHandler {
          ImageView imageView) {
       String url = _image.getImageUrl();
       Bitmap bitmap = memoryCache.get(url);
-         
 
       if (bitmap != null) {
          imageView.setImageBitmap(bitmap);
-      }
-      else{
+      } else {
          queuePhoto(_image, activity, imageView);
-         
+
          // loading image
          if (_loadingImage == 0) {
             // show nothing as loading image
@@ -106,7 +105,12 @@ public class ImageHandler {
          // from web
          try {
             DataHandler service = DataHandler.getCurrentRemoteInstance();
-            b = service.getImage(_image.getImageUrl(), _image.getMaxWidth(), _image.getMaxHeight());
+            if (_image.getImageType() == ImageType.TvLogo) {
+               b = service.getTvLogoImage(_image.getImageUrl());
+            } else {
+               b = service.getImage(_image.getImageUrl(), _image.getMaxWidth(),
+                     _image.getMaxHeight());
+            }
          } catch (Exception ex) {
             Log.w(Constants.LOG_CONST, ex);
             return null;

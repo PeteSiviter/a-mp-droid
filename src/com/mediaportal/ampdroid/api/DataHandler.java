@@ -36,6 +36,7 @@ import com.mediaportal.ampdroid.data.StreamProfile;
 import com.mediaportal.ampdroid.data.StreamTranscodingInfo;
 import com.mediaportal.ampdroid.data.TvCardDetails;
 import com.mediaportal.ampdroid.data.TvChannel;
+import com.mediaportal.ampdroid.data.TvChannelDetails;
 import com.mediaportal.ampdroid.data.TvChannelGroup;
 import com.mediaportal.ampdroid.data.TvProgram;
 import com.mediaportal.ampdroid.data.TvProgramBase;
@@ -569,6 +570,11 @@ public class DataHandler {
       ITvServiceApi tvApi = client.getTvControlApi();
       return tvApi.GetChannels(_groupId);
    }
+   
+   public List<TvChannelDetails> getTvChannelDetailsForGroup(int _groupId) {
+      ITvServiceApi tvApi = client.getTvControlApi();
+      return tvApi.GetChannelsDetails(_groupId);
+   }
 
    public List<TvChannel> getTvChannelsForGroup(int _groupId, int _startIndex, int _endIndex) {
       ITvServiceApi tvApi = client.getTvControlApi();
@@ -718,8 +724,8 @@ public class DataHandler {
       client.getClientControlApi().sendKeyUpCommand();
    }
 
-   public void playChannelOnClient(int _channel) {
-      client.getClientControlApi().playChannelOnClient(_channel);
+   public void playTvChannelOnClient(int _channel, boolean _fullscreen) {
+      client.getClientControlApi().playTvChannelOnClient(_channel, _fullscreen);
    }
 
    public void sendSetPowerModeCommand(PowerModes _mode) {
@@ -850,5 +856,9 @@ public class DataHandler {
 
    public MediaInfo getRecordingMediaInfo(int _recordingId) {
       return client.getTvControlApi().getRecordingMediaInfo(_recordingId);
+   }
+
+   public Bitmap getTvLogoImage(String _channelId) {
+      return client.getTvControlApi().getTvChannelLogo(_channelId);
    }
 }

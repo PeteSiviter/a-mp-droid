@@ -493,8 +493,8 @@ public class WifiRemoteMpController implements IClientControlApi {
    }
 
    @Override
-   public void playChannelOnClient(int _channel) {
-      writeObject(new WifiRemoteStartTvMessage(_channel));
+   public void playTvChannelOnClient(int _channel, boolean _fullscreen) {
+      writeObject(new WifiRemoteStartTvMessage(_channel, _fullscreen));
    }
 
    @Override
