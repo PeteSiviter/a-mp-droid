@@ -372,7 +372,6 @@ public class WifiRemoteMpController implements IClientControlApi {
       for (IClientControlListener l : mListeners) {
          l.stateChanged(_state);
       }
-
    }
 
    @Override
@@ -391,7 +390,6 @@ public class WifiRemoteMpController implements IClientControlApi {
       } catch (IOException e) {
          e.printStackTrace();
       }
-
    }
 
    @Override

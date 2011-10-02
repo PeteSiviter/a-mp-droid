@@ -138,24 +138,26 @@ public class TvServerRecordingsActivity extends BaseActivity {
    }
 
    private void openDetails(TvRecording _recording) {
-      Intent recIntent = new Intent(this, TvServerRecordingDetailsActivity.class);
-      recIntent.putExtra("recording_id", _recording.getIdRecording());
-      recIntent.putExtra("recording_name", _recording.getTitle());
-      recIntent.putExtra("recording_start", _recording.getStartTime());
-      recIntent.putExtra("recording_end", _recording.getEndTime());
-      if (!mChannels.containsKey(_recording.getIdChannel())) {
-         TvChannel channel = mService.getTvChannel(_recording.getIdChannel());
-         if (channel != null) {
-            recIntent.putExtra("recording_channel", channel.getDisplayName());
+      if (_recording != null) {
+         Intent recIntent = new Intent(this, TvServerRecordingDetailsActivity.class);
+         recIntent.putExtra("recording_id", _recording.getIdRecording());
+         recIntent.putExtra("recording_name", _recording.getTitle());
+         recIntent.putExtra("recording_start", _recording.getStartTime());
+         recIntent.putExtra("recording_end", _recording.getEndTime());
+         if (!mChannels.containsKey(_recording.getIdChannel())) {
+            TvChannel channel = mService.getTvChannel(_recording.getIdChannel());
+            if (channel != null) {
+               recIntent.putExtra("recording_channel", channel.getDisplayName());
+            }
+         } else {
+            recIntent.putExtra("recording_channel", mChannels.get(_recording.getIdChannel())
+                  .getDisplayName());
          }
-      } else {
-         recIntent.putExtra("recording_channel", mChannels.get(_recording.getIdChannel())
-               .getDisplayName());
-      }
-      recIntent.putExtra("recording_description", _recording.getDescription());
-      recIntent.putExtra("recording_filename", _recording.getFileName());
+         recIntent.putExtra("recording_description", _recording.getDescription());
+         recIntent.putExtra("recording_filename", _recording.getFileName());
 
-      startActivity(recIntent);
+         startActivity(recIntent);
+      }
    }
 
    private void refreshRecordings() {

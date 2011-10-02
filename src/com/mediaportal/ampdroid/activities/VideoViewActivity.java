@@ -112,7 +112,7 @@ public class VideoViewActivity extends BaseActivity {
       }
       
       Log.i(Constants.LOG_CONST, "Initialising Tv Stream");
-      mClientName = PreferencesManager.getTvClientName();
+      mClientName = PreferencesManager.getClientName();
       boolean success = mService.initTvStreaming(mIdentifier, mClientName,
             Integer.parseInt(mStreamingFile), mProfile);
       if (success) {

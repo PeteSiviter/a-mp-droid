@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (c) 2011 Benjamin Gmeiner.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the GNU Public License v2.0
-  which accompanies this distribution, and is available at
-  http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-  
-  Contributors:
-      Benjamin Gmeiner - Project Owner
--->
+<!-- Copyright (c) 2011 Benjamin Gmeiner. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	GNU Public License v2.0 which accompanies this distribution, and is available 
+	at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html Contributors: Benjamin 
+	Gmeiner - Project Owner -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content" android:layout_width="fill_parent">
 	<LinearLayout android:layout_width="fill_parent"
@@ -34,7 +29,8 @@
 				android:layout_height="wrap_content" android:id="@+id/TextView01"
 				android:text="@string/settings_clients_clientmac"></TextView>
 			<EditText android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:id="@+id/pref_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
+				android:layout_height="wrap_content" android:id="@+id/pref_mac"
+				android:hint="@string/settings_clients_clientmac_hint"></EditText>
 
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
@@ -75,8 +71,12 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_wifiremote_port"
 				android:imeOptions="actionNext" android:inputType="number"></EditText>
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView02"></TextView>
-			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_wifiremote_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac"
+				android:id="@+id/TextView02"></TextView>
+			<EditText android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/pref_host_wifiremote_mac"
+				android:hint="@string/settings_clients_clientmac_hint"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
 			<EditText android:text="" android:id="@+id/pref_wifiremote_user"
@@ -112,8 +112,12 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_tv4home_port"
 				android:imeOptions="actionNext" android:inputType="number"></EditText>
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView03"></TextView>
-			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_tv4home_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac"
+				android:id="@+id/TextView03"></TextView>
+			<EditText android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/pref_host_tv4home_mac"
+				android:hint="@string/settings_clients_clientmac_hint"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
 			<EditText android:text="" android:id="@+id/pref_tv4home_user"
@@ -144,12 +148,16 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/pref_host_gma_addr"
 				android:imeOptions="actionNext" android:inputType="text"></EditText>
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac" android:id="@+id/TextView04"></TextView>
-			<EditText android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pref_host_gma_mac" android:hint="@string/settings_clients_clientmac_hint"></EditText>
-			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings_clients_clientport" android:id="@+id/textView1"></TextView>
-			<EditText android:layout_height="wrap_content"
-				android:layout_width="fill_parent" android:id="@+id/pref_host_gma_port"
-				android:imeOptions="actionNext" android:inputType="number"></EditText>
+			<TextView android:text="@string/settings_clients_clientport" android:layout_width="wrap_content" android:id="@+id/textView1" android:layout_height="wrap_content"></TextView>
+			<EditText android:id="@+id/pref_host_gma_port" android:inputType="number" android:imeOptions="actionNext" android:layout_width="fill_parent" android:layout_height="wrap_content">
+				<requestFocus></requestFocus>
+			</EditText>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/settings_clients_clientmac"
+				android:id="@+id/TextView04"></TextView>
+			<EditText android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/pref_host_gma_mac"
+				android:hint="@string/settings_clients_clientmac_hint"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/settings_clients_clientusername" />
 			<EditText android:text="" android:id="@+id/pref_gma_user"

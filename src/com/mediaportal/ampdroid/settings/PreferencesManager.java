@@ -51,9 +51,9 @@ public class PreferencesManager {
       }
    }
 
-   public static String getTvClientName() {
+   public static String getClientName() {
       if (Preferences != null) {
-         return Preferences.getString("tvserver_clientname", "unknown");
+         return Preferences.getString("general_clientname", "unknown");
       } else {
          Log.w(Constants.LOG_CONST, "PreferencesManager not initialised");
          return "unknown";

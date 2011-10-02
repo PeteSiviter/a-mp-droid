@@ -430,7 +430,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
       Bundle extras = getIntent().getExtras();
       final Object retainData = getLastNonConfigurationInstance();
 
-      mClientName = PreferencesManager.getTvClientName();
+      mClientName = PreferencesManager.getClientName();
 
       mContext = this;
 
@@ -1005,7 +1005,7 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
             // + mStreamingUrl);
          }
          if (mIsTv) {
-            mService.stopTimeshift(PreferencesManager.getTvClientName());
+            mService.stopTimeshift(PreferencesManager.getClientName());
          } else {
             showExternalPlayerStartOverlay(false);
             mStartStreamingTask = new StartStreamingTask();
@@ -1276,6 +1276,14 @@ public class VideoStreamingPlayerActivity extends BaseActivity implements OnComp
    public void onOptionsMenuClosed(Menu menu) {
       hideStatusBar();
       super.onOptionsMenuClosed(menu);
+   }
+   
+   
+
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      hideStatusBar();
+      return super.onOptionsItemSelected(item);
    }
 
    protected void changeStreamingQuality(String _profile) {

@@ -311,7 +311,7 @@ public class StreamingDetailsActivity extends BaseActivity {
          public void onClick(View _view) {
             if (mFinishedLoading) {
                mPlayingUrl = mService.startTimeshift(Integer.parseInt(mStreamingFile),
-                     PreferencesManager.getTvClientName());
+                     PreferencesManager.getClientName());
                if (mPlayingUrl != null) {
                   try {
                      Intent i = new Intent(Intent.ACTION_VIEW);
@@ -536,7 +536,7 @@ public class StreamingDetailsActivity extends BaseActivity {
          } else {
             Util.showToast(this, getString(R.string.tvserver_finishedplaying) + mPlayingUrl);
          }
-         mService.stopTimeshift(PreferencesManager.getTvClientName());
+         mService.stopTimeshift(PreferencesManager.getClientName());
       }
 
       super.onActivityResult(requestCode, resultCode, data);

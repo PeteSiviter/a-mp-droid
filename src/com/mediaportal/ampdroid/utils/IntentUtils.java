@@ -21,7 +21,7 @@ public class IntentUtils {
    public static Intent startTvStreaming(Activity _parent, DataHandler _service, TvChannel _channel) {
       if (PreferencesManager.useDirectStream()) {
          String url = _service.startTimeshift(_channel.getIdChannel(),
-               PreferencesManager.getTvClientName());
+               PreferencesManager.getClientName());
 
          if (url != null) {
             try {
